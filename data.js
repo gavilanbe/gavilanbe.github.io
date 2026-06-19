@@ -69,7 +69,7 @@ const GAMES = [
   {
     "name": "dakino",
     "title": "🛒 Dakino: Supermarket Heist",
-    "tagline": "",
+    "tagline": "Sigilo arcade con vista cenital: cuélate en el supermercado, mangonea el mejor botín y escapa sin que los guardias te pillen.",
     "type": "web",
     "play": "https://gavilanbe.github.io/dakino/",
     "repo": "https://github.com/gavilanbe/dakino",
@@ -178,8 +178,8 @@ const GAMES = [
   },
   {
     "name": "gacha-zoo",
-    "title": "luego abre http://127.0.0.1:8431/index.html",
-    "tagline": "",
+    "title": "🐾 Gacha Zoo",
+    "tagline": "Una máquina gachapon 3D voxel llena de animalitos coleccionables. ¡Tira de la palanca y a ver qué cae! 🎰",
     "type": "web",
     "play": "https://gavilanbe.github.io/gacha-zoo/",
     "repo": "https://github.com/gavilanbe/gacha-zoo",
@@ -233,8 +233,8 @@ const GAMES = [
   },
   {
     "name": "kaizen",
-    "title": "kaizen",
-    "tagline": "",
+    "title": "🗼 Kaizen Tower Defense",
+    "tagline": "Defiende la ruta, mejora tus torres y aguanta cada oleada. Un Tower Defense web con criaturas estilo Pokémon.",
     "type": "web",
     "play": "https://gavilanbe.github.io/kaizen/",
     "repo": "https://github.com/gavilanbe/kaizen",
@@ -256,7 +256,7 @@ const GAMES = [
   {
     "name": "libret",
     "title": "✏️ Libreta",
-    "tagline": "",
+    "tagline": "Hack & slash de garabatos: una libreta de papel cobra vida y todo lo dibujado quiere matarte.",
     "type": "web",
     "play": "https://gavilanbe.github.io/libret/",
     "repo": "https://github.com/gavilanbe/libret",
@@ -267,7 +267,7 @@ const GAMES = [
   {
     "name": "libreta",
     "title": "✏️ LIBRETA",
-    "tagline": "Juega online aquí 👉 [gavilanbe.github.io/libreta](https://gavilanbe.github.io/libreta/)",
+    "tagline": "LIBRETA es un hack & slash con estética de cuaderno escolar: papel rayado, margen rojo y un trazo \"hervido\" tipo boceto, todo dibujado en código (sin imágenes ni sprites)",
     "type": "web",
     "play": "https://gavilanbe.github.io/libreta/",
     "repo": "https://github.com/gavilanbe/libreta",
@@ -344,7 +344,7 @@ const GAMES = [
   {
     "name": "ofis",
     "title": "🏢 Chibi Office",
-    "tagline": "",
+    "tagline": "Chibi Office es una experiencia isométrica relajante hecha al 100% con p5.js.",
     "type": "web",
     "play": "https://gavilanbe.github.io/ofis/",
     "repo": "https://github.com/gavilanbe/ofis",
@@ -388,7 +388,7 @@ const GAMES = [
   {
     "name": "pokechess",
     "title": "♟️ PokéChess — Type Sumo",
-    "tagline": "Online:** 👉 **[gavilanbe.github.io/pokechess](https://gavilanbe.github.io/pokechess/)",
+    "tagline": "Online: 👉 gavilanbe.github.io/pokechess",
     "type": "web",
     "play": "https://gavilanbe.github.io/pokechess/",
     "repo": "https://github.com/gavilanbe/pokechess",
@@ -531,7 +531,7 @@ const GAMES = [
   {
     "name": "sprout-gbc",
     "title": "🌱 SPROUT (Game Boy Color)",
-    "tagline": "Port homebrew para Game Boy Color de SPROUT: una aventurilla de acción top-down tipo Zelda, en una ROM `.gbc` real.",
+    "tagline": "Port homebrew para Game Boy Color de SPROUT: una aventurilla de acción top-down tipo Zelda, en una ROM .gbc real.",
     "type": "terminal",
     "play": "",
     "repo": "https://github.com/gavilanbe/sprout-gbc",
@@ -542,7 +542,7 @@ const GAMES = [
   {
     "name": "srak-l-zit",
     "title": "🫒 Srak l-Zit · سرق الزيت",
-    "tagline": "",
+    "tagline": "El Atraco del Aceite: una cucaracha ladronzuela contra el oro líquido del Magreb.",
     "type": "web",
     "play": "https://gavilanbe.github.io/srak-l-zit/",
     "repo": "https://github.com/gavilanbe/srak-l-zit",
@@ -564,7 +564,7 @@ const GAMES = [
   {
     "name": "tamamon",
     "title": "🥚 Tamamon",
-    "tagline": "",
+    "tagline": "Tamamon es un juego idle/clicker de monstruo digital con estética Game Boy + Digivice.",
     "type": "web",
     "play": "https://gavilanbe.github.io/tamamon/",
     "repo": "https://github.com/gavilanbe/tamamon",
