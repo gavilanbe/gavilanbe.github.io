@@ -192,16 +192,19 @@
     return el;
   }
 
-  // sections: web first (most exciting), then terminal
-  const order = {web:0, terminal:1};
-  const sorted = [...GAMES].sort((a,b)=> (order[a.type]-order[b.type]) || a.name.localeCompare(b.name));
+  // featured order (los mejores primero), luego el resto alfabético
+  const FEATURED = ['sprout-game','nahugavi','gacha-zoo','libreta','makinamon','doodli','chef-game','poke-autobattler','short-hike-demo'];
+  const rk = n => { const i = FEATURED.indexOf(n); return i < 0 ? 999 : i; };
+  const webGames  = GAMES.filter(g=>g.type==='web').sort((a,b)=> rk(a.name)-rk(b.name) || a.title.localeCompare(b.title));
+  const termGames = GAMES.filter(g=>g.type==='terminal').sort((a,b)=> a.title.localeCompare(b.title));
   const secWeb = document.createElement('section');
   secWeb.innerHTML = '<h2 class="sectiontitle">🌐 Jugar en el navegador</h2>';
   const gridWeb = document.createElement('div'); gridWeb.className='grid'; gridWeb.id='gw';
   const secTerm = document.createElement('section');
   secTerm.innerHTML = '<h2 class="sectiontitle">🖥️ Juegos de terminal</h2>';
   const gridTerm = document.createElement('div'); gridTerm.className='grid'; gridTerm.id='gt';
-  sorted.forEach(g => (g.type==='web'?gridWeb:gridTerm).appendChild(card(g)));
+  webGames.forEach(g => gridWeb.appendChild(card(g)));
+  termGames.forEach(g => gridTerm.appendChild(card(g)));
   secWeb.appendChild(gridWeb); secTerm.appendChild(gridTerm);
   main.append(secWeb, secTerm);
 
