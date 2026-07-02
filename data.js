@@ -23,6 +23,18 @@ const GAMES = [
     "kind": "juego"
   },
   {
+    "name": "bitxo",
+    "title": "🥚 BITXO",
+    "tagline": "Mascota virtual + idle incremental: cuida a tu bicho, cosecha motas ✦ y asciende su dinastía al cielo. 46 formas, clima, chiptune y cero assets.",
+    "type": "web",
+    "play": "https://gavilanbe.github.io/bitxo/",
+    "repo": "https://github.com/gavilanbe/bitxo",
+    "thumb": "thumbs/bitxo.jpg",
+    "wip": false,
+    "new": true,
+    "kind": "juego"
+  },
+  {
     "name": "bug-smash",
     "title": "🐛 Bug Smash",
     "tagline": "Backend contra Frontend: dos jugadores, una hoja de cuaderno y el que pierde se come el ticket.",
