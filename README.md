@@ -11,7 +11,11 @@
 Una sola página estática, sin frameworks ni build: los juegos viven en
 [`data.js`](data.js) y las miniaturas en [`thumbs/`](thumbs/). Con buscador
 (tecla `/`), filtros por tipo, **juego del día** (rotación diaria determinista)
-y botón **INSERT COIN** que abre un juego al azar.
+y una ranura para **echar una moneda** que lanza un juego al azar.
+
+El diseño está inspirado en el chasis de la Game Boy DMG: plástico cálido,
+bisel oscuro de pantalla, botón A magenta, ficha dorada y verde oliva para la
+sección de terminal. Tipografía: Unbounded + IBM Plex Sans/Mono.
 
 ## Añadir un juego
 

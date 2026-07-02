@@ -3,298 +3,473 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>gavilanbe // ARCADE — la colección de juegos</title>
-<meta name="description" content="Una colección hecha a mano de juegos web, de terminal y homebrew. Jugables directamente en el navegador.">
-<meta property="og:title" content="gavilanbe // ARCADE">
-<meta property="og:description" content="59 juegos hechos a mano — web, terminal y homebrew. Muchos jugables al instante en el navegador.">
+<title>gavilanbe // arcade — 59 juegos hechos a mano</title>
+<meta name="description" content="La colección de juegos de gavilanbe: pixel art, mundos 3D, terminal y homebrew de Game Boy. Muchos se juegan al instante en el navegador.">
+<meta property="og:title" content="gavilanbe // arcade">
+<meta property="og:description" content="59 juegos hechos a mano — pixel art, terminal y homebrew de Game Boy. Muchos jugables al instante.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://gavilanbe.github.io/">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🕹️</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#080810; --panel:#13131f; --panel2:#1b1b2c; --line:#2a2a40;
-    --ink:#e8e8f4; --dim:#9a9ab8;
-    --green:#5ee07a; --magenta:#ff5dbb; --cyan:#4ad7ff; --gold:#ffce4a;
+    /* chasis DMG: plástico cálido, bisel oscuro, botón A magenta, ficha dorada, pantalla oliva */
+    --shell:#E7E3D8; --shell-2:#DDD7C8; --card:#FFFDF6; --line:#CDC7B6;
+    --bezel:#20242A; --bezel-2:#2B3038; --phosphor:#F2F0E4;
+    --ink:#26282A; --dim:#6E6A5C;
+    --play:#C42B67; --play-dark:#9C1F50;
+    --coin:#D99A2B; --coin-dark:#8A5F14;
+    --screen:#93A24B; --screen-ink:#20251A; --screen-dim:#B8C48A;
+    --r:14px;
+    --focus:0 0 0 3px rgba(196,43,103,.35);
   }
   *{margin:0;padding:0;box-sizing:border-box}
   html{scroll-behavior:smooth}
   body{
-    background:var(--bg); color:var(--ink);
-    font-family:'VT323',monospace; font-size:21px; line-height:1.35;
-    background-image:
-      radial-gradient(circle at 20% -10%, rgba(94,224,122,.10), transparent 45%),
-      radial-gradient(circle at 90% 0%, rgba(255,93,187,.10), transparent 40%),
-      linear-gradient(rgba(255,255,255,.022) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(255,255,255,.022) 1px, transparent 1px);
-    background-size:auto,auto,100% 3px,3px 100%;
-    min-height:100vh;
-  }
-  /* CRT scanlines */
-  body::after{
-    content:""; position:fixed; inset:0; pointer-events:none; z-index:50;
-    background:repeating-linear-gradient(0deg, rgba(0,0,0,.10) 0 1px, transparent 1px 3px);
-    mix-blend-mode:multiply;
+    background:var(--shell); color:var(--ink);
+    font-family:'IBM Plex Sans',system-ui,sans-serif; font-size:15px; line-height:1.55;
+    /* textura sutil de plástico moteado */
+    background-image:radial-gradient(rgba(38,40,42,.028) 1px, transparent 1.2px);
+    background-size:5px 5px;
   }
   a{color:inherit;text-decoration:none}
-  .wrap{max-width:1240px; margin:0 auto; padding:0 20px}
+  :focus-visible{outline:none; box-shadow:var(--focus); border-radius:8px}
+  img{display:block}
+  .wrap{max-width:1200px; margin:0 auto; padding:0 22px}
+  .mono{font-family:'IBM Plex Mono',monospace}
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace; font-size:11px; font-weight:500;
+    letter-spacing:.14em; text-transform:uppercase; color:var(--dim);
+  }
 
-  header{padding:64px 20px 30px; text-align:center; position:relative}
-  .logo{
-    font-family:'Press Start 2P',monospace; font-size:clamp(22px,5vw,46px);
-    letter-spacing:1px; line-height:1.25;
-    color:#fff;
-    text-shadow:0 0 8px var(--green), 4px 4px 0 var(--magenta);
+  /* ============ HERO: el bisel de la consola ============ */
+  .hero-outer{padding:26px 22px 10px}
+  .hero{
+    max-width:1200px; margin:0 auto; position:relative; overflow:hidden;
+    background:linear-gradient(160deg, var(--bezel-2), var(--bezel) 55%);
+    border-radius:24px; border:1px solid #14171B;
+    box-shadow:inset 0 1px 0 rgba(242,240,228,.08), 0 20px 50px -24px rgba(32,36,42,.55);
+    display:grid; grid-template-columns:minmax(0,1fr) minmax(280px,420px);
   }
-  .logo b{color:var(--green)}
-  .blurb{margin-top:18px; color:var(--dim); font-size:23px}
-  .blurb b{color:var(--gold)}
-  .stats{margin-top:22px; display:flex; gap:10px; justify-content:center; flex-wrap:wrap}
-  .stat{
-    background:var(--panel); border:1px solid var(--line); border-radius:10px;
-    padding:8px 16px; font-size:20px; color:var(--dim);
+  .hero-copy{padding:clamp(30px,5vw,64px); position:relative; z-index:2}
+  .hero .eyebrow{color:#9BA3AE}
+  h1{
+    font-family:'Unbounded',sans-serif; font-weight:700;
+    font-size:clamp(27px,4.6vw,50px); line-height:1.04; letter-spacing:-.01em;
+    color:var(--phosphor); margin:14px 0 18px;
   }
-  .stat b{font-family:'Press Start 2P'; font-size:15px; color:var(--cyan); margin-right:6px}
-  .gh{display:inline-block; margin-top:18px; color:var(--ink); border-bottom:1px dashed var(--dim)}
-  .gh:hover{color:var(--green)}
+  h1 .slash{color:var(--coin); font-weight:500}
+  .thesis{color:#C9CDD3; font-size:clamp(15px,1.6vw,18px); max-width:44ch}
+  .thesis b{color:var(--phosphor); font-weight:600}
+  .hero-stats{margin-top:22px; display:flex; gap:18px; flex-wrap:wrap;
+    font-family:'IBM Plex Mono',monospace; font-size:12px; color:#9BA3AE}
+  .hero-stats b{color:var(--coin); font-weight:500}
+  .hero-actions{margin-top:30px; display:flex; gap:12px; flex-wrap:wrap; align-items:center}
 
-  /* controls */
-  .controls{
-    position:sticky; top:0; z-index:30; background:rgba(8,8,16,.86);
-    backdrop-filter:blur(8px); border-bottom:1px solid var(--line);
-    padding:14px 0; margin-bottom:30px;
+  /* ranura de moneda: juego al azar */
+  .coinbtn{
+    position:relative; display:inline-flex; align-items:center; gap:12px;
+    background:linear-gradient(180deg,#E9AC3B,var(--coin));
+    color:#3A2604; border:1px solid var(--coin-dark); border-radius:12px;
+    padding:12px 18px 12px 14px; cursor:pointer; font:inherit;
+    font-weight:600; font-size:15px;
+    box-shadow:0 1px 0 rgba(255,255,255,.5) inset, 0 3px 0 var(--coin-dark);
+    transition:transform .08s, box-shadow .08s;
   }
-  .controls .wrap{display:flex; gap:14px; align-items:center; flex-wrap:wrap; justify-content:center}
-  .tabs{display:flex; gap:8px; flex-wrap:wrap}
-  .tab{
-    font-family:'VT323'; font-size:21px; cursor:pointer; user-select:none;
-    background:var(--panel); border:1px solid var(--line); color:var(--dim);
-    padding:7px 16px; border-radius:999px; transition:.15s;
+  .coinbtn:active{transform:translateY(3px); box-shadow:0 1px 0 rgba(255,255,255,.5) inset, 0 0 0 var(--coin-dark)}
+  .coinbtn .slot{
+    width:26px; height:34px; border-radius:6px; background:#3A2604; position:relative; flex:none;
+    box-shadow:0 1px 0 rgba(255,255,255,.35);
   }
-  .tab:hover{color:var(--ink); border-color:var(--dim)}
-  .tab.on{background:var(--green); color:#06210f; border-color:var(--green); font-weight:bold; box-shadow:0 0 14px rgba(94,224,122,.5)}
-  #search{
-    flex:1; min-width:180px; max-width:340px;
-    background:var(--panel); border:1px solid var(--line); color:var(--ink);
-    font-family:'VT323'; font-size:21px; padding:8px 14px; border-radius:999px; outline:none;
+  .coinbtn .slot::after{content:""; position:absolute; left:50%; top:6px; transform:translateX(-50%);
+    width:3px; height:22px; border-radius:2px; background:var(--coin)}
+  .coinbtn small{display:block; font-family:'IBM Plex Mono',monospace; font-size:10px;
+    font-weight:500; letter-spacing:.12em; opacity:.75}
+  .ghlink{
+    color:#C9CDD3; font-size:14px; padding:12px 6px; border-bottom:1px dashed #4A505A;
   }
-  #search:focus{border-color:var(--cyan); box-shadow:0 0 12px rgba(74,215,255,.35)}
+  .ghlink:hover{color:var(--phosphor); border-color:var(--coin)}
 
-  .sectiontitle{
-    font-family:'Press Start 2P'; font-size:15px; color:var(--gold);
-    margin:34px 0 16px; padding-left:4px; border-left:4px solid var(--gold);
-    padding:6px 0 6px 12px;
+  /* muro de miniaturas */
+  .wall{
+    position:relative; overflow:hidden; z-index:1;
+    -webkit-mask-image:linear-gradient(90deg, transparent 0, #000 14%);
+            mask-image:linear-gradient(90deg, transparent 0, #000 14%);
   }
-  .grid{
-    display:grid; gap:18px;
-    grid-template-columns:repeat(auto-fill, minmax(252px,1fr));
+  .wall-tilt{
+    position:absolute; inset:-12% -6%; display:flex; gap:14px;
+    transform:rotate(-3.5deg) translateX(4%);
   }
-  .card{
-    background:var(--panel); border:1px solid var(--line); border-radius:14px;
-    overflow:hidden; display:flex; flex-direction:column;
-    transition:transform .15s, border-color .15s, box-shadow .15s;
-  }
-  .card:hover{transform:translateY(-5px); border-color:var(--green); box-shadow:0 10px 30px rgba(0,0,0,.5), 0 0 0 1px var(--green)}
-  .shot{position:relative; aspect-ratio:16/10; background:#0c0c16; overflow:hidden}
-  .shot img{width:100%; height:100%; object-fit:cover; image-rendering:auto; display:block}
-  .shot.noimg{display:flex; align-items:center; justify-content:center; font-size:74px;
-    background:radial-gradient(circle at 50% 40%, var(--panel2), #0c0c16)}
-  .ribbon{
-    position:absolute; top:10px; right:-34px; transform:rotate(40deg);
-    background:var(--gold); color:#241a00; font-family:'Press Start 2P'; font-size:9px;
-    padding:4px 38px; box-shadow:0 2px 6px rgba(0,0,0,.4)}
-  .ribbon.nuevo{background:var(--green); color:#06210f; animation:ribbonpulse 1.2s steps(2) infinite}
-  @keyframes ribbonpulse{50%{filter:brightness(1.35)}}
+  .wall-col{display:flex; flex-direction:column; gap:14px; flex:1; min-width:0;
+    animation:wallUp 52s linear infinite}
+  .wall-col.rev{animation:wallDown 64s linear infinite}
+  @keyframes wallUp{to{transform:translateY(-50%)}}
+  @keyframes wallDown{from{transform:translateY(-50%)}}
+  .wall-col a{flex:none; border-radius:10px; overflow:hidden;
+    border:1px solid rgba(242,240,228,.14); box-shadow:0 8px 18px -10px rgba(0,0,0,.6)}
+  .wall-col img{width:100%; aspect-ratio:16/10; object-fit:cover; opacity:.92}
+  .wall-col a:hover img{opacity:1}
+  .wall:hover .wall-col{animation-play-state:paused}
 
-  /* juego del día */
-  .spot{
-    display:flex; gap:0; background:var(--panel); border:1px solid var(--gold);
-    border-radius:14px; overflow:hidden; margin-bottom:6px;
-    box-shadow:0 0 24px rgba(255,206,74,.14);
-    transition:transform .15s, box-shadow .15s;
+  /* ============ barra de mandos ============ */
+  .deck{
+    position:sticky; top:0; z-index:40;
+    background:rgba(231,227,216,.88); backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line);
+    margin-top:26px;
   }
-  .spot:hover{transform:translateY(-3px); box-shadow:0 0 34px rgba(255,206,74,.3)}
-  .spot-shot{flex:0 0 44%; max-width:460px; aspect-ratio:16/10; background:#0c0c16}
-  .spot-shot img{width:100%; height:100%; object-fit:cover; display:block}
-  .spot-body{padding:20px 22px; display:flex; flex-direction:column; gap:8px; justify-content:center; min-width:0}
-  .spot-body .title{font-size:30px}
-  .spot-body .tagline{-webkit-line-clamp:4}
-  .spot-body .btn.play{max-width:220px; margin-top:8px}
-  @media (max-width:640px){ .spot{flex-direction:column} .spot-shot{flex:none; max-width:none} }
-
-  /* insert coin */
-  .coin{
-    display:inline-block; margin-top:20px; font-family:'Press Start 2P'; font-size:12px;
-    color:var(--gold); cursor:pointer; animation:coinblink 1.1s steps(2) infinite;
-  }
-  .coin:hover{color:#fff; animation-play-state:paused}
-  @keyframes coinblink{50%{opacity:.25}}
+  .deck .wrap{display:flex; gap:10px; align-items:center; padding:12px 22px; flex-wrap:wrap}
   .chip{
-    position:absolute; top:8px; left:8px; font-size:16px; padding:2px 9px; border-radius:999px;
-    backdrop-filter:blur(4px); border:1px solid rgba(255,255,255,.18);
+    font-family:'IBM Plex Mono',monospace; font-size:12.5px; font-weight:500;
+    padding:8px 14px; border-radius:999px; cursor:pointer; user-select:none;
+    background:transparent; border:1px solid var(--line); color:var(--dim);
+    transition:.15s; font-variant-numeric:tabular-nums;
   }
-  .chip.web{background:rgba(74,215,255,.22); color:#bff0ff}
-  .chip.terminal{background:rgba(255,93,187,.20); color:#ffcdee}
-  .body{padding:13px 14px 14px; display:flex; flex-direction:column; gap:6px; flex:1}
-  .title{font-size:25px; line-height:1.05; color:#fff}
-  .tagline{color:var(--dim); font-size:19px; flex:1;
-    display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden}
-  .actions{display:flex; gap:8px; margin-top:6px}
-  .btn{
-    font-family:'VT323'; font-size:19px; padding:6px 14px; border-radius:8px; cursor:pointer;
-    border:1px solid var(--line); color:var(--ink); background:var(--panel2); transition:.15s; flex:0 0 auto;
+  .chip:hover{color:var(--ink); border-color:var(--dim)}
+  .chip.on{background:var(--bezel); color:var(--phosphor); border-color:var(--bezel)}
+  #search{
+    flex:1; min-width:160px; max-width:320px; margin-left:auto;
+    font-family:'IBM Plex Mono',monospace; font-size:13.5px;
+    background:var(--card); color:var(--ink);
+    border:1px solid var(--line); border-radius:10px; padding:9px 13px; outline:none;
   }
-  .btn:hover{border-color:var(--dim)}
-  .btn.play{background:var(--green); color:#06210f; border-color:var(--green); font-weight:bold; flex:1; text-align:center}
-  .btn.play:hover{box-shadow:0 0 14px rgba(94,224,122,.6)}
-  .btn.wip{background:var(--gold); color:#241a00; border-color:var(--gold)}
+  #search::placeholder{color:#A29C8C}
+  #search:focus{border-color:var(--play); box-shadow:var(--focus)}
+  #hits{font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--dim); white-space:nowrap}
+
+  /* ============ secciones ============ */
+  section{padding-top:44px}
+  .sec-head{display:flex; align-items:baseline; gap:14px; margin-bottom:18px}
+  .sec-head h2{
+    font-family:'Unbounded',sans-serif; font-weight:500; font-size:clamp(17px,2.2vw,21px);
+    letter-spacing:-.01em;
+  }
+  .sec-head .count{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--dim)}
+  .sec-head .rail{flex:1; height:1px; background:var(--line)}
+
+  /* estante de destacados */
+  .shelf{
+    display:grid; grid-auto-flow:column; grid-auto-columns:min(78vw,330px);
+    gap:16px; overflow-x:auto; padding:4px 4px 18px;
+    scroll-snap-type:x mandatory; scrollbar-width:thin; scrollbar-color:var(--line) transparent;
+  }
+  .shelf > *{scroll-snap-align:start}
+
+  /* carta jugable: toda la carta lanza el juego */
+  .game{
+    position:relative; display:flex; flex-direction:column;
+    background:var(--card); border:1px solid var(--line); border-radius:var(--r);
+    overflow:hidden; transition:transform .18s, box-shadow .18s;
+    box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 10px 24px -18px rgba(32,36,42,.4);
+  }
+  .game:hover{transform:translateY(-4px); box-shadow:0 1px 0 rgba(255,255,255,.6) inset, 0 22px 34px -18px rgba(32,36,42,.5)}
+  .game .shot{position:relative; aspect-ratio:16/10; background:var(--shell-2); overflow:hidden}
+  .game .shot img{width:100%; height:100%; object-fit:cover; transition:transform .25s}
+  .game:hover .shot img{transform:scale(1.035)}
+  .game .shot .noimg{width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:56px}
+  .badge{
+    position:absolute; top:10px; left:10px; z-index:2;
+    font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:500; letter-spacing:.1em;
+    padding:4px 9px; border-radius:999px; color:#fff;
+  }
+  .badge.nuevo{background:var(--play)}
+  .badge.hoy{background:var(--coin); color:#3A2604}
+  .badge.wip{background:var(--bezel); color:var(--phosphor)}
+  .playmark{
+    position:absolute; right:10px; bottom:10px; z-index:2;
+    width:38px; height:38px; border-radius:50%;
+    background:var(--play); color:#fff; display:flex; align-items:center; justify-content:center;
+    font-size:14px; padding-left:3px;
+    box-shadow:0 6px 14px -4px rgba(156,31,80,.55);
+    opacity:0; transform:translateY(6px); transition:.18s;
+  }
+  .game:hover .playmark, .game:focus-within .playmark{opacity:1; transform:none}
+  .game .body{padding:13px 15px 15px; display:flex; flex-direction:column; gap:5px; flex:1}
+  .game .title{font-weight:600; font-size:16.5px; line-height:1.25}
+  .game .title a::after{content:""; position:absolute; inset:0}  /* toda la carta = jugar */
+  .game .tagline{color:var(--dim); font-size:13.5px; flex:1;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
+  .game .meta{display:flex; align-items:center; justify-content:space-between; margin-top:7px}
+  .game .meta .cta{font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--play); font-weight:500; letter-spacing:.06em}
+  .repo{
+    position:relative; z-index:3;
+    font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--dim);
+    padding:3px 8px; border:1px solid var(--line); border-radius:8px;
+  }
+  .repo:hover{color:var(--ink); border-color:var(--dim)}
+
+  .grid{display:grid; gap:16px; grid-template-columns:repeat(auto-fill,minmax(248px,1fr))}
+
+  /* cartas de terminal: pantalla oliva, tipografía mono */
+  .tgrid{display:grid; gap:14px; grid-template-columns:repeat(auto-fill,minmax(290px,1fr))}
+  .term{
+    position:relative; display:flex; gap:14px; align-items:flex-start;
+    background:var(--screen-ink); border-radius:12px; padding:16px;
+    border:1px solid #31381F;
+    box-shadow:0 1px 0 rgba(184,196,138,.14) inset;
+    transition:transform .18s, box-shadow .18s;
+  }
+  .term:hover{transform:translateY(-3px); box-shadow:0 1px 0 rgba(184,196,138,.14) inset, 0 16px 26px -16px rgba(32,37,26,.8)}
+  .term .icon{
+    flex:none; width:46px; height:46px; border-radius:9px; background:rgba(147,162,75,.16);
+    border:1px solid rgba(147,162,75,.35);
+    display:flex; align-items:center; justify-content:center; font-size:24px;
+  }
+  .term .cmd{font-family:'IBM Plex Mono',monospace; font-size:13.5px; font-weight:500; color:var(--screen-dim); word-break:break-all}
+  .term .cmd::before{content:"$ "; color:var(--screen)}
+  .term .cmd a::after{content:""; position:absolute; inset:0}
+  .term .tagline{color:#8A9377; font-size:12.5px; margin-top:4px;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
+  .term .lang{font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:.1em;
+    color:var(--screen); margin-top:8px}
+
+  .empty{
+    display:none; text-align:center; color:var(--dim); padding:70px 20px;
+  }
+  .empty .mono{font-size:13px}
+  .empty button{
+    margin-top:14px; font:inherit; font-weight:600; cursor:pointer;
+    background:var(--bezel); color:var(--phosphor); border:none; border-radius:10px; padding:10px 18px;
+  }
+
+  footer{margin-top:70px; border-top:1px solid var(--line); background:var(--shell-2)}
+  footer .wrap{padding:30px 22px 40px; display:flex; gap:18px; flex-wrap:wrap;
+    align-items:baseline; justify-content:space-between; color:var(--dim); font-size:13.5px}
+  footer a{border-bottom:1px dashed var(--dim)}
+  footer a:hover{color:var(--ink); border-color:var(--play)}
+
   .hidden{display:none !important}
-  footer{text-align:center; color:var(--dim); padding:50px 20px 40px; font-size:19px}
-  footer b{color:var(--magenta)}
-  .empty{text-align:center;color:var(--dim);padding:40px;font-size:22px}
+
+  /* aparición al hacer scroll */
+  .reveal{opacity:0; transform:translateY(14px); transition:opacity .5s, transform .5s}
+  .reveal.in{opacity:1; transform:none}
+
+  @media (max-width:840px){
+    .hero{grid-template-columns:1fr}
+    .wall{height:190px;
+      -webkit-mask-image:linear-gradient(180deg, transparent 0, #000 22%);
+              mask-image:linear-gradient(180deg, transparent 0, #000 22%);}
+    .wall-tilt{inset:-8% -4%}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .wall-col{animation:none}
+    .reveal{opacity:1; transform:none; transition:none}
+    .game,.term,.game .shot img{transition:none}
+  }
 </style>
 </head>
 <body>
-<header>
-  <div class="wrap">
-    <div class="logo"><b>gavilanbe</b> // ARCADE</div>
-    <p class="blurb">Una colección hecha a mano de <b>juegos</b> — web, terminal y homebrew.<br>Muchos se juegan al instante en el navegador. Sin instalar nada.</p>
-    <div class="stats" id="stats"></div>
-    <a class="gh" href="https://github.com/gavilanbe" target="_blank" rel="noopener">▸ github.com/gavilanbe</a>
-    <br><span class="coin" id="coin" title="Abre un juego al azar">▶ INSERT COIN · JUEGO AL AZAR</span>
-  </div>
-</header>
 
-<div class="controls">
-  <div class="wrap">
-    <div class="tabs" id="tabs">
-      <span class="tab on" data-f="all">Todos</span>
-      <span class="tab" data-f="web">🌐 Jugar online</span>
-      <span class="tab" data-f="terminal">🖥️ Terminal</span>
+<div class="hero-outer">
+  <header class="hero">
+    <div class="hero-copy">
+      <p class="eyebrow">Colección de juegos · de la terminal a Game Boy</p>
+      <h1>gavilanbe<span class="slash">//</span>arcade</h1>
+      <p class="thesis"><b id="total-b">59</b> juegos hechos a mano: pixel art, mundos 3D,
+        rogue­likes de terminal y homebrew de Game Boy. <b>Muchos se juegan aquí mismo</b>,
+        sin instalar nada.</p>
+      <p class="hero-stats" id="hero-stats"></p>
+      <div class="hero-actions">
+        <button class="coinbtn" id="coin" type="button">
+          <span class="slot" aria-hidden="true"></span>
+          <span>Echa una moneda<small>JUEGO AL AZAR</small></span>
+        </button>
+        <a class="ghlink" href="https://github.com/gavilanbe" target="_blank" rel="noopener">github.com/gavilanbe ↗</a>
+      </div>
     </div>
-    <input id="search" type="search" placeholder="buscar juego…  ( / )" autocomplete="off">
-    <span class="tab" id="dice" title="Juego al azar">🎲</span>
-  </div>
+    <div class="wall" id="wall" aria-hidden="true"></div>
+  </header>
 </div>
 
-<main class="wrap" id="main"></main>
+<nav class="deck" aria-label="filtros">
+  <div class="wrap">
+    <button class="chip on" data-f="all" type="button">Todos</button>
+    <button class="chip" data-f="web" type="button">Jugables online</button>
+    <button class="chip" data-f="terminal" type="button">De terminal</button>
+    <input id="search" type="search" placeholder="buscar…  /" autocomplete="off" aria-label="Buscar juego">
+    <span id="hits"></span>
+  </div>
+</nav>
+
+<main class="wrap">
+  <section id="sec-feat">
+    <div class="sec-head"><h2>Destacados</h2><span class="rail"></span><span class="count mono">para empezar por lo bueno</span></div>
+    <div class="shelf" id="shelf"></div>
+  </section>
+
+  <section id="sec-web">
+    <div class="sec-head"><h2>Juega en el navegador</h2><span class="rail"></span><span class="count" id="count-web"></span></div>
+    <div class="grid" id="grid-web"></div>
+  </section>
+
+  <section id="sec-term">
+    <div class="sec-head"><h2>Para tu terminal</h2><span class="rail"></span><span class="count" id="count-term"></span></div>
+    <div class="tgrid" id="grid-term"></div>
+  </section>
+
+  <div class="empty" id="empty">
+    <p>Nada por aquí con <b id="empty-q"></b>.</p>
+    <p class="mono">prueba con «poke», «terminal», «3d»…</p>
+    <button type="button" id="empty-clear">Borrar búsqueda</button>
+  </div>
+</main>
 
 <footer>
-  Hecho a mano con muchos <b>rectángulos</b> · <span id="count"></span> juegos · 2026<br>
-  Dirigido y publicado por <a class="gh" href="https://github.com/gavilanbe" target="_blank" rel="noopener">@gavilanbe</a>
+  <div class="wrap">
+    <span>Hecho a mano, un rectángulo cada vez.</span>
+    <span class="mono" id="foot-count"></span>
+    <a href="https://github.com/gavilanbe" target="_blank" rel="noopener">@gavilanbe</a>
+  </div>
 </footer>
 
 <script src="data.js"></script>
 <script>
+(() => {
   const $ = s => document.querySelector(s);
-  const main = $('#main');
-  const nWeb = GAMES.filter(g=>g.type==='web').length;
-  const nTerm = GAMES.filter(g=>g.type==='terminal').length;
-  $('#stats').innerHTML =
-    `<span class="stat"><b>${GAMES.length}</b>juegos</span>`+
-    `<span class="stat"><b>${nWeb}</b>jugables online</span>`+
-    `<span class="stat"><b>${nTerm}</b>de terminal</span>`;
-  $('#count').textContent = GAMES.length;
+  const esc = s => String(s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const firstEmoji = s => { const m = [...s].find(c => /\p{Extended_Pictographic}/u.test(c)); return m || '🎮'; };
+  const stripEmoji = s => s.replace(/^\s*\p{Extended_Pictographic}[️‍]*\s*/u, '');
 
-  const firstEmoji = s => { const m = [...s].find(c=>/\p{Extended_Pictographic}/u.test(c)); return m||'🎮'; };
-  const cleanTitle = s => s; // keep emoji + name
+  const FEATURED = ['bitxo','sprout-game','nahugavi','gacha-zoo','libreta','makinamon','doodli','chef-game','poke-autobattler','short-hike-demo'];
+  const rk = n => { const i = FEATURED.indexOf(n); return i < 0 ? 999 : i; };
 
-  function card(g){
+  const webGames  = GAMES.filter(g => g.type === 'web').sort((a,b) => rk(a.name)-rk(b.name) || a.title.localeCompare(b.title));
+  const termGames = GAMES.filter(g => g.type === 'terminal').sort((a,b) => a.title.localeCompare(b.title));
+  const pool = webGames.filter(g => !g.wip && g.play && g.kind === 'juego');
+  const daily = pool[Math.floor(Date.now()/86400000) % pool.length];
+
+  $('#total-b').textContent = GAMES.length;
+  $('#hero-stats').innerHTML =
+    `<span><b>${webGames.length}</b> jugables online</span>` +
+    `<span><b>${termGames.length}</b> de terminal</span>` +
+    `<span><b>hoy en la máquina:</b> ${esc(stripEmoji(daily.title))}</span>`;
+  $('#foot-count').textContent = `${GAMES.length} juegos · 2026`;
+  $('#count-web').textContent = `${webGames.length} juegos`;
+  $('#count-term').textContent = `${termGames.length} juegos`;
+
+  /* ---- muro de miniaturas del héroe ---- */
+  const wallThumbs = [...webGames.filter(g => g.thumb)];
+  for (let i = wallThumbs.length-1; i > 0; i--){ const j = Math.floor(Math.random()*(i+1)); [wallThumbs[i], wallThumbs[j]] = [wallThumbs[j], wallThumbs[i]]; }
+  const colHTML = games => games.concat(games).map(g =>
+    `<a href="${esc(g.play)}" target="_blank" rel="noopener" tabindex="-1"><img src="${esc(g.thumb)}" alt="" loading="lazy"></a>`).join('');
+  $('#wall').innerHTML = `<div class="wall-tilt">
+      <div class="wall-col">${colHTML(wallThumbs.slice(0,7))}</div>
+      <div class="wall-col rev">${colHTML(wallThumbs.slice(7,14))}</div>
+    </div>`;
+
+  /* ---- cartas ---- */
+  const badge = g =>
+    g === daily ? '<span class="badge hoy">HOY</span>' :
+    g.wip ? '<span class="badge wip">WIP</span>' :
+    g.new ? '<span class="badge nuevo">NUEVO</span>' : '';
+
+  function webCard(g, eager){
     const el = document.createElement('article');
-    el.className = 'card';
-    el.dataset.type = g.type;
+    el.className = 'game reveal';
     el.dataset.search = (g.name+' '+g.title+' '+g.tagline).toLowerCase();
-    const ribbon = g.wip ? '<span class="ribbon">WIP</span>' : (g.new ? '<span class="ribbon nuevo">NUEVO</span>' : '');
+    el.dataset.type = 'web';
     const shot = g.thumb
-      ? `<div class="shot"><span class="chip ${g.type}">${g.type==='web'?'🌐 web':'🖥️ terminal'}</span>${ribbon}<img loading="lazy" src="${g.thumb}" alt="${g.title}"></div>`
-      : `<div class="shot noimg"><span class="chip ${g.type}">${g.type==='web'?'🌐 web':'🖥️ terminal'}</span>${ribbon}${firstEmoji(g.title)}</div>`;
-    let actions = '';
-    if(g.type==='web'){
-      actions += g.wip
-        ? `<a class="btn wip" href="${g.play}" target="_blank" rel="noopener">▶ Probar (WIP)</a>`
-        : `<a class="btn play" href="${g.play}" target="_blank" rel="noopener">▶ Jugar</a>`;
-    }
-    actions += `<a class="btn" href="${g.repo}" target="_blank" rel="noopener">&lt;/&gt; Código</a>`;
-    el.innerHTML = shot + `<div class="body">
-        <div class="title">${cleanTitle(g.title)}</div>
-        <div class="tagline">${g.tagline||''}</div>
-        <div class="actions">${actions}</div>
+      ? `<img src="${esc(g.thumb)}" alt="" ${eager ? '' : 'loading="lazy"'}>`
+      : `<div class="noimg">${firstEmoji(g.title)}</div>`;
+    el.innerHTML = `
+      <div class="shot">${badge(g)}${shot}<span class="playmark" aria-hidden="true">▶</span></div>
+      <div class="body">
+        <h3 class="title"><a href="${esc(g.play)}" target="_blank" rel="noopener">${esc(g.title)}</a></h3>
+        <p class="tagline">${esc(g.tagline)}</p>
+        <div class="meta">
+          <span class="cta">${g.wip ? 'PROBAR (WIP) ↗' : 'JUGAR ↗'}</span>
+          <a class="repo" href="${esc(g.repo)}" target="_blank" rel="noopener" aria-label="Código de ${esc(g.title)}">código</a>
+        </div>
       </div>`;
     return el;
   }
 
-  // featured order (los mejores primero), luego el resto alfabético
-  const FEATURED = ['bitxo','sprout-game','nahugavi','gacha-zoo','libreta','makinamon','doodli','chef-game','poke-autobattler','short-hike-demo'];
-  const rk = n => { const i = FEATURED.indexOf(n); return i < 0 ? 999 : i; };
-  const webGames  = GAMES.filter(g=>g.type==='web').sort((a,b)=> rk(a.name)-rk(b.name) || a.title.localeCompare(b.title));
-  const termGames = GAMES.filter(g=>g.type==='terminal').sort((a,b)=> a.title.localeCompare(b.title));
-  const secWeb = document.createElement('section');
-  secWeb.innerHTML = '<h2 class="sectiontitle">🌐 Jugar en el navegador</h2>';
-  const gridWeb = document.createElement('div'); gridWeb.className='grid'; gridWeb.id='gw';
-  const secTerm = document.createElement('section');
-  secTerm.innerHTML = '<h2 class="sectiontitle">🖥️ Juegos de terminal</h2>';
-  const gridTerm = document.createElement('div'); gridTerm.className='grid'; gridTerm.id='gt';
-  webGames.forEach(g => gridWeb.appendChild(card(g)));
-  termGames.forEach(g => gridTerm.appendChild(card(g)));
-  secWeb.appendChild(gridWeb); secTerm.appendChild(gridTerm);
-
-  // 🎰 juego del día: rotación diaria determinista entre los jugables online
-  const pool = webGames.filter(g => !g.wip && g.play && g.kind === 'juego');
-  const daily = pool[Math.floor(Date.now()/86400000) % pool.length];
-  const secSpot = document.createElement('section');
-  secSpot.id = 'spotlight';
-  secSpot.innerHTML = `<h2 class="sectiontitle">🎰 Juego del día</h2>
-    <a class="spot" href="${daily.play}" target="_blank" rel="noopener">
-      <div class="spot-shot">${daily.thumb ? `<img src="${daily.thumb}" alt="${daily.title}">` : ''}</div>
-      <div class="spot-body">
-        <div class="title">${daily.title}</div>
-        <div class="tagline">${daily.tagline||''}</div>
-        <span class="btn play">▶ Jugar ahora</span>
-      </div>
-    </a>`;
-  main.append(secSpot, secWeb, secTerm);
-
-  // contadores en las pestañas
-  document.querySelector('[data-f="all"]').textContent = `Todos · ${GAMES.length}`;
-  document.querySelector('[data-f="web"]').textContent = `🌐 Jugar online · ${nWeb}`;
-  document.querySelector('[data-f="terminal"]').textContent = `🖥️ Terminal · ${nTerm}`;
-
-  // filtering
-  let filter='all', q='';
-  function apply(){
-    [secWeb, secTerm].forEach(sec=>{
-      const type = sec===secWeb?'web':'terminal';
-      const showSec = (filter==='all'||filter===type);
-      let visible=0;
-      sec.querySelectorAll('.card').forEach(c=>{
-        const ok = showSec && (!q || c.dataset.search.includes(q));
-        c.classList.toggle('hidden', !ok);
-        if(ok) visible++;
-      });
-      sec.classList.toggle('hidden', visible===0);
-    });
-    secSpot.classList.toggle('hidden', !!q || filter==='terminal');
+  const LANGS = {rust:'RUST', python:'PYTHON', bash:'BASH', c:'C · GBDK'};
+  function termCard(g){
+    const el = document.createElement('article');
+    el.className = 'term reveal';
+    el.dataset.search = (g.name+' '+g.title+' '+g.tagline).toLowerCase();
+    el.dataset.type = 'terminal';
+    el.innerHTML = `
+      <div class="icon" aria-hidden="true">${firstEmoji(g.title)}</div>
+      <div>
+        <p class="cmd"><a href="${esc(g.repo)}" target="_blank" rel="noopener">./${esc(g.name)}</a></p>
+        <p class="tagline">${esc(stripEmoji(g.tagline||g.title))}</p>
+        <p class="lang">VER CÓDIGO ↗</p>
+      </div>`;
+    return el;
   }
-  $('#tabs').addEventListener('click', e=>{
-    const t = e.target.closest('.tab'); if(!t) return;
-    document.querySelectorAll('#tabs .tab').forEach(x=>x.classList.remove('on'));
-    t.classList.add('on'); filter=t.dataset.f; apply();
-  });
-  $('#search').addEventListener('input', e=>{ q=e.target.value.trim().toLowerCase(); apply(); });
 
-  // 🎲 juego al azar (botón, INSERT COIN)
-  const lucky = () => { const g = pool[Math.floor(Math.random()*pool.length)]; window.open(g.play, '_blank', 'noopener'); };
-  $('#dice').addEventListener('click', lucky);
-  $('#coin').addEventListener('click', lucky);
+  const shelf = $('#shelf'), gw = $('#grid-web'), gt = $('#grid-term');
+  const featured = [daily, ...webGames.filter(g => FEATURED.includes(g.name) && g !== daily)];
+  featured.forEach((g,i) => shelf.appendChild(webCard(g, i < 4)));
+  webGames.forEach(g => gw.appendChild(webCard(g)));
+  termGames.forEach(g => gt.appendChild(termCard(g)));
 
-  // teclado: "/" busca, Escape limpia
-  document.addEventListener('keydown', e=>{
-    const s = $('#search');
-    if(e.key==='/' && document.activeElement!==s){ e.preventDefault(); s.focus(); }
-    if(e.key==='Escape' && document.activeElement===s){ s.value=''; q=''; apply(); s.blur(); }
+  /* ---- aparición al hacer scroll ---- */
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window){
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    }), {rootMargin:'0px 0px -6% 0px'});
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  } else {
+    document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+  }
+
+  /* ---- filtro + búsqueda ---- */
+  let filter = 'all', q = '';
+  const hits = $('#hits'), empty = $('#empty');
+  function apply(){
+    let shown = 0;
+    const test = el => (filter === 'all' || el.dataset.type === filter) && (!q || el.dataset.search.includes(q));
+    [gw, gt].forEach(grid => {
+      let vis = 0;
+      grid.querySelectorAll('[data-search]').forEach(el => {
+        const ok = test(el);
+        el.classList.toggle('hidden', !ok);
+        el.classList.add('in');
+        if (ok) vis++;
+      });
+      shown += vis;
+      grid.closest('section').classList.toggle('hidden', vis === 0);
+    });
+    $('#sec-feat').classList.toggle('hidden', !!q || filter === 'terminal');
+    hits.textContent = (q || filter !== 'all') ? `${shown} resultado${shown === 1 ? '' : 's'}` : '';
+    empty.style.display = shown === 0 ? 'block' : 'none';
+    $('#empty-q').textContent = `«${q}»`;
+  }
+  document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
+    document.querySelectorAll('.chip').forEach(x => x.classList.remove('on'));
+    c.classList.add('on'); filter = c.dataset.f; apply();
+  }));
+  const search = $('#search');
+  search.addEventListener('input', () => { q = search.value.trim().toLowerCase(); apply(); });
+  $('#empty-clear').addEventListener('click', () => { search.value=''; q=''; apply(); search.focus(); });
+  document.addEventListener('keydown', e => {
+    if (e.key === '/' && document.activeElement !== search){ e.preventDefault(); search.focus(); }
+    if (e.key === 'Escape' && document.activeElement === search){ search.value=''; q=''; apply(); search.blur(); }
   });
+
+  /* ---- la moneda ---- */
+  $('#coin').addEventListener('click', () => {
+    try{
+      const a = new (window.AudioContext || window.webkitAudioContext)();
+      [880, 1320].forEach((f,i) => {
+        const o = a.createOscillator(), g = a.createGain();
+        o.type = 'square'; o.frequency.value = f;
+        g.gain.setValueAtTime(.045, a.currentTime + i*.06);
+        g.gain.exponentialRampToValueAtTime(.0001, a.currentTime + i*.06 + .12);
+        o.connect(g); g.connect(a.destination);
+        o.start(a.currentTime + i*.06); o.stop(a.currentTime + i*.06 + .14);
+      });
+    }catch(e){}
+    const g = pool[Math.floor(Math.random()*pool.length)];
+    setTimeout(() => window.open(g.play, '_blank', 'noopener'), 180);
+  });
+})();
 </script>
 </body>
 </html>
