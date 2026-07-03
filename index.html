@@ -151,15 +151,25 @@
   #search:focus{border-color:var(--play); box-shadow:var(--focus)}
   #hits{font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--dim); white-space:nowrap}
 
-  /* ============ secciones ============ */
+  /* ============ la sala de juegos: el catálogo vive en pantalla oscura ============ */
+  main.room{
+    background:
+      radial-gradient(rgba(242,240,228,.035) 1px, transparent 1.4px),
+      linear-gradient(180deg,#262B33,#1D2127 42%,#191C21);
+    background-size:22px 22px, auto;
+    border:1px solid #14171B; border-radius:26px;
+    margin-top:30px; padding:8px 34px 50px;
+    box-shadow:inset 0 1px 0 rgba(242,240,228,.07), 0 26px 55px -32px rgba(32,36,42,.65);
+  }
   section{padding-top:44px}
   .sec-head{display:flex; align-items:baseline; gap:14px; margin-bottom:18px}
   .sec-head h2{
     font-family:'Unbounded',sans-serif; font-weight:500; font-size:clamp(17px,2.2vw,21px);
-    letter-spacing:-.01em;
+    letter-spacing:-.01em; color:var(--phosphor);
   }
-  .sec-head .count{font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--dim)}
-  .sec-head .rail{flex:1; height:1px; background:var(--line)}
+  .sec-head h2::before{content:"▸ "; color:var(--coin)}
+  .sec-head .count{font-family:'IBM Plex Mono',monospace; font-size:12px; color:#8B93A0}
+  .sec-head .rail{flex:1; height:1px; background:#343A44}
 
   /* ============ cartuchos ============ */
   .shelf{
@@ -170,77 +180,108 @@
   .shelf > *{scroll-snap-align:start}
   .cartgrid{display:grid; gap:36px 24px; grid-template-columns:repeat(auto-fill,minmax(164px,1fr)); padding-top:18px}
 
-  /* el cartucho: la carcasa delata el chip que lleva dentro */
-  .slot3d{perspective:1000px; position:relative; cursor:pointer; -webkit-tap-highlight-color:transparent}
+  /* el cartucho: caja 3D real de seis caras; la carcasa delata el chip que lleva dentro */
+  .slot3d{perspective:1100px; position:relative; cursor:pointer; -webkit-tap-highlight-color:transparent}
   .cart{
-    --edge:#8B8577;
-    position:relative; width:100%; aspect-ratio:57/66;
+    --edge:#8B8577; --dz:12px;
+    position:relative; width:100%; aspect-ratio:57/64;
     transform-style:preserve-3d; will-change:transform;
     transition:transform .22s ease-out;
     animation:bob 5.6s ease-in-out infinite; animation-delay:var(--d,0s);
   }
-  @keyframes bob{0%,100%{transform:translateY(0) rotateZ(0)}50%{transform:translateY(-7px) rotateZ(.7deg)}}
+  @keyframes bob{0%,100%{transform:translateY(0) rotateX(4deg) rotateY(-6deg)}50%{transform:translateY(-8px) rotateX(7deg) rotateY(6deg)}}
   .slot3d::after{ /* sombra en el suelo */
-    content:""; position:absolute; left:12%; right:12%; bottom:-15px; height:13px;
-    border-radius:50%; background:radial-gradient(ellipse, rgba(32,36,42,.30), transparent 68%);
+    content:""; position:absolute; left:10%; right:10%; bottom:-17px; height:14px;
+    border-radius:50%; background:radial-gradient(ellipse, rgba(0,0,0,.5), transparent 68%);
     animation:bobshadow 5.6s ease-in-out infinite; animation-delay:var(--d,0s);
   }
-  @keyframes bobshadow{0%,100%{transform:scale(1); opacity:1}50%{transform:scale(.86); opacity:.65}}
-  .cart::before{ /* canto trasero: da grosor al inclinarlo */
-    content:""; position:absolute; inset:0; border-radius:10px 10px 14px 14px;
-    background:var(--edge); transform:translateZ(-13px);
-  }
-  .cart-body{
-    position:absolute; inset:0; border-radius:10px 10px 14px 14px;
-    border:1px solid var(--edge);
+  @keyframes bobshadow{0%,100%{transform:scale(1); opacity:.9}50%{transform:scale(.86); opacity:.55}}
+  .cart .f{position:absolute; inset:0}
+  .cart .fr{
+    transform:translateZ(var(--dz)); backface-visibility:hidden;
+    border-radius:9px 9px 13px 13px; background:var(--g);
     box-shadow:inset 0 2px 0 rgba(255,255,255,.5), inset 0 -3px 0 rgba(0,0,0,.16),
       inset 3px 0 3px -2px rgba(255,255,255,.35), inset -3px 0 3px -2px rgba(0,0,0,.12);
   }
-  .cart-body::after{ /* brillo que sigue al ratón */
+  .cart .bk{
+    transform:rotateY(180deg) translateZ(var(--dz)); backface-visibility:hidden;
+    border-radius:9px 9px 13px 13px;
+    background:linear-gradient(rgba(0,0,0,.14),rgba(0,0,0,.14)), var(--g);
+    box-shadow:inset 0 2px 0 rgba(255,255,255,.25), inset 0 -3px 0 rgba(0,0,0,.2);
+  }
+  .cart .lf, .cart .rt{top:3px; bottom:3px; width:calc(var(--dz)*2); background:var(--edge); border-radius:3px}
+  .cart .lf{left:calc(var(--dz)*-1); right:auto; transform:rotateY(90deg)}
+  .cart .rt{right:calc(var(--dz)*-1); left:auto; transform:rotateY(90deg)}
+  .cart .tp{left:3px; right:3px; top:calc(var(--dz)*-1); bottom:auto; height:calc(var(--dz)*2);
+    background:var(--edge); border-radius:3px; transform:rotateX(90deg)}
+  .cart .bt{ /* canto inferior: el conector de la placa, con sus contactos dorados */
+    left:3px; right:3px; bottom:calc(var(--dz)*-1); top:auto; height:calc(var(--dz)*2);
+    background:#20242A; border-radius:3px; transform:rotateX(90deg);
+  }
+  .cart .bt .pins{position:absolute; left:15%; right:15%; top:24%; bottom:24%; border-radius:2px;
+    background:repeating-linear-gradient(90deg,#D9A62B 0 5px,#7A5511 5px 7px,#20242A 7px 11px)}
+  .cart .fr::after{ /* brillo especular que sigue al ratón */
     content:""; position:absolute; inset:0; border-radius:inherit; pointer-events:none;
-    background:radial-gradient(260px circle at var(--gx,50%) var(--gy,-30%), rgba(255,255,255,.38), transparent 55%);
+    background:radial-gradient(260px circle at var(--gx,50%) var(--gy,-30%), rgba(255,255,255,.4), transparent 55%);
     opacity:0; transition:opacity .25s;
   }
-  .slot3d:hover .cart-body::after, .slot3d:focus-visible .cart-body::after{opacity:1}
-  .cart .grip{position:absolute; top:6.5%; left:10%; right:10%; height:11%;
-    background:repeating-linear-gradient(180deg, rgba(0,0,0,.15) 0 2px, transparent 2px 7px)}
-  .cart .brandline{position:absolute; top:19%; left:0; right:0; text-align:center;
-    font-family:'IBM Plex Mono',monospace; font-size:8px; letter-spacing:.22em;
-    color:rgba(0,0,0,.42); text-shadow:0 1px 0 rgba(255,255,255,.35)}
-  .cart .scr{position:absolute; bottom:3.5%; width:8px; height:8px; border-radius:50%;
-    background:radial-gradient(circle at 35% 30%, rgba(255,255,255,.7), rgba(0,0,0,.4));
-    box-shadow:0 1px 0 rgba(255,255,255,.4)}
-  .cart .scr.l{left:4.5%} .cart .scr.r{right:4.5%}
-  .cart .label{
-    position:absolute; left:10.5%; right:10.5%; top:25%; bottom:12.5%;
-    border-radius:7px; overflow:hidden; background:#14171B;
-    box-shadow:0 1px 0 rgba(255,255,255,.4), inset 0 0 0 2px rgba(0,0,0,.28);
+  .slot3d:hover .fr::after, .slot3d:focus-visible .fr::after{opacity:1}
+  /* frontal: banda moldeada con flecha + hueco rehundido con la etiqueta */
+  .fr .band{
+    position:absolute; top:6%; left:7%; right:7%; height:12.5%; border-radius:5px;
+    display:flex; align-items:center; justify-content:center; gap:7px;
+    font-family:'IBM Plex Mono',monospace; font-size:7.5px; font-weight:500; letter-spacing:.22em;
+    color:rgba(0,0,0,.42); text-shadow:0 1px 0 rgba(255,255,255,.35);
+    background:rgba(0,0,0,.05);
+    box-shadow:inset 0 2px 4px rgba(0,0,0,.22), inset 0 -1px 0 rgba(255,255,255,.45);
   }
-  .cart .label img{width:100%; height:70%; object-fit:cover}
-  .cart .label .noart{width:100%; height:70%; display:flex; align-items:center; justify-content:center;
-    font-size:40px; background:#20242A}
-  .cart .label .strip{position:absolute; left:0; right:0; bottom:0; top:70%;
+  .fr .band .arw{width:0; height:0; border:5px solid transparent;
+    border-top-color:rgba(0,0,0,.38); margin-top:6px;
+    filter:drop-shadow(0 1px 0 rgba(255,255,255,.35))}
+  .fr .well{
+    position:absolute; left:8.5%; right:8.5%; top:23.5%; bottom:9%; border-radius:7px; padding:5px;
+    background:rgba(0,0,0,.10);
+    box-shadow:inset 0 2px 6px rgba(0,0,0,.30), inset 0 -1px 0 rgba(255,255,255,.35);
+  }
+  .sticker{position:relative; width:100%; height:100%; border-radius:5px; overflow:hidden; background:#14171B;
+    box-shadow:0 0 0 1px rgba(255,255,255,.22), 0 1px 3px rgba(0,0,0,.4)}
+  .sticker img{width:100%; height:70%; object-fit:cover}
+  .sticker .noart{width:100%; height:70%; display:flex; align-items:center; justify-content:center;
+    font-size:38px; background:#20242A}
+  .sticker .strip{position:absolute; left:0; right:0; bottom:0; top:70%;
     display:flex; align-items:center; justify-content:center; padding:2px 7px;
     background:linear-gradient(180deg,#23272D,#181B1F)}
-  .cart .label .strip span{
+  .sticker .strip span{
     font-family:'Unbounded',sans-serif; font-weight:500; font-size:9.5px; line-height:1.25;
     color:var(--phosphor); text-align:center;
     display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
   }
-  .label .mchip{position:absolute; top:6px; right:6px; font-size:8px; padding:3px 6px}
-  .label .badge{top:6px; left:6px; transform:rotate(-6deg)}
-  .cart-cap{margin-top:16px; text-align:center; font-family:'IBM Plex Mono',monospace;
-    font-size:12px; color:var(--dim); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-  .slot3d:hover .cart-cap, .slot3d:focus-visible .cart-cap{color:var(--ink)}
+  .sticker .mchip{position:absolute; top:5px; right:5px; font-size:8px; padding:3px 6px}
+  .sticker .badge{top:5px; left:5px; transform:rotate(-6deg)}
+  /* trasera: estrías de agarre, placa embutida y tornillo */
+  .bk .ridges{position:absolute; top:7%; left:8%; right:8%; height:36%;
+    background:repeating-linear-gradient(180deg, rgba(0,0,0,.22) 0 4px, transparent 4px 11px)}
+  .bk .plate{position:absolute; top:52%; left:0; right:0; text-align:center;
+    font-family:'IBM Plex Mono',monospace; font-size:7px; letter-spacing:.2em; line-height:2.1;
+    color:rgba(0,0,0,.42); text-shadow:0 1px 0 rgba(255,255,255,.25)}
+  .bk .screw{position:absolute; bottom:6%; left:50%; margin-left:-5px; width:10px; height:10px; border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, rgba(255,255,255,.65), rgba(0,0,0,.45));
+    box-shadow:inset 0 0 0 1px rgba(0,0,0,.3)}
+  .bk .screw::after{content:""; position:absolute; left:2px; right:2px; top:50%; height:1.5px;
+    background:rgba(0,0,0,.55); transform:rotate(45deg)}
+  .cart-cap{margin-top:18px; text-align:center; font-family:'IBM Plex Mono',monospace;
+    font-size:12px; color:#8B93A0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .cart-cap b{color:#5C646F; font-weight:500; margin-right:6px}
+  .slot3d:hover .cart-cap, .slot3d:focus-visible .cart-cap{color:var(--phosphor)}
+  .slot3d:hover .cart-cap b{color:#8B93A0}
 
   /* carcasas por chip: nácar para Fable; oro, plata y bronce para Opus */
-  .tier-fable{--edge:#A796C9}
-  .tier-fable .cart-body{background:linear-gradient(125deg,#F2E7FF,#D4F1FF 28%,#DDFBE7 52%,#FFF2D2 76%,#F2E7FF);
-    background-size:220% 220%; animation:pearl 9s linear infinite}
+  .tier-fable{--edge:#A796C9; --g:linear-gradient(125deg,#F2E7FF,#D4F1FF 28%,#DDFBE7 52%,#FFF2D2 76%,#F2E7FF)}
+  .tier-fable .fr, .tier-fable .bk{background-size:220% 220%; animation:pearl 9s linear infinite}
   @keyframes pearl{to{background-position:220% 220%}}
-  .tier-o48{--edge:#8A5F14} .tier-o48 .cart-body{background:linear-gradient(155deg,#F6DA8C,#E2AC3C 55%,#C9911F)}
-  .tier-o47{--edge:#77828F} .tier-o47 .cart-body{background:linear-gradient(155deg,#F3F5F9,#C9D2DE 55%,#ACB8C7)}
-  .tier-o46{--edge:#7A4B2A} .tier-o46 .cart-body{background:linear-gradient(155deg,#EBBE93,#CD8148 55%,#AC6531)}
+  .tier-o48{--edge:#8A5F14; --g:linear-gradient(155deg,#F6DA8C,#E2AC3C 55%,#C9911F)}
+  .tier-o47{--edge:#77828F; --g:linear-gradient(155deg,#F3F5F9,#C9D2DE 55%,#ACB8C7)}
+  .tier-o46{--edge:#7A4B2A; --g:linear-gradient(155deg,#EBBE93,#CD8148 55%,#AC6531)}
 
   /* ============ ficha: el cartucho de cerca + la consola ============ */
   .dex{position:fixed; inset:0; z-index:60; display:flex; align-items:center; justify-content:center; padding:18px}
@@ -255,14 +296,31 @@
   .dex-x{position:absolute; top:12px; right:12px; z-index:6; width:34px; height:34px; border-radius:50%;
     border:1px solid var(--line); background:var(--card); color:var(--dim); font-size:15px; cursor:pointer}
   .dex-x:hover{color:var(--ink); border-color:var(--dim)}
-  .dex-stage{position:relative; overflow:hidden; min-height:430px;
-    background:radial-gradient(140% 90% at 50% 0%, #2B3038 0%, #20242A 60%, #191C21 100%)}
-  .cartwell{position:absolute; left:0; right:0; top:0; bottom:96px;
-    display:flex; align-items:center; justify-content:center; overflow:hidden}
-  .cartwell .slot3d{width:212px; cursor:default}
-  .cartwell .slot3d::after{display:none}
-  .cartwell .cart{animation:showoff 7s ease-in-out infinite}
-  @keyframes showoff{0%,100%{transform:rotateY(-13deg) rotateX(3deg)}50%{transform:rotateY(13deg) rotateX(-3deg) translateY(-8px)}}
+  .dex-stage{position:relative; overflow:hidden; min-height:460px; touch-action:none;
+    background:radial-gradient(120% 80% at 50% -10%, #343B45 0%, #23272E 55%, #16181D 100%)}
+  .dex-stage::before{ /* suelo de rejilla en perspectiva */
+    content:""; position:absolute; left:-24%; right:-24%; bottom:70px; height:56%;
+    background:
+      repeating-linear-gradient(90deg, rgba(147,162,75,.16) 0 1px, transparent 1px 48px),
+      repeating-linear-gradient(180deg, rgba(147,162,75,.13) 0 1px, transparent 1px 36px);
+    transform:perspective(430px) rotateX(58deg); transform-origin:50% 100%;
+    -webkit-mask-image:linear-gradient(180deg, transparent, #000 60%);
+            mask-image:linear-gradient(180deg, transparent, #000 60%);
+  }
+  .dex-stage::after{ /* foco cenital sobre el cartucho */
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background:radial-gradient(46% 60% at 50% 34%, rgba(242,240,228,.10), transparent 70%);
+  }
+  .cartwell{position:absolute; left:0; right:0; top:0; bottom:96px; z-index:2;
+    display:flex; align-items:center; justify-content:center; overflow:hidden; cursor:grab}
+  .cartwell:active{cursor:grabbing}
+  .cartwell .slot3d{width:210px}
+  .cartwell .slot3d::after{bottom:-30px; background:radial-gradient(ellipse, rgba(0,0,0,.65), transparent 68%); animation:none}
+  .cartwell .cart{animation:spin 16s linear infinite; --dz:14px}
+  @keyframes spin{from{transform:rotateX(6deg) rotateY(0)}to{transform:rotateX(6deg) rotateY(360deg)}}
+  .cartwell.grabbed .cart, .cartwell.grabbed .slot3d::after{animation:none}
+  .drag-hint{position:absolute; left:0; right:0; bottom:110px; z-index:2; text-align:center; pointer-events:none;
+    font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:.24em; color:#5C646F}
   /* la consola: cubierta con ranura de carga */
   .dock{position:absolute; left:0; right:0; bottom:0; height:96px; z-index:3;
     background:linear-gradient(180deg,#31363E,#23272D 30%,#1B1E23);
@@ -273,6 +331,10 @@
     box-shadow:inset 0 3px 6px rgba(0,0,0,.9), 0 1px 0 rgba(255,255,255,.07)}
   .dock small{position:absolute; left:0; right:0; bottom:16px; text-align:center;
     font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:.24em; color:#5C646F}
+  .dock .led{position:absolute; right:26px; top:24px; width:9px; height:9px; border-radius:50%;
+    background:#E4574A; box-shadow:0 0 10px rgba(228,87,74,.8); transition:background .2s, box-shadow .2s}
+  .dex.inserting .dock .led, .dex.booting .dock .led{
+    background:#7AC74F; box-shadow:0 0 12px rgba(122,199,79,.95)}
   .dex.inserting .cartwell .cart{animation:insert .85s cubic-bezier(.55,0,.9,.45) forwards}
   @keyframes insert{0%{transform:rotateY(0) rotateX(0)}28%{transform:translateY(-24px)}100%{transform:translateY(430px)}}
   .dex.inserting .dock i{animation:slotflash .5s .68s}
@@ -377,12 +439,12 @@
     color:var(--screen); margin-top:8px}
 
   .empty{
-    display:none; text-align:center; color:var(--dim); padding:70px 20px;
+    display:none; text-align:center; color:#8B93A0; padding:70px 20px;
   }
   .empty .mono{font-size:13px}
   .empty button{
     margin-top:14px; font:inherit; font-weight:600; cursor:pointer;
-    background:var(--bezel); color:var(--phosphor); border:none; border-radius:10px; padding:10px 18px;
+    background:var(--bezel); color:var(--phosphor); border:1px solid #3A404A; border-radius:10px; padding:10px 18px;
   }
 
   footer{margin-top:70px; border-top:1px solid var(--line); background:var(--shell-2)}
@@ -416,6 +478,8 @@
     .deck .chips::-webkit-scrollbar{display:none}
     .chip{flex:none}
     .wrap{padding:0 14px}
+    main.room{padding:2px 18px 38px; border-radius:20px; margin-top:22px}
+    .cartgrid{gap:30px 18px; grid-template-columns:repeat(auto-fill,minmax(140px,1fr))}
     footer .legend{justify-content:center}
   }
   @media (prefers-reduced-motion:reduce){
@@ -468,7 +532,7 @@
   </div>
 </nav>
 
-<main class="wrap">
+<main class="wrap room">
   <section id="sec-feat">
     <div class="sec-head"><h2>Destacados</h2><span class="rail"></span><span class="count mono">toca un cartucho para verlo de cerca</span></div>
     <div class="shelf" id="shelf"></div>
@@ -510,9 +574,10 @@
   <div class="dex-back" id="dex-back"></div>
   <div class="dex-card">
     <button class="dex-x" id="dex-x" type="button" aria-label="Cerrar ficha">✕</button>
-    <div class="dex-stage">
-      <div class="cartwell"><div class="slot3d" id="dex-holder"></div></div>
-      <div class="dock" aria-hidden="true"><i></i><small>RANURA DE CARGA</small></div>
+    <div class="dex-stage" id="dex-stage">
+      <div class="cartwell" id="dex-well"><div class="slot3d" id="dex-holder"></div></div>
+      <p class="drag-hint">ARRÁSTRALO PARA GIRARLO</p>
+      <div class="dock" aria-hidden="true"><i></i><span class="led"></span><small>RANURA DE CARGA</small></div>
       <div class="gbboot" aria-hidden="true"><span>gavilanbe<b>®</b></span></div>
     </div>
     <div class="dex-info">
@@ -564,7 +629,7 @@
     `<span><b>${nFable}</b> con pegatina Fable ✦</span>` +
     `<span><b>hoy en la máquina:</b> ${esc(stripEmoji(daily.title))}</span>`;
   $('#foot-count').textContent = `${GAMES.length} juegos · 2026`;
-  $('#count-web').textContent = `${webGames.length} juegos`;
+  $('#count-web').textContent = `${webGames.length} cartuchos`;
   $('#count-term').textContent = `${termGames.length} juegos`;
 
   /* ---- muro de miniaturas del héroe ---- */
@@ -584,7 +649,7 @@
     g.new ? '<span class="badge nuevo">NUEVO</span>' : '';
 
   const TIER = {'fable':'tier-fable','opus-4.8':'tier-o48','opus-4.7':'tier-o47','opus-4.6':'tier-o46'};
-  function cartSlot(g, eager){
+  function cartSlot(g, eager, num){
     const el = document.createElement('div');
     el.className = 'slot3d reveal';
     el.dataset.search = (g.name+' '+g.title+' '+g.tagline+' '+g.model).toLowerCase();
@@ -598,16 +663,18 @@
     const art = g.thumb
       ? `<img src="${esc(g.thumb)}" alt="" ${eager ? '' : 'loading="lazy"'}>`
       : `<div class="noart">${firstEmoji(g.title)}</div>`;
+    const cap = (num ? `<b>${String(num).padStart(2,'0')}</b>` : '') + esc(g.title);
     el.innerHTML = `
       <div class="cart ${TIER[g.model]||''}">
-        <div class="cart-body">
-          <span class="grip"></span>
-          <span class="brandline">GAVILANBE™GAME</span>
-          <div class="label">${art}<span class="strip"><span>${esc(stripEmoji(g.title))}</span></span>${badge(g)}${mchip(g)}</div>
-          <span class="scr l"></span><span class="scr r"></span>
+        <i class="f bk"><span class="ridges"></span><span class="plate">GAVILANBE™<br>GAME PAK<br>HECHO A MANO</span><span class="screw"></span></i>
+        <i class="f lf"></i><i class="f rt"></i><i class="f tp"></i>
+        <i class="f bt"><span class="pins"></span></i>
+        <div class="f fr">
+          <span class="band"><b class="arw"></b>GAVILANBE™ GAME PAK</span>
+          <div class="well"><div class="sticker">${art}<span class="strip"><span>${esc(stripEmoji(g.title))}</span></span>${badge(g)}${mchip(g)}</div></div>
         </div>
       </div>
-      <p class="cart-cap">${esc(g.title)}</p>`;
+      <p class="cart-cap">${cap}</p>`;
     return el;
   }
 
@@ -632,7 +699,7 @@
   const shelf = $('#shelf'), gw = $('#grid-web'), gt = $('#grid-term');
   const featured = [daily, ...webGames.filter(g => FEATURED.includes(g.name) && g !== daily)];
   featured.forEach((g,i) => shelf.appendChild(cartSlot(g, i < 5)));
-  webGames.forEach(g => gw.appendChild(cartSlot(g)));
+  webGames.forEach((g,i) => gw.appendChild(cartSlot(g, false, i+1)));
   termGames.forEach(g => gt.appendChild(termCard(g)));
 
   /* ---- tilt 3D: el cartucho sigue al ratón ---- */
@@ -641,19 +708,19 @@
     const MAXT = 11;
     document.addEventListener('pointermove', e => {
       const s = e.target.closest('.slot3d');
-      if (!s || dex.classList.contains('inserting')) return;
+      if (!s || s.closest('.cartwell')) return;
       const c = s.querySelector('.cart'); if (!c) return;
       const r = s.getBoundingClientRect();
       const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
       c.style.animation = 'none';
       c.style.transform = `translateY(-10px) scale(1.05) rotateX(${((.5-y)*2*MAXT).toFixed(2)}deg) rotateY(${((x-.5)*2*MAXT).toFixed(2)}deg)`;
-      const b = c.querySelector('.cart-body');
+      const b = c.querySelector('.fr');
       b.style.setProperty('--gx', (x*100).toFixed(1)+'%');
       b.style.setProperty('--gy', (y*100).toFixed(1)+'%');
     }, {passive:true});
     document.addEventListener('pointerout', e => {
       const s = e.target.closest('.slot3d');
-      if (!s || (e.relatedTarget && s.contains(e.relatedTarget))) return;
+      if (!s || s.closest('.cartwell') || (e.relatedTarget && s.contains(e.relatedTarget))) return;
       const c = s.querySelector('.cart'); if (!c) return;
       c.style.transform = ''; c.style.animation = '';
     }, {passive:true});
@@ -678,6 +745,7 @@
       + (g.wip ? '<span class="badge wip">WIP</span>' : (g.new ? '<span class="badge nuevo">NUEVO</span>' : ''));
     $('#dex-repo').href = g.repo;
     $('#dex-play').disabled = false;
+    dexWell.classList.remove('grabbed');
     dex.hidden = false;
     document.body.style.overflow = 'hidden';
     $('#dex-play').focus({preventScroll:true});
@@ -690,18 +758,46 @@
     document.body.style.overflow = '';
     dexGame = null;
   }
+
+  /* girar el cartucho arrastrando */
+  const dexWell = $('#dex-well');
+  let dragging = false, dragX = 0, rotY = 0;
+  dexWell.addEventListener('pointerdown', e => {
+    if (dex.classList.contains('inserting')) return;
+    dragging = true; dragX = e.clientX;
+    dexWell.classList.add('grabbed');
+    dexWell.setPointerCapture(e.pointerId);
+  });
+  dexWell.addEventListener('pointermove', e => {
+    if (!dragging) return;
+    rotY += (e.clientX - dragX) * .55; dragX = e.clientX;
+    const c = dexHolder.querySelector('.cart');
+    if (c) c.style.transform = `rotateX(6deg) rotateY(${rotY.toFixed(1)}deg)`;
+  });
+  ['pointerup','pointercancel'].forEach(ev => dexWell.addEventListener(ev, () => { dragging = false; }));
+
   function insertCart(){
     if (!dexGame || dex.classList.contains('inserting')) return;
     const url = dexGame.play;
     if (reduce){ if (!window.open(url,'_blank')) location.assign(url); closeDex(); return; }
     $('#dex-play').disabled = true;
-    dex.classList.add('inserting');
-    sfx('clack', .8);
-    dexTimers.push(setTimeout(() => { dex.classList.add('booting'); sfx('boot', .35); }, 950));
+    /* alinear el cartucho antes de meterlo */
+    const c = dexHolder.querySelector('.cart');
+    if (c){
+      dexWell.classList.add('grabbed'); rotY = 0;
+      c.style.transition = 'transform .25s ease';
+      c.style.transform = 'rotateX(0) rotateY(0)';
+    }
     dexTimers.push(setTimeout(() => {
-      if (!window.open(url, '_blank')) location.assign(url);
-      closeDex();
-    }, 2050));
+      if (c) c.style.transition = '';
+      dex.classList.add('inserting');
+      sfx('clack', .8);
+      dexTimers.push(setTimeout(() => { dex.classList.add('booting'); sfx('boot', .35); }, 950));
+      dexTimers.push(setTimeout(() => {
+        if (!window.open(url, '_blank')) location.assign(url);
+        closeDex();
+      }, 2050));
+    }, 260));
   }
   document.addEventListener('click', e => {
     const s = e.target.closest('.slot3d');
