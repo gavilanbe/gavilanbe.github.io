@@ -341,15 +341,27 @@
   @keyframes slotflash{50%{box-shadow:inset 0 3px 6px rgba(0,0,0,.9), 0 0 20px rgba(217,154,43,.85)}}
   .dex.inserting .dex-stage{animation:thunk .18s .82s}
   @keyframes thunk{50%{transform:translateY(3px)}}
-  /* pantalla de arranque */
-  .gbboot{position:absolute; inset:0; z-index:5; background:#C4CFA1;
+  /* pantalla de arranque estilo Game Boy Color: blanco, el logo cae y destella en colores */
+  .gbboot{position:absolute; inset:0; z-index:5; background:#F7F7EF;
     display:flex; align-items:center; justify-content:center;
     opacity:0; visibility:hidden; transition:opacity .25s, visibility .25s}
   .dex.booting .gbboot{opacity:1; visibility:visible}
-  .gbboot span{font-family:'Unbounded',sans-serif; font-weight:700; font-size:30px; color:#0F380F}
-  .gbboot b{font-size:12px; vertical-align:super}
-  .dex.booting .gbboot span{animation:bootdrop 1s cubic-bezier(.2,.7,.3,1) forwards}
-  @keyframes bootdrop{from{transform:translateY(-180px)}to{transform:translateY(0)}}
+  .gblogo{text-align:center}
+  .dex.booting .gblogo{animation:bootdrop .9s cubic-bezier(.2,.8,.3,1) forwards}
+  @keyframes bootdrop{from{transform:translateY(-200px)}to{transform:translateY(0)}}
+  .gblogo b{display:block; font-family:'Unbounded',sans-serif; font-weight:700;
+    font-size:clamp(24px,4.5vw,34px); letter-spacing:.02em; color:#1A1A8C}
+  .gblogo b i{font-style:normal}
+  .dex.booting .gblogo b i{animation:gbcflash .72s steps(1) forwards;
+    animation-delay:calc(.95s + var(--i)*.055s)}
+  @keyframes gbcflash{
+    0%{color:#D8334A} 18%{color:#E8821D} 36%{color:#3BA53B}
+    54%{color:#2C6FD1} 72%{color:#8A46C4} 100%{color:#1A1A8C}
+  }
+  .gblogo small{display:block; margin-top:9px; font-family:'IBM Plex Mono',monospace;
+    font-size:12px; letter-spacing:.5em; text-indent:.5em; color:#1A1A8C; opacity:0}
+  .dex.booting .gblogo small{animation:gbfade .3s ease 1.05s forwards}
+  @keyframes gbfade{to{opacity:.85}}
   .dex-info{padding:30px 30px 26px; display:flex; flex-direction:column; gap:12px; overflow:auto}
   .dex-info h3{font-family:'Unbounded',sans-serif; font-weight:700; font-size:clamp(19px,2.6vw,26px);
     line-height:1.1; padding-right:34px}
@@ -578,7 +590,10 @@
       <div class="cartwell" id="dex-well"><div class="slot3d" id="dex-holder"></div></div>
       <p class="drag-hint">ARRÁSTRALO PARA GIRARLO</p>
       <div class="dock" aria-hidden="true"><i></i><span class="led"></span><small>RANURA DE CARGA</small></div>
-      <div class="gbboot" aria-hidden="true"><span>gavilanbe<b>®</b></span></div>
+      <div class="gbboot" aria-hidden="true"><div class="gblogo">
+        <b><i style="--i:0">G</i><i style="--i:1">A</i><i style="--i:2">V</i><i style="--i:3">I</i><i style="--i:4">L</i><i style="--i:5">A</i><i style="--i:6">N</i><i style="--i:7">B</i><i style="--i:8">E</i></b>
+        <small>games™</small>
+      </div></div>
     </div>
     <div class="dex-info">
       <p class="eyebrow">Ficha de cartucho</p>
@@ -792,11 +807,12 @@
       if (c) c.style.transition = '';
       dex.classList.add('inserting');
       sfx('clack', .8);
-      dexTimers.push(setTimeout(() => { dex.classList.add('booting'); sfx('boot', .35); }, 950));
+      /* el chime suena justo cuando el logo aterriza; se abre tras el destello de colores */
+      dexTimers.push(setTimeout(() => { dex.classList.add('booting'); sfx('boot', .92); }, 950));
       dexTimers.push(setTimeout(() => {
         if (!window.open(url, '_blank')) location.assign(url);
         closeDex();
-      }, 2050));
+      }, 2900));
     }, 260));
   }
   document.addEventListener('click', e => {
@@ -832,7 +848,8 @@
         o.start(t); o.stop(t + dur + .02);
       };
       if (kind === 'clack'){ note(150, t0, .06, .06); note(85, t0 + .05, .09, .07); }
-      if (kind === 'boot'){ note(1046.5, t0, .1, .04); note(2093, t0 + .11, .34, .04); }
+      /* el "ba-DING" del arranque: dos notas cuadradas a una octava, la segunda larga */
+      if (kind === 'boot'){ note(1046.5, t0, .07, .05); note(2093, t0 + .085, .55, .05); }
     }catch(e){}
   }
 
