@@ -9,7 +9,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/3dish",
     "thumb": "thumbs/3dish.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.7"
   },
   {
     "name": "bingo",
@@ -20,7 +21,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/bingo",
     "thumb": "thumbs/bingo.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.6"
   },
   {
     "name": "bitxo",
@@ -32,7 +34,8 @@ const GAMES = [
     "thumb": "thumbs/bitxo.jpg",
     "wip": false,
     "new": true,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "fable"
   },
   {
     "name": "bug-smash",
@@ -43,7 +46,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/bug-smash",
     "thumb": "thumbs/bug-smash.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.6"
   },
   {
     "name": "celda",
@@ -54,7 +58,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/celda",
     "thumb": "thumbs/celda.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.8"
   },
   {
     "name": "chef-game",
@@ -65,7 +70,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/chef-game",
     "thumb": "thumbs/chef-game.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.7"
   },
   {
     "name": "command-wars",
@@ -76,7 +82,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/command-wars",
     "thumb": "thumbs/command-wars.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.7"
   },
   {
     "name": "dakino",
@@ -87,7 +94,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/dakino",
     "thumb": "thumbs/dakino.jpg",
     "wip": true,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.7"
   },
   {
     "name": "deepresion",
@@ -98,7 +106,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/deepresion",
     "thumb": "thumbs/deepresion.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.6"
   },
   {
     "name": "dogfy-3d",
@@ -109,7 +118,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/dogfy-3d",
     "thumb": "thumbs/dogfy-3d.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.6"
   },
   {
     "name": "dogfy-gb",
@@ -120,7 +130,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/dogfy-gb",
     "thumb": "thumbs/dogfy-gb.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.8"
   },
   {
     "name": "dogfy-life",
@@ -131,7 +142,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/dogfy-life",
     "thumb": "thumbs/dogfy-life.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.6"
   },
   {
     "name": "dogfy-runner",
@@ -142,7 +154,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/dogfy-runner",
     "thumb": "thumbs/dogfy-runner.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.6"
   },
   {
     "name": "doodlaria",
@@ -153,7 +166,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/doodlaria",
     "thumb": "thumbs/doodlaria.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.8"
   },
   {
     "name": "doodle-quest",
@@ -164,7 +178,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/doodle-quest",
     "thumb": "thumbs/doodle-quest.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.7"
   },
   {
     "name": "doodli",
@@ -175,7 +190,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/doodli",
     "thumb": "thumbs/doodli.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.8"
   },
   {
     "name": "el-oraculo-de-jorge",
@@ -186,7 +202,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/el-oraculo-de-jorge",
     "thumb": "thumbs/el-oraculo-de-jorge.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.6"
   },
   {
     "name": "gacha-zoo",
@@ -197,7 +214,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/gacha-zoo",
     "thumb": "thumbs/gacha-zoo.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "fable"
   },
   {
     "name": "gb-game",
@@ -208,7 +226,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/gb-game",
     "thumb": "thumbs/gb-game.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.8"
   },
   {
     "name": "gomi",
@@ -219,7 +238,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/gomi",
     "thumb": "thumbs/gomi.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.8"
   },
   {
     "name": "gotchi",
@@ -230,18 +250,20 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/gotchi",
     "thumb": "thumbs/gotchi.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.7"
   },
   {
     "name": "jub",
     "title": "🥊 Doodle Smash",
-    "tagline": "En local:",
+    "tagline": "Un Smash Bros de garabatos en una sola página HTML: dos jugadores, un cuaderno y mamporros hasta sacar al otro del papel.",
     "type": "web",
     "play": "https://gavilanbe.github.io/jub/",
     "repo": "https://github.com/gavilanbe/jub",
     "thumb": "thumbs/jub.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.7"
   },
   {
     "name": "kaizen",
@@ -252,7 +274,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/kaizen",
     "thumb": "thumbs/kaizen.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.8"
   },
   {
     "name": "lane-catcher",
@@ -263,7 +286,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/lane-catcher",
     "thumb": "thumbs/lane-catcher.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.6"
   },
   {
     "name": "libret",
@@ -274,7 +298,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/libret",
     "thumb": "thumbs/libret.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.8"
   },
   {
     "name": "libreta",
@@ -285,7 +310,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/libreta",
     "thumb": "thumbs/libreta.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "fable"
   },
   {
     "name": "makinamon",
@@ -296,7 +322,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/makinamon",
     "thumb": "thumbs/makinamon.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "fable"
   },
   {
     "name": "michi",
@@ -307,7 +334,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/michi",
     "thumb": "thumbs/michi.jpg",
     "wip": false,
-    "kind": "juguete"
+    "kind": "juguete",
+    "model": "fable"
   },
   {
     "name": "monster-battler",
@@ -318,7 +346,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/monster-battler",
     "thumb": "thumbs/monster-battler.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.8"
   },
   {
     "name": "msemmen-clicker",
@@ -329,7 +358,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/msemmen-clicker",
     "thumb": "thumbs/msemmen-clicker.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.6"
   },
   {
     "name": "multiblex",
@@ -340,7 +370,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/multiblex",
     "thumb": "",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.8"
   },
   {
     "name": "nahugavi",
@@ -351,7 +382,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/nahugavi",
     "thumb": "thumbs/nahugavi.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "fable"
   },
   {
     "name": "ofis",
@@ -362,7 +394,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/ofis",
     "thumb": "thumbs/ofis.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.6"
   },
   {
     "name": "pang",
@@ -373,7 +406,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/pang",
     "thumb": "thumbs/pang.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.7"
   },
   {
     "name": "png-to-svg-app",
@@ -384,7 +418,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/png-to-svg-app",
     "thumb": "thumbs/png-to-svg-app.jpg",
     "wip": false,
-    "kind": "herramienta"
+    "kind": "herramienta",
+    "model": "opus-4.6"
   },
   {
     "name": "poke-autobattler",
@@ -395,18 +430,20 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/poke-autobattler",
     "thumb": "thumbs/poke-autobattler.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.8"
   },
   {
     "name": "pokechess",
     "title": "♟️ PokéChess — Type Sumo",
-    "tagline": "Online: 👉 gavilanbe.github.io/pokechess",
+    "tagline": "Sumo de tipos sobre un tablero: empuja a los Pokémon rivales fuera del ring aprovechando la efectividad de tipos.",
     "type": "web",
     "play": "https://gavilanbe.github.io/pokechess/",
     "repo": "https://github.com/gavilanbe/pokechess",
     "thumb": "thumbs/pokechess.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.7"
   },
   {
     "name": "pokedefense",
@@ -417,7 +454,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/pokedefense",
     "thumb": "thumbs/pokedefense.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.8"
   },
   {
     "name": "pokedex",
@@ -428,7 +466,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/pokedex",
     "thumb": "thumbs/pokedex.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.8"
   },
   {
     "name": "pokemon-route1",
@@ -439,7 +478,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/pokemon-route1",
     "thumb": "thumbs/pokemon-route1.jpg",
     "wip": false,
-    "kind": "música"
+    "kind": "música",
+    "model": "opus-4.6"
   },
   {
     "name": "pokemon-terminal",
@@ -450,7 +490,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/pokemon-terminal",
     "thumb": "thumbs/pokemon-terminal.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.7"
   },
   {
     "name": "ranota",
@@ -461,7 +502,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/ranota",
     "thumb": "thumbs/ranota.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.7"
   },
   {
     "name": "roguelike",
@@ -472,7 +514,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/roguelike",
     "thumb": "thumbs/roguelike.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.7"
   },
   {
     "name": "shooter",
@@ -483,7 +526,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/shooter",
     "thumb": "thumbs/shooter.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.8"
   },
   {
     "name": "short-hike-demo",
@@ -494,7 +538,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/short-hike-demo",
     "thumb": "thumbs/short-hike-demo.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.7"
   },
   {
     "name": "space-battle",
@@ -505,7 +550,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/space-battle",
     "thumb": "thumbs/space-battle.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.7"
   },
   {
     "name": "space-shooter",
@@ -516,7 +562,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/space-shooter",
     "thumb": "thumbs/space-shooter.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.7"
   },
   {
     "name": "spirout",
@@ -527,18 +574,20 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/spirout",
     "thumb": "thumbs/spirout.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.6"
   },
   {
     "name": "sprout-game",
-    "title": "SPROUT · y las 8 semillas",
+    "title": "🌱 SPROUT · y las 8 semillas",
     "tagline": "Una microaventura tipo Zelda, estilo Game Boy, hecha a mano con rectángulos.",
     "type": "web",
     "play": "https://gavilanbe.github.io/sprout-game/",
     "repo": "https://github.com/gavilanbe/sprout-game",
     "thumb": "thumbs/sprout-game.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "fable"
   },
   {
     "name": "sprout-gbc",
@@ -549,7 +598,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/sprout-gbc",
     "thumb": "",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.8"
   },
   {
     "name": "srak-l-zit",
@@ -560,7 +610,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/srak-l-zit",
     "thumb": "thumbs/srak-l-zit.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.7"
   },
   {
     "name": "stratecorum-terminal",
@@ -571,7 +622,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/stratecorum-terminal",
     "thumb": "thumbs/stratecorum-terminal.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.6"
   },
   {
     "name": "tamamon",
@@ -582,7 +634,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/tamamon",
     "thumb": "thumbs/tamamon.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.7"
   },
   {
     "name": "terminal-platformer",
@@ -593,7 +646,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/terminal-platformer",
     "thumb": "thumbs/terminal-platformer.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.6"
   },
   {
     "name": "terminal-tale",
@@ -604,7 +658,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/terminal-tale",
     "thumb": "thumbs/terminal-tale.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.7"
   },
   {
     "name": "termy",
@@ -615,7 +670,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/termy",
     "thumb": "thumbs/termy.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.7"
   },
   {
     "name": "undertale_terminal",
@@ -626,7 +682,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/undertale_terminal",
     "thumb": "thumbs/undertale_terminal.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.8"
   },
   {
     "name": "uno",
@@ -637,7 +694,8 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/uno",
     "thumb": "thumbs/uno.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.8"
   },
   {
     "name": "wirefox",
@@ -648,6 +706,7 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/wirefox",
     "thumb": "thumbs/wirefox.jpg",
     "wip": false,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "opus-4.7"
   }
 ];

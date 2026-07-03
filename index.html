@@ -9,6 +9,8 @@
 <meta property="og:description" content="59 juegos hechos a mano — pixel art, terminal y homebrew de Game Boy. Muchos jugables al instante.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://gavilanbe.github.io/">
+<meta property="og:image" content="https://gavilanbe.github.io/thumbs/bitxo.jpg">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🕹️</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -121,6 +123,8 @@
     margin-top:26px;
   }
   .deck .wrap{display:flex; gap:10px; align-items:center; padding:12px 22px; flex-wrap:wrap}
+  .deck .chips{display:flex; gap:10px; align-items:center; flex-wrap:wrap; min-width:0}
+  .deck .sep{width:1px; height:20px; background:var(--line); flex:none}
   .chip{
     font-family:'IBM Plex Mono',monospace; font-size:12.5px; font-weight:500;
     padding:8px 14px; border-radius:999px; cursor:pointer; user-select:none;
@@ -129,6 +133,14 @@
   }
   .chip:hover{color:var(--ink); border-color:var(--dim)}
   .chip.on{background:var(--bezel); color:var(--phosphor); border-color:var(--bezel)}
+  .chip.on.m-fable{
+    background:linear-gradient(110deg,#F2C4FF,#9AD9FF,#A7F3C0,#FFE28A,#F2C4FF);
+    background-size:280% 100%; color:#3A2140; border-color:rgba(58,33,64,.35);
+    animation:foil 7s linear infinite;
+  }
+  .chip.on.m-o48{background:var(--coin); color:#3A2604; border-color:var(--coin-dark)}
+  .chip.on.m-o47{background:#8E99A8; color:#fff; border-color:#5B6470}
+  .chip.on.m-o46{background:#B06A38; color:#fff; border-color:#7A4B2A}
   #search{
     flex:1; min-width:160px; max-width:320px; margin-left:auto;
     font-family:'IBM Plex Mono',monospace; font-size:13.5px;
@@ -200,6 +212,27 @@
   }
   .repo:hover{color:var(--ink); border-color:var(--dim)}
 
+  /* chip de modelo: la pegatina del cartucho (quién lo construyó conmigo) */
+  .mchip{
+    font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:500; letter-spacing:.08em;
+    padding:4px 8px; border-radius:6px; white-space:nowrap; line-height:1;
+  }
+  .mchip.fable{
+    background:linear-gradient(110deg,#F2C4FF,#9AD9FF,#A7F3C0,#FFE28A,#F2C4FF);
+    background-size:280% 100%; color:#3A2140; border:1px solid rgba(58,33,64,.28);
+    animation:foil 7s linear infinite;
+  }
+  @keyframes foil{to{background-position:280% 50%}}
+  .mchip.o48{background:rgba(217,154,43,.16); color:#8A5F14; border:1px solid rgba(138,95,20,.4)}
+  .mchip.o47{background:rgba(91,100,112,.11); color:#5B6470; border:1px solid rgba(91,100,112,.38)}
+  .mchip.o46{background:rgba(160,98,54,.12); color:#7A4B2A; border:1px solid rgba(122,75,42,.38)}
+  .shot .mchip{position:absolute; top:10px; right:10px; z-index:2;
+    box-shadow:0 2px 8px -2px rgba(32,36,42,.35)}
+  .term .mchip{position:absolute; top:14px; right:14px}
+  .term .mchip.o48{background:rgba(233,172,59,.14); color:#E9AC3B; border-color:rgba(233,172,59,.4)}
+  .term .mchip.o47{background:rgba(185,194,206,.12); color:#B9C2CE; border-color:rgba(185,194,206,.35)}
+  .term .mchip.o46{background:rgba(214,154,110,.12); color:#D69A6E; border-color:rgba(214,154,110,.4)}
+
   .grid{display:grid; gap:16px; grid-template-columns:repeat(auto-fill,minmax(248px,1fr))}
 
   /* cartas de terminal: pantalla oliva, tipografía mono */
@@ -217,7 +250,7 @@
     border:1px solid rgba(147,162,75,.35);
     display:flex; align-items:center; justify-content:center; font-size:24px;
   }
-  .term .cmd{font-family:'IBM Plex Mono',monospace; font-size:13.5px; font-weight:500; color:var(--screen-dim); word-break:break-all}
+  .term .cmd{font-family:'IBM Plex Mono',monospace; font-size:13.5px; font-weight:500; color:var(--screen-dim); word-break:break-all; padding-right:76px}
   .term .cmd::before{content:"$ "; color:var(--screen)}
   .term .cmd a::after{content:""; position:absolute; inset:0}
   .term .tagline{color:#8A9377; font-size:12.5px; margin-top:4px;
@@ -235,7 +268,9 @@
   }
 
   footer{margin-top:70px; border-top:1px solid var(--line); background:var(--shell-2)}
-  footer .wrap{padding:30px 22px 40px; display:flex; gap:18px; flex-wrap:wrap;
+  footer .legend{max-width:1200px; margin:0 auto; padding:28px 22px 0;
+    display:flex; gap:8px; flex-wrap:wrap; align-items:center; color:var(--dim); font-size:13px}
+  footer .wrap{padding:18px 22px 40px; display:flex; gap:18px; flex-wrap:wrap;
     align-items:baseline; justify-content:space-between; color:var(--dim); font-size:13.5px}
   footer a{border-bottom:1px dashed var(--dim)}
   footer a:hover{color:var(--ink); border-color:var(--play)}
@@ -252,6 +287,18 @@
       -webkit-mask-image:linear-gradient(180deg, transparent 0, #000 22%);
               mask-image:linear-gradient(180deg, transparent 0, #000 22%);}
     .wall-tilt{inset:-8% -4%}
+  }
+  @media (max-width:640px){
+    /* barra de mandos compacta: búsqueda arriba, chips en carril deslizante */
+    .deck .wrap{padding:10px 14px}
+    #search{order:-1; flex:1 1 auto; max-width:none}
+    #hits{order:-1}
+    .deck .chips{flex:1 1 100%; flex-wrap:nowrap; overflow-x:auto; padding-bottom:2px;
+      scrollbar-width:none}
+    .deck .chips::-webkit-scrollbar{display:none}
+    .chip{flex:none}
+    .wrap{padding:0 14px}
+    footer .legend{justify-content:center}
   }
   @media (prefers-reduced-motion:reduce){
     html{scroll-behavior:auto}
@@ -286,9 +333,16 @@
 
 <nav class="deck" aria-label="filtros">
   <div class="wrap">
-    <button class="chip on" data-f="all" type="button">Todos</button>
-    <button class="chip" data-f="web" type="button">Jugables online</button>
-    <button class="chip" data-f="terminal" type="button">De terminal</button>
+    <div class="chips">
+      <button class="chip on" data-f="all" type="button">Todos</button>
+      <button class="chip" data-f="web" type="button">Jugables online</button>
+      <button class="chip" data-f="terminal" type="button">De terminal</button>
+      <span class="sep" aria-hidden="true"></span>
+      <button class="chip m-fable" data-m="fable" type="button" title="Juegos construidos con Claude Fable 5">✦ Fable</button>
+      <button class="chip m-o48" data-m="opus-4.8" type="button" title="Juegos construidos con Claude Opus 4.8">Opus 4.8</button>
+      <button class="chip m-o47" data-m="opus-4.7" type="button" title="Juegos construidos con Claude Opus 4.7">Opus 4.7</button>
+      <button class="chip m-o46" data-m="opus-4.6" type="button" title="Juegos construidos con Claude Opus 4.6">Opus 4.6</button>
+    </div>
     <input id="search" type="search" placeholder="buscar…  /" autocomplete="off" aria-label="Buscar juego">
     <span id="hits"></span>
   </div>
@@ -318,6 +372,13 @@
 </main>
 
 <footer>
+  <div class="legend">
+    <span>Cada juego lleva la pegatina del modelo que lo construyó conmigo:</span>
+    <span class="mchip fable">✦ FABLE</span>
+    <span class="mchip o48">OPUS 4.8</span>
+    <span class="mchip o47">OPUS 4.7</span>
+    <span class="mchip o46">OPUS 4.6</span>
+  </div>
   <div class="wrap">
     <span>Hecho a mano, un rectángulo cada vez.</span>
     <span class="mono" id="foot-count"></span>
@@ -341,10 +402,23 @@
   const pool = webGames.filter(g => !g.wip && g.play && g.kind === 'juego');
   const daily = pool[Math.floor(Date.now()/86400000) % pool.length];
 
+  const MCHIP = {
+    'fable':    ['fable', '✦ FABLE',  'Construido con Claude Fable 5'],
+    'opus-4.8': ['o48',   'OPUS 4.8', 'Construido con Claude Opus 4.8'],
+    'opus-4.7': ['o47',   'OPUS 4.7', 'Construido con Claude Opus 4.7'],
+    'opus-4.6': ['o46',   'OPUS 4.6', 'Construido con Claude Opus 4.6'],
+  };
+  const mchip = g => {
+    const [cls, label, title] = MCHIP[g.model] || [];
+    return cls ? `<span class="mchip ${cls}" title="${title}">${label}</span>` : '';
+  };
+  const nFable = GAMES.filter(g => g.model === 'fable').length;
+
   $('#total-b').textContent = GAMES.length;
   $('#hero-stats').innerHTML =
     `<span><b>${webGames.length}</b> jugables online</span>` +
     `<span><b>${termGames.length}</b> de terminal</span>` +
+    `<span><b>${nFable}</b> con pegatina Fable ✦</span>` +
     `<span><b>hoy en la máquina:</b> ${esc(stripEmoji(daily.title))}</span>`;
   $('#foot-count').textContent = `${GAMES.length} juegos · 2026`;
   $('#count-web').textContent = `${webGames.length} juegos`;
@@ -369,13 +443,14 @@
   function webCard(g, eager){
     const el = document.createElement('article');
     el.className = 'game reveal';
-    el.dataset.search = (g.name+' '+g.title+' '+g.tagline).toLowerCase();
+    el.dataset.search = (g.name+' '+g.title+' '+g.tagline+' '+g.model).toLowerCase();
     el.dataset.type = 'web';
+    el.dataset.model = g.model;
     const shot = g.thumb
       ? `<img src="${esc(g.thumb)}" alt="" ${eager ? '' : 'loading="lazy"'}>`
       : `<div class="noimg">${firstEmoji(g.title)}</div>`;
     el.innerHTML = `
-      <div class="shot">${badge(g)}${shot}<span class="playmark" aria-hidden="true">▶</span></div>
+      <div class="shot">${badge(g)}${mchip(g)}${shot}<span class="playmark" aria-hidden="true">▶</span></div>
       <div class="body">
         <h3 class="title"><a href="${esc(g.play)}" target="_blank" rel="noopener">${esc(g.title)}</a></h3>
         <p class="tagline">${esc(g.tagline)}</p>
@@ -391,15 +466,17 @@
   function termCard(g){
     const el = document.createElement('article');
     el.className = 'term reveal';
-    el.dataset.search = (g.name+' '+g.title+' '+g.tagline).toLowerCase();
+    el.dataset.search = (g.name+' '+g.title+' '+g.tagline+' '+g.model).toLowerCase();
     el.dataset.type = 'terminal';
+    el.dataset.model = g.model;
     el.innerHTML = `
       <div class="icon" aria-hidden="true">${firstEmoji(g.title)}</div>
       <div>
         <p class="cmd"><a href="${esc(g.repo)}" target="_blank" rel="noopener">./${esc(g.name)}</a></p>
         <p class="tagline">${esc(stripEmoji(g.tagline||g.title))}</p>
         <p class="lang">VER CÓDIGO ↗</p>
-      </div>`;
+      </div>
+      ${mchip(g)}`;
     return el;
   }
 
@@ -420,11 +497,13 @@
   }
 
   /* ---- filtro + búsqueda ---- */
-  let filter = 'all', q = '';
+  let filter = 'all', fmodel = null, q = '';
   const hits = $('#hits'), empty = $('#empty');
   function apply(){
     let shown = 0;
-    const test = el => (filter === 'all' || el.dataset.type === filter) && (!q || el.dataset.search.includes(q));
+    const test = el => (filter === 'all' || el.dataset.type === filter)
+      && (!fmodel || el.dataset.model === fmodel)
+      && (!q || el.dataset.search.includes(q));
     [gw, gt].forEach(grid => {
       let vis = 0;
       grid.querySelectorAll('[data-search]').forEach(el => {
@@ -436,18 +515,28 @@
       shown += vis;
       grid.closest('section').classList.toggle('hidden', vis === 0);
     });
-    $('#sec-feat').classList.toggle('hidden', !!q || filter === 'terminal');
-    hits.textContent = (q || filter !== 'all') ? `${shown} resultado${shown === 1 ? '' : 's'}` : '';
+    $('#sec-feat').classList.toggle('hidden', !!q || !!fmodel || filter === 'terminal');
+    hits.textContent = (q || fmodel || filter !== 'all') ? `${shown} resultado${shown === 1 ? '' : 's'}` : '';
     empty.style.display = shown === 0 ? 'block' : 'none';
-    $('#empty-q').textContent = `«${q}»`;
+    $('#empty-q').textContent = q ? `«${q}»` : 'ese filtro';
   }
-  document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
-    document.querySelectorAll('.chip').forEach(x => x.classList.remove('on'));
+  document.querySelectorAll('.chip[data-f]').forEach(c => c.addEventListener('click', () => {
+    document.querySelectorAll('.chip[data-f]').forEach(x => x.classList.remove('on'));
     c.classList.add('on'); filter = c.dataset.f; apply();
+  }));
+  document.querySelectorAll('.chip[data-m]').forEach(c => c.addEventListener('click', () => {
+    const wasOn = c.classList.contains('on');
+    document.querySelectorAll('.chip[data-m]').forEach(x => x.classList.remove('on'));
+    if (!wasOn) c.classList.add('on');
+    fmodel = wasOn ? null : c.dataset.m; apply();
   }));
   const search = $('#search');
   search.addEventListener('input', () => { q = search.value.trim().toLowerCase(); apply(); });
-  $('#empty-clear').addEventListener('click', () => { search.value=''; q=''; apply(); search.focus(); });
+  $('#empty-clear').addEventListener('click', () => {
+    search.value=''; q=''; fmodel=null;
+    document.querySelectorAll('.chip[data-m]').forEach(x => x.classList.remove('on'));
+    apply(); search.focus();
+  });
   document.addEventListener('keydown', e => {
     if (e.key === '/' && document.activeElement !== search){ e.preventDefault(); search.focus(); }
     if (e.key === 'Escape' && document.activeElement === search){ search.value=''; q=''; apply(); search.blur(); }
