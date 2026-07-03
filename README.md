@@ -15,6 +15,13 @@ u `Opus 4.8/4.7/4.6`, el modelo que construyó cada juego), **juego del día**
 (rotación diaria determinista) y una ranura para **echar una moneda** que lanza
 un juego al azar.
 
+Cada juego web es un **cartucho 3D flotante** (CSS puro): la carcasa delata su
+chip — nácar tornasolado para Fable; oro, plata y bronce para Opus — con tilt
+que sigue al ratón y brillo especular. Al tocarlo se abre su **ficha**, y al
+darle a *«Meter el cartucho»* se inserta en la ranura de la consola, arranca la
+pantalla verde `gavilanbe®` con su chime chiptune (Web Audio) y el juego se abre
+en otra pestaña.
+
 El diseño está inspirado en el chasis de la Game Boy DMG: plástico cálido,
 bisel oscuro de pantalla, botón A magenta, ficha dorada y verde oliva para la
 sección de terminal. Tipografía: Unbounded + IBM Plex Sans/Mono.
