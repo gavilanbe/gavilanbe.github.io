@@ -315,19 +315,32 @@
     content:""; position:absolute; inset:0; pointer-events:none;
     background:radial-gradient(46% 60% at 50% 34%, rgba(242,240,228,.10), transparent 70%);
   }
+  /* la estantería-carrusel: los cartuchos en fila, el del centro manda */
+  .dexcount{position:absolute; left:16px; top:16px; z-index:4;
+    font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:.22em; color:#5C646F}
+  .dex.solo .dexcount{visibility:hidden}
+  .dex-info{transition:opacity .16s}
+  .dex-info.swap{opacity:0}
   .cartwell{position:absolute; left:0; right:0; top:0; bottom:96px; z-index:2;
-    display:flex; align-items:center; justify-content:center; overflow:hidden; cursor:grab}
+    overflow:hidden; cursor:grab; perspective:1100px}
   .cartwell:active{cursor:grabbing}
-  .cartwell .slot3d{width:210px}
-  .cartwell .slot3d::after{bottom:-30px; background:radial-gradient(ellipse, rgba(0,0,0,.65), transparent 68%); animation:none;
-    transform:scale(calc(1 + var(--k,0)*.4)); opacity:calc(1 - var(--k,0)*.55); transition:opacity .3s}
-  .cartwell .cart{animation:spin 16s linear infinite; --dz:14px}
+  .dexrow{position:absolute; inset:0; transform-style:preserve-3d}
+  .rowitem{position:absolute; left:50%; top:50%; width:210px;
+    transform-style:preserve-3d; will-change:transform, opacity, filter}
+  .rowitem .lift{transform-style:preserve-3d}
+  .rowitem .cart{--dz:14px}
+  .rowitem.center .cart{animation:spin 16s linear infinite}
+  .rowitem:not(.center) .cart{animation:none; transform:rotateX(6deg)}
   @keyframes spin{from{transform:rotateX(6deg) rotateY(0)}to{transform:rotateX(6deg) rotateY(360deg)}}
-  .cartwell.grabbed .cart, .cartwell.grabbed .slot3d::after{animation:none}
+  .rowitem::after{ /* sombra en el suelo de la sala; crece cuando bajas el cartucho */
+    content:""; position:absolute; left:10%; right:10%; bottom:-30px; height:14px; border-radius:50%;
+    background:radial-gradient(ellipse, rgba(0,0,0,.65), transparent 68%);
+    transform:scale(calc(1 + var(--k,0)*.4)); opacity:calc(1 - var(--k,0)*.55); transition:opacity .3s}
   .drag-hint{position:absolute; left:0; right:0; bottom:110px; z-index:2; text-align:center; pointer-events:none;
     font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:.24em; color:#5C646F;
     transition:opacity .25s}
   .dex.ready .drag-hint, .dex.inserting .drag-hint{opacity:0}
+  .drag-hint .h-mini{display:none}
   /* la consola: la propia ranura de carga es el botón de jugar */
   .dock{position:absolute; left:0; right:0; bottom:0; height:96px; z-index:3;
     display:block; width:100%; padding:0; font:inherit; color:inherit; text-align:center; cursor:pointer;
@@ -360,7 +373,7 @@
   .dex.ready .dock .cta{color:var(--coin)}
   .dex.ready .dock .cta b{animation-duration:.5s}
   /* demo diegética: el cartucho hace una reverencia hacia la ranura ("yo voy ahí") */
-  .dex.nudge .cartwell .slot3d{animation:nudgedip 1.5s cubic-bezier(.45,0,.35,1)}
+  .dex.nudge .rowitem.center .lift{animation:nudgedip 1.5s cubic-bezier(.45,0,.35,1)}
   @keyframes nudgedip{0%,100%{transform:translateY(0)}42%,58%{transform:translateY(var(--nudge,90px))}}
   .dex.nudge .dock i{animation:nudgeglow 1.5s ease}
   @keyframes nudgeglow{42%,70%{box-shadow:inset 0 3px 6px rgba(0,0,0,.9),
@@ -368,7 +381,8 @@
   .dex.nudge .dock .cta{color:var(--coin)}
   .dex.inserting .dock .led, .dex.booting .dock .led{
     background:#7AC74F; box-shadow:0 0 12px rgba(122,199,79,.95)}
-  .dex.inserting .cartwell .slot3d::after{opacity:0}
+  .dex.inserting .rowitem::after{opacity:0}
+  .dex.inserting .rowitem:not(.center){opacity:0 !important; transition:opacity .35s}
   .dex.inserting .dock i{animation:slotflash .5s .3s}
   @keyframes slotflash{50%{box-shadow:inset 0 3px 6px rgba(0,0,0,.9), 0 0 20px rgba(217,154,43,.85)}}
   .dex.inserting .dex-stage{animation:thunk .18s .44s}
@@ -415,9 +429,11 @@
     .dex-card{grid-template-columns:1fr; max-height:94vh; overflow:auto}
     .dex-stage{min-height:330px}
     .cartwell{top:30px; bottom:84px}
-    .cartwell .slot3d{width:150px}
-    .drag-hint{bottom:auto; top:16px; padding:0 54px}
-    .drag-hint .h-rot{display:none}
+    .rowitem{width:150px}
+    .dexcount{left:50%; top:14px; transform:translateX(-50%); white-space:nowrap}
+    .drag-hint{bottom:auto; top:34px; padding:0 54px}
+    .drag-hint .h-full{display:none}
+    .drag-hint .h-mini{display:inline}
     .dock{height:84px}
     .dock .cta{top:22px}
     .dock small{bottom:11px}
@@ -531,7 +547,7 @@
     .wall-col{animation:none}
     .reveal{opacity:1; transform:none; transition:none}
     .term{transition:none}
-    .cart, .slot3d::after, .cartwell .cart, .tier-fable .fr, .tier-fable .bk{animation:none !important}
+    .cart, .slot3d::after, .rowitem .cart, .tier-fable .fr, .tier-fable .bk{animation:none !important}
     .dock .cta b{animation:none}
     .cart{transition:none}
   }
@@ -620,8 +636,9 @@
   <div class="dex-card">
     <button class="dex-x" id="dex-x" type="button" aria-label="Cerrar ficha">✕</button>
     <div class="dex-stage" id="dex-stage">
-      <div class="cartwell" id="dex-well"><div class="slot3d" id="dex-holder"></div></div>
-      <p class="drag-hint"><span class="h-rot">◂ ▸ GIRAR · </span>▼ BAJAR HASTA LA RANURA</p>
+      <span class="dexcount" id="dex-count"></span>
+      <div class="cartwell" id="dex-well"><div class="dexrow" id="dex-row"></div></div>
+      <p class="drag-hint"><span class="h-full">◂ ▸ DESLIZA PARA CAMBIAR · ▼ BAJA EL CARTUCHO A LA RANURA</span><span class="h-mini">◂ ▸ DESLIZA · ▼ A LA RANURA</span></p>
       <button class="dock" id="dex-dock" type="button">
         <i aria-hidden="true"></i><span class="led" aria-hidden="true"></span>
         <span class="cta"><b aria-hidden="true">▼</b> METER EL CARTUCHO</span>
@@ -778,27 +795,107 @@
     }, {passive:true});
   }
 
-  /* ---- la ficha: cartucho de cerca, showcase e inserción en la consola ---- */
-  const dex = $('#dex'), dexHolder = $('#dex-holder');
+  /* ---- la ficha: estantería-carrusel, escaparate e inserción en la consola ---- */
+  const dex = $('#dex'), dexRow = $('#dex-row'), dexWell = $('#dex-well'),
+        dexDock = $('#dex-dock'), dexStage = $('#dex-stage'),
+        dexInfo = document.querySelector('.dex-info');
   let dexGame = null, dexTimers = [];
+  let deck = [], items = [], posX = 0, target = 0, animId = 0, lastTick = 0, infoTimer = 0;
+  let inserting = false, dragging = false, dragMode = null, dy = 0, insertGap = 120;
+  let downX = 0, downY = 0, lastX = 0, lastT = 0, vel = 0, wheelAt = 0, dragStart = 0;
+  const MOBQ = matchMedia('(max-width:760px)');
+  const geom = () => MOBQ.matches ? {gap:178, z:120, rot:27} : {gap:252, z:150, rot:30};
   function clearDexTimers(){ dexTimers.forEach(clearTimeout); dexTimers = []; }
-  function openDex(g, autoplay){
+
+  /* la caja por la que se hojea: los cartuchos visibles con el filtro/búsqueda actual */
+  function dexPool(g){
+    const vis = [...gw.querySelectorAll('.slot3d:not(.hidden)')]
+      .map(el => webGames.find(x => x.name === el.dataset.name)).filter(Boolean);
+    return vis.some(x => x.name === g.name) ? vis : [g];
+  }
+  function buildRow(){
+    dexRow.replaceChildren();
+    items = deck.map(g => {
+      const el = document.createElement('div');
+      el.className = 'rowitem';
+      const lift = document.createElement('div');
+      lift.className = 'lift';
+      lift.appendChild(cartSlot(g, true).querySelector('.cart'));
+      el.appendChild(lift);
+      dexRow.appendChild(el);
+      return el;
+    });
+  }
+  function render(){
+    const G = geom();
+    items.forEach((el, i) => {
+      const o = i - posX, a = Math.abs(o);
+      if (a > 4){ el.style.display = 'none'; return; }
+      el.style.display = '';
+      el.style.transform = `translate(-50%,-50%) translateX(${(o*G.gap).toFixed(1)}px)`
+        + ` translateZ(${(-a*G.z).toFixed(1)}px)`
+        + ` rotateY(${(Math.max(-1, Math.min(1, -o))*G.rot).toFixed(1)}deg)`;
+      el.style.opacity = Math.max(0, Math.min(1, 1.9 - a*.42)).toFixed(2);
+      el.style.filter = `brightness(${(1 - Math.min(a, 1.6)*.33).toFixed(2)})`;
+      el.style.zIndex = 40 - Math.round(a*4);
+      el.classList.toggle('center', a < .5);
+    });
+  }
+  function animate(){ /* muelle hacia el objetivo, con "clac" al cruzar cada cartucho */
+    cancelAnimationFrame(animId);
+    const step = () => {
+      const d = target - posX;
+      if (Math.abs(d) < .0015){ posX = target; render(); return; }
+      posX += d * .16;
+      const idx = Math.round(posX);
+      if (idx !== lastTick){ lastTick = idx; sfx('tick'); }
+      render();
+      animId = requestAnimationFrame(step);
+    };
+    animId = requestAnimationFrame(step);
+  }
+  function setInfo(g, instant){
     dexGame = g;
-    clearDexTimers();
-    dex.classList.remove('inserting','booting');
-    dexHolder.replaceChildren(cartSlot(g, true).querySelector('.cart'));
-    $('#dex-title').textContent = stripEmoji(g.title);
-    $('#dex-tag').textContent = g.tagline || '';
-    const img = $('#dex-img');
-    if (g.thumb){ img.src = g.thumb; img.alt = 'Pantalla de '+stripEmoji(g.title); $('#dex-shot').style.display = ''; }
-    else $('#dex-shot').style.display = 'none';
-    $('#dex-meta').innerHTML = mchip(g)
-      + `<span class="repo" style="cursor:default">${g.kind && g.kind!=='juego' ? esc(g.kind) : 'juego'} · web</span>`
-      + (g.wip ? '<span class="badge wip">WIP</span>' : (g.new ? '<span class="badge nuevo">NUEVO</span>' : ''));
-    $('#dex-repo').href = g.repo;
-    inserting = false; dragging = false; rotY = 0; dy = 0;
-    dexHolder.style.setProperty('--k', 0);
-    dexWell.classList.remove('grabbed');
+    clearTimeout(infoTimer);
+    const fill = () => {
+      $('#dex-title').textContent = stripEmoji(g.title);
+      $('#dex-tag').textContent = g.tagline || '';
+      const img = $('#dex-img');
+      if (g.thumb){ img.src = g.thumb; img.alt = 'Pantalla de '+stripEmoji(g.title); $('#dex-shot').style.display = ''; }
+      else $('#dex-shot').style.display = 'none';
+      $('#dex-meta').innerHTML = mchip(g)
+        + `<span class="repo" style="cursor:default">${g.kind && g.kind!=='juego' ? esc(g.kind) : 'juego'} · web</span>`
+        + (g.wip ? '<span class="badge wip">WIP</span>' : (g.new ? '<span class="badge nuevo">NUEVO</span>' : ''));
+      $('#dex-repo').href = g.repo;
+      const i = deck.findIndex(x => x.name === g.name);
+      $('#dex-count').textContent = i < 0 ? '' :
+        `CARTUCHO ${String(i+1).padStart(2,'0')} / ${String(deck.length).padStart(2,'0')}`;
+      dexInfo.classList.remove('swap');
+    };
+    if (instant || reduce){ fill(); return; }
+    dexInfo.classList.add('swap');
+    infoTimer = setTimeout(fill, 140);
+  }
+  function settle(i){ /* fija el objetivo y deja que el muelle lo traiga al centro */
+    i = Math.max(0, Math.min(deck.length - 1, i));
+    if (i !== target){
+      target = i;
+      dex.classList.remove('nudge','ready'); clearTimeout(nudgeTimer);
+      setInfo(deck[i]);
+    }
+    if (reduce){ posX = target; lastTick = target; render(); return; }
+    animate();
+  }
+  function openDex(g, autoplay){
+    clearDexTimers(); clearTimeout(nudgeTimer); cancelAnimationFrame(animId);
+    dex.classList.remove('inserting','booting','ready','nudge');
+    inserting = false; dragging = false; dragMode = null; dy = 0;
+    deck = dexPool(g);
+    target = Math.max(0, deck.findIndex(x => x.name === g.name));
+    posX = target; lastTick = target;
+    dex.classList.toggle('solo', deck.length < 2);
+    buildRow(); render();
+    setInfo(g, true);
     dex.hidden = false;
     document.body.style.overflow = 'hidden';
     dexDock.focus({preventScroll:true});
@@ -806,20 +903,21 @@
     else if (!knowsInsert()) dexTimers.push(setTimeout(playNudge, 900));
   }
   function closeDex(){
-    clearDexTimers();
-    clearTimeout(nudgeTimer);
+    clearDexTimers(); clearTimeout(nudgeTimer); clearTimeout(infoTimer);
+    cancelAnimationFrame(animId);
     dex.hidden = true;
     dex.classList.remove('inserting','booting','ready','nudge');
+    dexInfo.classList.remove('swap');
     document.body.style.overflow = '';
-    dexGame = null; inserting = false; dragging = false;
+    dexGame = null; inserting = false; dragging = false; dragMode = null;
   }
 
-  /* la reverencia: el cartucho baja hasta rozar la ranura y vuelve, para que se vea dónde va */
+  /* la reverencia: el cartucho central baja hasta rozar la ranura, por si no queda claro dónde va */
   const knowsInsert = () => { try{ return !!localStorage.getItem('gb-metido'); }catch(e){ return true; } };
   let nudgeTimer = null;
   function playNudge(){
     if (reduce || inserting || dex.hidden) return;
-    const c = dexHolder.querySelector('.cart'); if (!c) return;
+    const c = items[target]?.querySelector('.cart'); if (!c) return;
     const wr = dexWell.getBoundingClientRect(), cr = c.getBoundingClientRect();
     dexStage.style.setProperty('--nudge', Math.max(50, (wr.bottom - cr.bottom) * .8).toFixed(0) + 'px');
     dex.classList.remove('nudge'); void dexStage.offsetWidth;
@@ -827,58 +925,100 @@
     clearTimeout(nudgeTimer);
     nudgeTimer = setTimeout(() => dex.classList.remove('nudge'), 1550);
   }
-
-  /* el cartucho en la mano: ◂▸ lo gira, ▼ lo baja hasta la ranura */
-  const dexWell = $('#dex-well'), dexDock = $('#dex-dock'), dexStage = $('#dex-stage');
-  let dragging = false, dragX = 0, dragY = 0, dy = 0, rotY = 0, inserting = false, insertGap = 120;
-  let downX = 0, downY = 0;
-  const cartAngle = c => { /* ángulo actual aunque venga de la animación de giro: así no da un salto al agarrarlo */
+  const cartAngle = c => { /* ángulo del giro automático, para alinear sin salto */
     const t = getComputedStyle(c).transform;
     if (!t || t === 'none') return 0;
     const m = new DOMMatrix(t);
     return Math.atan2(m.m31, m.m11) * 180 / Math.PI;
   };
-  const setCart = (c, y, r) => { c.style.transform = `translateY(${y.toFixed(1)}px) rotateX(6deg) rotateY(${r.toFixed(1)}deg)`; };
+
+  /* un gesto, dos ejes: ◂▸ desliza la estantería, ▼ baja el cartucho a la ranura */
   dexWell.addEventListener('pointerdown', e => {
     if (inserting) return;
     dex.classList.remove('nudge'); clearTimeout(nudgeTimer);
-    const c = dexHolder.querySelector('.cart'); if (!c) return;
-    dragging = true; dragX = e.clientX; dragY = e.clientY; downX = e.clientX; downY = e.clientY; dy = 0;
-    if (!dexWell.classList.contains('grabbed')){
-      rotY = cartAngle(c);
-      dexWell.classList.add('grabbed');
-    }
-    const wr = dexWell.getBoundingClientRect(), cr = c.getBoundingClientRect();
-    insertGap = Math.max(70, wr.bottom - cr.bottom + 24);
-    c.style.transition = 'none';
-    setCart(c, 0, rotY);
-    dexWell.setPointerCapture(e.pointerId);
+    cancelAnimationFrame(animId);
+    dragging = true; dragMode = null; dragStart = posX;
+    downX = lastX = e.clientX; downY = e.clientY;
+    lastT = performance.now(); vel = 0; dy = 0;
+    try{ dexWell.setPointerCapture(e.pointerId); }catch(err){}
   });
   dexWell.addEventListener('pointermove', e => {
     if (!dragging || inserting) return;
-    const c = dexHolder.querySelector('.cart'); if (!c) return;
-    rotY += (e.clientX - dragX) * .55; dragX = e.clientX;
-    dy = Math.max(0, (e.clientY - dragY) * .92);
-    setCart(c, Math.min(dy, insertGap + 30), rotY);
-    dexHolder.style.setProperty('--k', Math.min(dy / insertGap, 1).toFixed(3));
-    dex.classList.toggle('ready', dy > insertGap * .45);
-    if (dy >= insertGap){ dragging = false; insertCart(); }
+    const dx = e.clientX - downX, dv = e.clientY - downY;
+    if (!dragMode){
+      if (Math.abs(dx) > 9 && Math.abs(dx) > Math.abs(dv)) dragMode = 'scroll';
+      else if (dv > 12 && dv > Math.abs(dx)){
+        dragMode = 'insert';
+        const c = items[target]?.querySelector('.cart');
+        if (!c){ dragMode = 'scroll'; }
+        else {
+          const wr = dexWell.getBoundingClientRect(), cr = c.getBoundingClientRect();
+          insertGap = Math.max(70, wr.bottom - cr.bottom + 24);
+        }
+      }
+      else return;
+    }
+    if (dragMode === 'scroll'){
+      const G = geom(), max = deck.length - 1;
+      let p = dragStart - dx / G.gap;
+      if (p < 0) p *= .32;
+      else if (p > max) p = max + (p - max) * .32;
+      posX = p;
+      const now = performance.now();
+      vel = (e.clientX - lastX) / Math.max(1, now - lastT);
+      lastX = e.clientX; lastT = now;
+      const idx = Math.max(0, Math.min(max, Math.round(posX)));
+      if (idx !== lastTick){ lastTick = idx; sfx('tick'); }
+      if (idx !== target){ target = idx; setInfo(deck[idx]); }
+      render();
+    } else {
+      const it = items[target]; if (!it) return;
+      dy = Math.max(0, (e.clientY - downY) * .92);
+      it.querySelector('.lift').style.transform = `translateY(${Math.min(dy, insertGap + 30).toFixed(1)}px)`;
+      it.style.setProperty('--k', Math.min(dy / insertGap, 1).toFixed(3));
+      dex.classList.toggle('ready', dy > insertGap * .45);
+      if (dy >= insertGap){ dragging = false; insertCart(); }
+    }
   });
   ['pointerup','pointercancel'].forEach(ev => dexWell.addEventListener(ev, e => {
     if (!dragging) return;
     dragging = false;
     if (inserting) return;
-    dex.classList.remove('ready');
-    dexHolder.style.setProperty('--k', 0);
-    const c = dexHolder.querySelector('.cart');
-    if (c && dy > 0){ /* no llegó: vuelve a su sitio con un muelle */
-      c.style.transition = 'transform .4s cubic-bezier(.2,.9,.3,1.25)';
-      setCart(c, 0, rotY);
+    if (dragMode === 'scroll'){
+      const fling = Math.max(-3, Math.min(3, -vel * 320 / geom().gap));
+      settle(Math.round(posX + fling));
+    } else if (dragMode === 'insert'){
+      dex.classList.remove('ready');
+      const it = items[target];
+      if (it){
+        it.style.setProperty('--k', 0);
+        if (dy > 0){ /* no llegó: vuelve con un muelle */
+          const lift = it.querySelector('.lift');
+          lift.style.transition = 'transform .4s cubic-bezier(.2,.9,.3,1.25)';
+          lift.style.transform = 'translateY(0)';
+          setTimeout(() => { lift.style.transition = ''; }, 420);
+        }
+      }
+    } else if (ev === 'pointerup'){
+      /* toque: en un vecino viaja hasta él; en el central, señala la ranura.
+         El índice sale de la geometría de la fila, fiable aunque el muelle siga en marcha */
+      const G = geom(), wr = dexWell.getBoundingClientRect();
+      const rel = (e.clientX - (wr.left + wr.width / 2)) / (G.gap * .85);
+      const i = Math.max(0, Math.min(deck.length - 1, Math.round(posX + rel)));
+      if (i !== target) settle(i);
+      else playNudge();
     }
-    /* toque sin arrastre: el cartucho responde señalando la ranura */
-    if (ev === 'pointerup' && Math.abs(e.clientX - downX) + Math.abs(e.clientY - downY) < 7) playNudge();
-    dy = 0;
+    dragMode = null; dy = 0;
   }));
+  dexStage.addEventListener('wheel', e => {
+    if (dex.hidden || inserting) return;
+    e.preventDefault();
+    const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+    const now = performance.now();
+    if (Math.abs(d) < 10 || now - wheelAt < 240) return;
+    wheelAt = now;
+    settle(target + (d > 0 ? 1 : -1));
+  }, {passive:false});
 
   function insertCart(){
     if (!dexGame || inserting) return;
@@ -889,24 +1029,28 @@
     try{ localStorage.setItem('gb-metido','1'); }catch(e){}
     dex.classList.remove('nudge'); clearTimeout(nudgeTimer);
     dex.classList.add('ready');
-    const c = dexHolder.querySelector('.cart');
+    cancelAnimationFrame(animId);
+    posX = target; lastTick = target; render(); /* clavado al centro antes de tragarlo */
+    const it = items[target];
+    const c = it?.querySelector('.cart'), lift = it?.querySelector('.lift');
     if (c){
-      /* alinearlo por el camino corto, aunque le hayan dado tres vueltas */
-      let r = c.style.transform ? rotY % 360 : cartAngle(c);
-      if (r > 180) r -= 360; if (r < -180) r += 360;
-      dexWell.classList.add('grabbed');
+      /* alinear la cara al frente por el camino corto, venga del giro que venga */
+      const r = cartAngle(c);
+      c.style.animation = 'none';
       c.style.transition = 'none';
-      setCart(c, dy, r);
+      c.style.transform = `rotateX(6deg) rotateY(${r.toFixed(1)}deg)`;
       void c.offsetWidth;
       c.style.transition = 'transform .2s ease';
-      setCart(c, Math.max(0, dy - 12), 0);
+      c.style.transform = 'rotateX(0deg) rotateY(0deg)';
+      lift.style.transition = 'transform .2s ease';
+      lift.style.transform = `translateY(${Math.max(0, dy - 12).toFixed(1)}px)`;
     }
     dexTimers.push(setTimeout(() => {
       dex.classList.add('inserting');
       sfx('clack', .42);
-      if (c){ /* pequeño impulso hacia arriba y a la ranura */
-        c.style.transition = 'transform .48s cubic-bezier(.6,-.28,.9,.5)';
-        c.style.transform = 'translateY(460px) rotateX(0deg) rotateY(0deg)';
+      if (lift){ /* pequeño impulso hacia arriba y a la ranura */
+        lift.style.transition = 'transform .48s cubic-bezier(.6,-.28,.9,.5)';
+        lift.style.transform = 'translateY(460px)';
       }
       /* el chime suena justo cuando el logo aterriza; se abre tras el destello de colores */
       dexTimers.push(setTimeout(() => { dex.classList.add('booting'); sfx('boot', .78); }, 720));
@@ -928,6 +1072,11 @@
   $('#dex-back').addEventListener('click', closeDex);
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && !dex.hidden){ closeDex(); return; }
+    if (!dex.hidden && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')){
+      e.preventDefault();
+      settle(target + (e.key === 'ArrowRight' ? 1 : -1));
+      return;
+    }
     if ((e.key === 'Enter' || e.key === ' ') && document.activeElement?.matches?.('.slot3d[role="button"]')){
       e.preventDefault();
       const g = GAMES.find(x => x.name === document.activeElement.dataset.name);
@@ -949,6 +1098,8 @@
         o.start(t); o.stop(t + dur + .02);
       };
       if (kind === 'clack'){ note(150, t0, .06, .06); note(85, t0 + .05, .09, .07); }
+      /* el "clac" de hojear la caja de cartuchos */
+      if (kind === 'tick'){ note(1250, t0, .03, .028); note(720, t0 + .025, .04, .03); }
       /* el "ba-DING" del arranque: dos notas cuadradas a una octava, la segunda larga */
       if (kind === 'boot'){ note(1046.5, t0, .07, .05); note(2093, t0 + .085, .55, .05); }
     }catch(e){}
