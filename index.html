@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🕹️ gavilanbe//arcade — 59 juegos hechos a mano</title>
-<meta name="description" content="El salón recreativo de gavilanbe: 59 juegos hechos a mano — pixel art, mundos 3D, roguelikes de terminal y homebrew de Game Boy. Elige un cartucho, mételo en la consola y juega en tu navegador.">
+<title>🕹️ gavilanbe//arcade — 61 juegos hechos a mano</title>
+<meta name="description" content="El salón recreativo de gavilanbe: 61 juegos hechos a mano — pixel art, mundos 3D, roguelikes de terminal y homebrew de Game Boy. Elige un cartucho, mételo en la consola y juega en tu navegador.">
 <meta name="theme-color" content="#E7E3D8">
-<meta property="og:title" content="gavilanbe//arcade — 59 juegos hechos a mano">
+<meta property="og:title" content="gavilanbe//arcade — 61 juegos hechos a mano">
 <meta property="og:description" content="Pixel art, mundos 3D, terminal y homebrew de Game Boy. Elige un cartucho, mételo en la consola y juega al instante.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="gavilanbe//arcade">
@@ -594,7 +594,7 @@
     <div class="hero-copy">
       <p class="eyebrow">Colección de juegos · de la terminal a Game Boy</p>
       <h1>gavilanbe<span class="slash">//</span>arcade</h1>
-      <p class="thesis"><b id="total-b">59</b> juegos hechos a mano: pixel art, mundos 3D,
+      <p class="thesis"><b id="total-b">61</b> juegos hechos a mano: pixel art, mundos 3D,
         rogue­likes de terminal y homebrew de Game Boy. <b>Muchos se juegan aquí mismo</b>,
         sin instalar nada.</p>
       <p class="hero-stats" id="hero-stats"></p>
@@ -705,7 +705,7 @@
   const firstEmoji = s => { const m = [...s].find(c => /\p{Extended_Pictographic}/u.test(c)); return m || '🎮'; };
   const stripEmoji = s => s.replace(/^\s*\p{Extended_Pictographic}[️‍]*\s*/u, '');
 
-  const FEATURED = ['bitxo','sprout-game','nahugavi','gacha-zoo','libreta','makinamon','doodli','chef-game','poke-autobattler','short-hike-demo'];
+  const FEATURED = ['spore-quest','rana-gba','bitxo','sprout-game','nahugavi','gacha-zoo','libreta','makinamon','doodli','chef-game','poke-autobattler','short-hike-demo'];
   const rk = n => { const i = FEATURED.indexOf(n); return i < 0 ? 999 : i; };
 
   const webGames  = GAMES.filter(g => g.type === 'web').sort((a,b) => rk(a.name)-rk(b.name) || a.title.localeCompare(b.title));

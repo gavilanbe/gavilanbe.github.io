@@ -33,7 +33,6 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/bitxo",
     "thumb": "thumbs/bitxo.jpg",
     "wip": false,
-    "new": true,
     "kind": "juego",
     "model": "fable"
   },
@@ -494,6 +493,19 @@ const GAMES = [
     "model": "opus-4.7"
   },
   {
+    "name": "rana-gba",
+    "title": "🐸 RANA vs MOSQUITOS",
+    "tagline": "Defiende las flores del nenúfar: estira la lengua como un tirachinas y caza mosquitos. Fake-GBA 240×160 rasterizado a mano, sin un solo asset.",
+    "type": "web",
+    "play": "https://gavilanbe.github.io/rana-gba/",
+    "repo": "https://github.com/gavilanbe/rana-gba",
+    "thumb": "thumbs/rana-gba.jpg",
+    "wip": false,
+    "new": true,
+    "kind": "juego",
+    "model": "fable"
+  },
+  {
     "name": "ranota",
     "title": "🐸 RaNota",
     "tagline": "Eres una rana voxel en un mundo cúbico. Salta, mira alrededor y caza moscas con la lengua.",
@@ -576,6 +588,19 @@ const GAMES = [
     "wip": false,
     "kind": "juego",
     "model": "opus-4.6"
+  },
+  {
+    "name": "spore-quest",
+    "title": "🍄 SPORE QUEST · El Oráculo de las Estaciones",
+    "tagline": "Roguelike GBC con carcasa Seta Boy: 4 estaciones que recolorean el mundo y transponen la música, mejoras de nivel y Rey Moho cada 8 salas.",
+    "type": "web",
+    "play": "https://gavilanbe.github.io/spore-quest/",
+    "repo": "https://github.com/gavilanbe/spore-quest",
+    "thumb": "thumbs/spore-quest.jpg",
+    "wip": false,
+    "new": true,
+    "kind": "juego",
+    "model": "fable"
   },
   {
     "name": "sprout-game",
