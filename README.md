@@ -17,10 +17,14 @@ un juego al azar.
 
 Cada juego web es un **cartucho 3D flotante** (CSS puro): la carcasa delata su
 chip — nácar tornasolado para Fable; oro, plata y bronce para Opus — con tilt
-que sigue al ratón y brillo especular. Al tocarlo se abre su **ficha**, y al
-darle a *«Meter el cartucho»* se inserta en la ranura de la consola, arranca la
-pantalla verde `gavilanbe®` con su chime chiptune (Web Audio) y el juego se abre
-en otra pestaña.
+que sigue al ratón y brillo especular. Al tocarlo se abre su **ficha**: el
+cartucho gira en una sala oscura sobre la **ranura de carga** de la consola,
+que es el propio botón de jugar. Arrástralo hasta la ranura (se enciende al
+acercarse) o toca la ranura: la consola lo traga, arranca el destello
+`GAVILANBE games™` estilo Game Boy Color con su chime chiptune (Web Audio) y el
+juego se abre en otra pestaña. Si no está claro dónde va, el cartucho hace una
+pequeña reverencia hacia la ranura al abrir la ficha (hasta tu primera
+inserción) o al tocarlo.
 
 El diseño está inspirado en el chasis de la Game Boy DMG: plástico cálido,
 bisel oscuro de pantalla, botón A magenta, ficha dorada y verde oliva para la
