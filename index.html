@@ -468,35 +468,68 @@
   .mchip.o48{background:rgba(217,154,43,.16); color:#8A5F14; border:1px solid rgba(138,95,20,.4)}
   .mchip.o47{background:rgba(91,100,112,.11); color:#5B6470; border:1px solid rgba(91,100,112,.38)}
   .mchip.o46{background:rgba(160,98,54,.12); color:#7A4B2A; border:1px solid rgba(122,75,42,.38)}
-  .term .mchip{position:absolute; top:14px; right:14px}
-  .term .mchip.o48{background:rgba(233,172,59,.14); color:#E9AC3B; border-color:rgba(233,172,59,.4)}
-  .term .mchip.o47{background:rgba(185,194,206,.12); color:#B9C2CE; border-color:rgba(185,194,206,.35)}
-  .term .mchip.o46{background:rgba(214,154,110,.12); color:#D69A6E; border-color:rgba(214,154,110,.4)}
+  .crt .mchip.o48{background:rgba(233,172,59,.14); color:#E9AC3B; border-color:rgba(233,172,59,.4)}
+  .crt .mchip.o47{background:rgba(185,194,206,.12); color:#B9C2CE; border-color:rgba(185,194,206,.35)}
+  .crt .mchip.o46{background:rgba(214,154,110,.12); color:#D69A6E; border-color:rgba(214,154,110,.4)}
 
   .grid{display:grid; gap:16px; grid-template-columns:repeat(auto-fill,minmax(248px,1fr))}
 
-  /* cartas de terminal: pantalla oliva, tipografía mono */
-  .tgrid{display:grid; gap:14px; grid-template-columns:repeat(auto-fill,minmax(290px,1fr))}
-  .term{
-    position:relative; display:flex; gap:14px; align-items:flex-start;
-    background:var(--screen-ink); border-radius:12px; padding:16px;
-    border:1px solid #31381F;
-    box-shadow:0 1px 0 rgba(184,196,138,.14) inset;
-    transition:transform .18s, box-shadow .18s;
-  }
-  .term:hover{transform:translateY(-3px); box-shadow:0 1px 0 rgba(184,196,138,.14) inset, 0 16px 26px -16px rgba(32,37,26,.8)}
-  .term .icon{
-    flex:none; width:46px; height:46px; border-radius:9px; background:rgba(147,162,75,.16);
-    border:1px solid rgba(147,162,75,.35);
-    display:flex; align-items:center; justify-content:center; font-size:24px;
-  }
-  .term .cmd{font-family:'IBM Plex Mono',monospace; font-size:13.5px; font-weight:500; color:var(--screen-dim); word-break:break-all; padding-right:76px}
-  .term .cmd::before{content:"$ "; color:var(--screen)}
-  .term .cmd a::after{content:""; position:absolute; inset:0}
-  .term .tagline{color:#8A9377; font-size:12.5px; margin-top:4px;
-    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
-  .term .lang{font-family:'IBM Plex Mono',monospace; font-size:10.5px; letter-spacing:.1em;
-    color:var(--screen); margin-top:8px}
+  /* ============ la sala de máquinas: un monitor CRT encendido por juego ============ */
+  .tgrid{display:grid; gap:34px 22px; grid-template-columns:repeat(auto-fill,minmax(248px,1fr)); padding-top:14px}
+  .crt{position:relative; perspective:700px}
+  .crt::after{ /* sombra en el suelo de la sala */
+    content:""; position:absolute; left:15%; right:15%; bottom:-16px; height:12px; border-radius:50%;
+    background:radial-gradient(ellipse, rgba(0,0,0,.55), transparent 70%)}
+  .crt-body{position:relative; padding:11px 11px 0; border-radius:13px 13px 10px 10px;
+    background:linear-gradient(172deg,#3A404B,#262B33 55%,#1D2126);
+    border:1px solid #14171B;
+    box-shadow:inset 0 1px 0 rgba(242,240,228,.09), inset 0 -2px 0 rgba(0,0,0,.35),
+      0 16px 30px -20px rgba(0,0,0,.85);
+    transition:transform .18s ease-out; will-change:transform}
+  .crt-body::after{ /* la peana */
+    content:""; position:absolute; left:50%; bottom:-9px; transform:translateX(-50%);
+    width:44%; height:9px; border-radius:0 0 9px 9px;
+    background:linear-gradient(180deg,#262B33,#171A1F);
+    border:1px solid #14171B; border-top:0}
+  .crt .scr{position:relative; height:156px; border-radius:9px; overflow:hidden;
+    background:radial-gradient(115% 90% at 50% 42%, #2C351F 0%, #222A18 58%, #161C0F 100%);
+    box-shadow:inset 0 0 34px rgba(0,0,0,.78), 0 0 0 2px #101318, 0 0 16px rgba(147,162,75,.07);
+    transition:box-shadow .25s}
+  .crt:hover .scr, .crt:focus-within .scr{
+    box-shadow:inset 0 0 30px rgba(0,0,0,.72), 0 0 0 2px #101318, 0 0 26px rgba(147,162,75,.22)}
+  .crt .shot{ /* el TUI del juego, teñido de fósforo; se renderiza al "ejecutar" */
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; z-index:1;
+    filter:grayscale(1) sepia(.9) hue-rotate(44deg) saturate(1.5) brightness(.85) contrast(1.08);
+    transition:opacity .4s}
+  .crt.ran .shot{opacity:.9}
+  .crt .tty{position:relative; z-index:2; margin:0; padding:11px 12px; height:100%; overflow:hidden;
+    font-family:'IBM Plex Mono',monospace; font-size:11.5px; line-height:1.65;
+    color:#9DA97F; white-space:pre-wrap; word-break:break-word; transition:opacity .35s}
+  .crt.ran .tty{opacity:0}
+  .crt .tty .pr{color:var(--screen)}
+  .crt .tty .cmd{color:var(--screen-dim); font-weight:500}
+  .crt .tty .tl{color:#D6DFB2}
+  .crt .cur{display:inline-block; width:.62em; height:1.05em; vertical-align:-.15em;
+    background:var(--screen); animation:ttyblink 1.1s steps(1) infinite}
+  @keyframes ttyblink{50%{opacity:0}}
+  .crt .glass{ /* cristal: scanlines, viñeta y reflejo que sigue al ratón */
+    position:absolute; inset:0; z-index:3; pointer-events:none; border-radius:9px;
+    background:
+      radial-gradient(190px 130px at var(--gx,72%) var(--gy,10%), rgba(242,240,228,.10), transparent 60%),
+      linear-gradient(115deg, rgba(255,255,255,.05) 0%, transparent 24%),
+      repeating-linear-gradient(180deg, rgba(0,0,0,.15) 0 1px, transparent 1px 3px);
+    box-shadow:inset 0 0 40px rgba(0,0,0,.5)}
+  .crt .cover{position:absolute; inset:0; z-index:4; border-radius:14px}
+  .crt .chin{position:relative; display:flex; align-items:center; gap:8px; padding:9px 3px 10px}
+  .crt .brand{font-family:'IBM Plex Mono',monospace; font-size:8.5px; letter-spacing:.2em; color:#7A828E}
+  .crt .chin .mchip{margin-left:auto; font-size:9px}
+  .crt .chin .led{width:7px; height:7px; border-radius:50%; flex:none;
+    background:#E4574A; box-shadow:0 0 8px rgba(228,87,74,.7); transition:background .2s, box-shadow .2s}
+  .crt:hover .chin .led, .crt:focus-within .chin .led{
+    background:#7AC74F; box-shadow:0 0 9px rgba(122,199,79,.9)}
+  .crt.in .scr{animation:crton .55s ease-out} /* se enciende al entrar en escena */
+  @keyframes crton{0%{transform:scaleY(.04); filter:brightness(5)}
+    55%{transform:scaleY(1.04); filter:brightness(1.6)} 100%{transform:scaleY(1); filter:brightness(1)}}
 
   .empty{
     display:none; text-align:center; color:#8B93A0; padding:70px 20px;
@@ -546,9 +579,10 @@
     html{scroll-behavior:auto}
     .wall-col{animation:none}
     .reveal{opacity:1; transform:none; transition:none}
-    .term{transition:none}
+    .crt-body, .crt .shot, .crt .tty{transition:none}
     .cart, .slot3d::after, .rowitem .cart, .tier-fable .fr, .tier-fable .bk{animation:none !important}
     .dock .cta b{animation:none}
+    .crt.in .scr, .crt .cur{animation:none}
     .cart{transition:none}
   }
 </style>
@@ -605,7 +639,7 @@
   </section>
 
   <section id="sec-term">
-    <div class="sec-head"><h2>Para tu terminal</h2><span class="rail"></span><span class="count" id="count-term"></span></div>
+    <div class="sec-head"><h2>La sala de máquinas</h2><span class="rail"></span><span class="count" id="count-term"></span></div>
     <div class="tgrid" id="grid-term"></div>
   </section>
 
@@ -699,7 +733,7 @@
     `<span><b>hoy en la máquina:</b> ${esc(stripEmoji(daily.title))}</span>`;
   $('#foot-count').textContent = `${GAMES.length} juegos · 2026`;
   $('#count-web').textContent = `${webGames.length} cartuchos`;
-  $('#count-term').textContent = `${termGames.length} juegos`;
+  $('#count-term').textContent = `${termGames.length} máquinas encendidas · el código vive en GitHub`;
 
   /* ---- muro de miniaturas del héroe ---- */
   const wallThumbs = [...webGames.filter(g => g.thumb)];
@@ -747,21 +781,74 @@
     return el;
   }
 
-  const LANGS = {rust:'RUST', python:'PYTHON', bash:'BASH', c:'C · GBDK'};
+  /* la sala de máquinas: cada juego de terminal es un CRT; al pasar por encima, se ejecuta */
+  const CANHOVER = matchMedia('(hover:hover) and (pointer:fine)').matches
+    && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const wrapLines = (s, w, max) => {
+    const words = String(s || '').trim().split(/\s+/), lines = [];
+    let cur = '';
+    for (const word of words){
+      if (cur && (cur + ' ' + word).length > w){
+        lines.push(cur);
+        if (lines.length === max){ lines[max-1] += '…'; return lines; }
+        cur = word;
+      } else cur = cur ? cur + ' ' + word : word;
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  };
+  const crtTimers = new WeakMap();
+  function crtRun(el){
+    if (el.dataset.run) return;
+    el.dataset.run = '1';
+    const out = el.querySelector('.out');
+    const lines = JSON.parse(el.dataset.out || '[]');
+    let i = 0; out.textContent = '';
+    const ts = [];
+    const put = () => {
+      if (i < lines.length){ out.textContent += lines[i++] + '\n'; ts.push(setTimeout(put, 85 + Math.random()*70)); }
+      else ts.push(setTimeout(() => el.classList.add('ran'), 300)); /* ...y el TUI se renderiza */
+    };
+    ts.push(setTimeout(put, 130));
+    crtTimers.set(el, ts);
+  }
+  function crtStop(el){
+    (crtTimers.get(el) || []).forEach(clearTimeout);
+    crtTimers.delete(el);
+    el.classList.remove('ran');
+    el.querySelector('.out').textContent = '';
+    delete el.dataset.run;
+  }
   function termCard(g){
     const el = document.createElement('article');
-    el.className = 'term reveal';
+    el.className = 'crt reveal';
     el.dataset.search = (g.name+' '+g.title+' '+g.tagline+' '+g.model).toLowerCase();
     el.dataset.type = 'terminal';
     el.dataset.model = g.model;
+    el.dataset.out = JSON.stringify(wrapLines(stripEmoji(g.tagline || g.title), 34, 3));
+    const shot = g.thumb ? `<img class="shot" src="${esc(g.thumb)}" alt="" loading="lazy">` : '';
     el.innerHTML = `
-      <div class="icon" aria-hidden="true">${firstEmoji(g.title)}</div>
-      <div>
-        <p class="cmd"><a href="${esc(g.repo)}" target="_blank" rel="noopener">./${esc(g.name)}</a></p>
-        <p class="tagline">${esc(stripEmoji(g.tagline||g.title))}</p>
-        <p class="lang">VER CÓDIGO ↗</p>
+      <div class="crt-body">
+        <div class="scr">${shot}<pre class="tty"><span class="pr">$ </span><span class="cmd">./${esc(g.name)}</span>
+<span class="tl">${firstEmoji(g.title)} ${esc(stripEmoji(g.title))}</span>
+<span class="out"></span><span class="cur" aria-hidden="true"></span></pre><i class="glass" aria-hidden="true"></i></div>
+        <div class="chin">
+          <span class="brand">GAVILANBE™ TTY</span>
+          ${mchip(g)}
+          <i class="led" aria-hidden="true"></i>
+        </div>
       </div>
-      ${mchip(g)}`;
+      <a class="cover" href="${esc(g.repo)}" target="_blank" rel="noopener"
+        aria-label="Ver el código de ${esc(stripEmoji(g.title))} en GitHub"></a>`;
+    if (CANHOVER){
+      el.addEventListener('mouseenter', () => crtRun(el));
+      el.addEventListener('mouseleave', () => crtStop(el));
+      el.addEventListener('focusin', () => crtRun(el));
+      el.addEventListener('focusout', () => crtStop(el));
+    } else { /* sin hover: la máquina ya está ejecutada, con su salida y el TUI tenue */
+      el.querySelector('.out').textContent = JSON.parse(el.dataset.out).join('\n') + '\n';
+      el.querySelector('.shot')?.style.setProperty('opacity', '.28');
+    }
     return el;
   }
 
@@ -771,27 +858,45 @@
   webGames.forEach((g,i) => gw.appendChild(cartSlot(g, false, i+1)));
   termGames.forEach(g => gt.appendChild(termCard(g)));
 
-  /* ---- tilt 3D: el cartucho sigue al ratón ---- */
+  /* ---- tilt 3D: cartuchos y monitores siguen al ratón ---- */
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (!reduce && matchMedia('(pointer:fine)').matches){
     const MAXT = 11;
     document.addEventListener('pointermove', e => {
       const s = e.target.closest('.slot3d');
-      if (!s || s.closest('.cartwell')) return;
-      const c = s.querySelector('.cart'); if (!c) return;
-      const r = s.getBoundingClientRect();
-      const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
-      c.style.animation = 'none';
-      c.style.transform = `translateY(-10px) scale(1.05) rotateX(${((.5-y)*2*MAXT).toFixed(2)}deg) rotateY(${((x-.5)*2*MAXT).toFixed(2)}deg)`;
-      const b = c.querySelector('.fr');
-      b.style.setProperty('--gx', (x*100).toFixed(1)+'%');
-      b.style.setProperty('--gy', (y*100).toFixed(1)+'%');
+      if (s && !s.closest('.cartwell')){
+        const c = s.querySelector('.cart'); if (!c) return;
+        const r = s.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+        c.style.animation = 'none';
+        c.style.transform = `translateY(-10px) scale(1.05) rotateX(${((.5-y)*2*MAXT).toFixed(2)}deg) rotateY(${((x-.5)*2*MAXT).toFixed(2)}deg)`;
+        const b = c.querySelector('.fr');
+        b.style.setProperty('--gx', (x*100).toFixed(1)+'%');
+        b.style.setProperty('--gy', (y*100).toFixed(1)+'%');
+        return;
+      }
+      const k = e.target.closest('.crt');
+      if (k){ /* un monitor pesa: se inclina poco, pero el reflejo del cristal baila */
+        const b = k.querySelector('.crt-body'), r = k.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+        b.style.transform = `translateY(-4px) rotateX(${((.5-y)*7).toFixed(2)}deg) rotateY(${((x-.5)*7).toFixed(2)}deg)`;
+        const gl = k.querySelector('.glass');
+        gl.style.setProperty('--gx', (x*100).toFixed(1)+'%');
+        gl.style.setProperty('--gy', (y*100).toFixed(1)+'%');
+      }
     }, {passive:true});
     document.addEventListener('pointerout', e => {
       const s = e.target.closest('.slot3d');
-      if (!s || s.closest('.cartwell') || (e.relatedTarget && s.contains(e.relatedTarget))) return;
-      const c = s.querySelector('.cart'); if (!c) return;
-      c.style.transform = ''; c.style.animation = '';
+      if (s && !s.closest('.cartwell') && !(e.relatedTarget && s.contains(e.relatedTarget))){
+        const c = s.querySelector('.cart'); if (!c) return;
+        c.style.transform = ''; c.style.animation = '';
+        return;
+      }
+      const k = e.target.closest('.crt');
+      if (k && !(e.relatedTarget && k.contains(e.relatedTarget))){
+        const b = k.querySelector('.crt-body');
+        if (b) b.style.transform = '';
+      }
     }, {passive:true});
   }
 

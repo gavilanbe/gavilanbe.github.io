@@ -26,9 +26,15 @@ juego se abre en otra pestaña. Si no está claro dónde va, el cartucho hace un
 pequeña reverencia hacia la ranura al abrir la ficha (hasta tu primera
 inserción) o al tocarlo.
 
+Los juegos de terminal viven en **la sala de máquinas**: cada uno es un
+monitor CRT encendido — fósforo verde, scanlines, reflejo en el cristal y LED —
+que al pasar el ratón **ejecuta su programa**: imprime la descripción línea a
+línea y renderiza su TUI real teñido de fósforo. Al entrar en pantalla, los
+monitores se encienden con el destello CRT clásico. Clic → su código en GitHub.
+
 El diseño está inspirado en el chasis de la Game Boy DMG: plástico cálido,
 bisel oscuro de pantalla, botón A magenta, ficha dorada y verde oliva para la
-sección de terminal. Tipografía: Unbounded + IBM Plex Sans/Mono.
+sala de máquinas. Tipografía: Unbounded + IBM Plex Sans/Mono.
 
 ## Añadir un juego
 
