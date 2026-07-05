@@ -329,19 +329,28 @@
   .cartwell:active{cursor:grabbing}
   .dexrow{position:absolute; inset:0; transform-style:preserve-3d}
   .rowitem{position:absolute; left:50%; top:50%; width:210px;
-    transform-style:preserve-3d; will-change:transform, opacity}
+    transform-style:preserve-3d; will-change:transform}
   .rowitem .lift{transform-style:preserve-3d}
   .rowitem .cart{--dz:14px}
-  /* penumbra de los vecinos: overlay compositado (solo opacidad, nada de filter) */
+  /* penumbra de los vecinos: overlay compositado (solo opacidad, nada de filter).
+     A z=40 queda por delante de las caras estáticas y no las interseca (WebKit parte
+     los planos que se cruzan y en iOS lo pinta mal) */
   .rowitem .dim{position:absolute; inset:-2px; z-index:5; border-radius:12px;
     background:#0b0e13; opacity:0; pointer-events:none;
-    transform:translateZ(16px); will-change:opacity}
+    transform:translateZ(40px); will-change:opacity}
   .rowitem.center .cart{animation:spin 16s linear infinite}
   .rowitem:not(.center) .cart{animation:none; transform:rotateX(6deg)}
   /* fuera del centro, los acabados animados descansan (nácar y foil repintan) */
   .rowitem:not(.center) .fr, .rowitem:not(.center) .bk,
   .rowitem:not(.center) .mchip.fable{animation:none}
   @keyframes spin{from{transform:rotateX(6deg) rotateY(0)}to{transform:rotateX(6deg) rotateY(360deg)}}
+  /* táctil: el central no gira (WebKit iOS descompone el preserve-3d cuando el padre
+     lleva una animación de transform: las caras laterales se pintan sueltas) y los
+     acabados animados descansan también en el centro — menos raster por frame */
+  @media (hover:none){
+    .rowitem.center .cart{animation:none; transform:rotateX(6deg)}
+    .rowitem .fr, .rowitem .bk, .rowitem .mchip.fable{animation:none}
+  }
   .rowitem::after{ /* sombra en el suelo de la sala; crece cuando bajas el cartucho */
     content:""; position:absolute; left:10%; right:10%; bottom:-30px; height:14px; border-radius:50%;
     background:radial-gradient(ellipse, rgba(0,0,0,.65), transparent 68%);
@@ -436,7 +445,10 @@
     letter-spacing:.18em; text-transform:uppercase; color:var(--coin-dark); margin-bottom:2px}
   @media (max-width:760px){
     .dex{padding:10px}
-    .dex-card{grid-template-columns:1fr; max-height:94vh; overflow:auto}
+    /* la ficha no es un scroller que envuelva la escena 3D (iOS pinta mal el preserve-3d
+       dentro de overflow:auto): el escenario queda fijo y solo la info scrollea */
+    .dex-card{grid-template-columns:1fr; grid-template-rows:minmax(330px,auto) minmax(0,1fr);
+      max-height:94vh; overflow:hidden}
     .dex-stage{min-height:330px}
     .cartwell{top:30px; bottom:84px}
     .rowitem{width:150px}
@@ -559,6 +571,14 @@
   footer a:hover{color:var(--ink); border-color:var(--play)}
 
   .hidden{display:none !important}
+
+  /* con la ficha abierta, el salón de detrás se congela: los 34 cartuchos flotando,
+     el nácar, el foil y el muro del héroe no compiten con el carrusel en cada frame */
+  body.dexopen .wall-col,
+  body.dexopen .room .cart, body.dexopen .room .slot3d::after,
+  body.dexopen .room .fr, body.dexopen .room .bk,
+  body.dexopen .room .mchip.fable, body.dexopen footer .mchip.fable,
+  body.dexopen .deck .chip.m-fable{animation-play-state:paused}
 
   /* aparición al hacer scroll */
   .reveal{opacity:0; transform:translateY(14px); transition:opacity .5s, transform .5s}
@@ -938,6 +958,7 @@
     if (items[i]) return items[i];
     const el = document.createElement('div');
     el.className = 'rowitem';
+    el.style.display = 'none'; /* nace oculto: render() lo coloca y lo enseña cuando asome */
     const lift = document.createElement('div');
     lift.className = 'lift';
     lift.appendChild(cartSlot(deck[i], Math.abs(i - target) < 3).querySelector('.cart'));
@@ -949,7 +970,9 @@
     return el;
   }
   function render(){
-    const G = geom(), R = MOBQ.matches ? 2.6 : 4; /* en móvil, ventana más corta */
+    /* la ventana justa: más allá de ±2 el pozo ya los recorta, tenerlos vivos solo cuesta capas.
+       Nada de opacity fraccionaria en .rowitem: aplana el preserve-3d (spec) y iOS lo pinta roto */
+    const G = geom(), R = MOBQ.matches ? 2 : 2.4;
     const lo = Math.max(0, Math.floor(posX - R)), hi = Math.min(deck.length - 1, Math.ceil(posX + R));
     for (let i = 0; i < items.length; i++){
       if (items[i] && (i < lo || i > hi)) items[i].style.display = 'none';
@@ -961,7 +984,6 @@
       el.style.transform = `translate(-50%,-50%) translateX(${(o*G.gap).toFixed(1)}px)`
         + ` translateZ(${(-a*G.z).toFixed(1)}px)`
         + ` rotateY(${(Math.max(-1, Math.min(1, -o))*G.rot).toFixed(1)}deg)`;
-      el.style.opacity = Math.max(0, Math.min(1, 1.9 - a*.42)).toFixed(2);
       /* penumbra por overlay compositado: nada de filter por frame */
       el.lastChild.style.opacity = (Math.min(a, 1.6)*.30).toFixed(2);
       el.style.zIndex = 40 - Math.round(a*4);
@@ -1043,6 +1065,7 @@
     setInfo(g, true);
     dex.hidden = false;
     document.body.style.overflow = 'hidden';
+    document.body.classList.add('dexopen');
     dexDock.focus({preventScroll:true});
     if (autoplay) dexTimers.push(setTimeout(insertCart, 650));
     else if (!knowsInsert()) dexTimers.push(setTimeout(playNudge, 900));
@@ -1054,6 +1077,7 @@
     dex.classList.remove('inserting','booting','ready','nudge');
     dexInfo.classList.remove('swap');
     document.body.style.overflow = '';
+    document.body.classList.remove('dexopen');
     dexGame = null; inserting = false; dragging = false; dragMode = null; posV = 0;
   }
 
