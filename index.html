@@ -291,6 +291,9 @@
   .dex{position:fixed; inset:0; z-index:60; display:flex; align-items:center; justify-content:center; padding:18px}
   .dex[hidden]{display:none}
   .dex-back{position:absolute; inset:0; background:rgba(32,36,42,.58); backdrop-filter:blur(6px)}
+  @media (hover:none), (max-width:760px){
+    .dex-back{backdrop-filter:none; background:rgba(26,29,35,.85)}
+  }
   .dex-card{
     position:relative; width:min(960px,100%); max-height:min(92vh,660px);
     display:grid; grid-template-columns:minmax(300px,1fr) minmax(0,1.05fr);
@@ -326,11 +329,18 @@
   .cartwell:active{cursor:grabbing}
   .dexrow{position:absolute; inset:0; transform-style:preserve-3d}
   .rowitem{position:absolute; left:50%; top:50%; width:210px;
-    transform-style:preserve-3d; will-change:transform, opacity, filter}
+    transform-style:preserve-3d; will-change:transform, opacity}
   .rowitem .lift{transform-style:preserve-3d}
   .rowitem .cart{--dz:14px}
+  /* penumbra de los vecinos: overlay compositado (solo opacidad, nada de filter) */
+  .rowitem .dim{position:absolute; inset:-2px; z-index:5; border-radius:12px;
+    background:#0b0e13; opacity:0; pointer-events:none;
+    transform:translateZ(16px); will-change:opacity}
   .rowitem.center .cart{animation:spin 16s linear infinite}
   .rowitem:not(.center) .cart{animation:none; transform:rotateX(6deg)}
+  /* fuera del centro, los acabados animados descansan (nácar y foil repintan) */
+  .rowitem:not(.center) .fr, .rowitem:not(.center) .bk,
+  .rowitem:not(.center) .mchip.fable{animation:none}
   @keyframes spin{from{transform:rotateX(6deg) rotateY(0)}to{transform:rotateX(6deg) rotateY(360deg)}}
   .rowitem::after{ /* sombra en el suelo de la sala; crece cuando bajas el cartucho */
     content:""; position:absolute; left:10%; right:10%; bottom:-30px; height:14px; border-radius:50%;
@@ -688,7 +698,7 @@
       <h3 id="dex-title"></h3>
       <div class="dexmeta" id="dex-meta"></div>
       <p class="tagline2" id="dex-tag"></p>
-      <div class="dex-shot" id="dex-shot"><img id="dex-img" alt=""></div>
+      <div class="dex-shot" id="dex-shot"><img id="dex-img" alt="" decoding="async"></div>
       <div class="dex-actions">
         <p class="howto"><b>Cómo jugar</b>Lleva el cartucho hasta la ranura de carga — o toca la ranura — y la consola arranca sola.</p>
         <a class="repo" id="dex-repo" target="_blank" rel="noopener">ver código ↗</a>
@@ -918,40 +928,65 @@
       .map(el => webGames.find(x => x.name === el.dataset.name)).filter(Boolean);
     return vis.some(x => x.name === g.name) ? vis : [g];
   }
+  /* la fila es perezosa: cada cartucho se construye la primera vez que asoma.
+     Abrir la ficha ya no fabrica 32 cartuchos (ni dispara 32 imágenes) de golpe. */
   function buildRow(){
     dexRow.replaceChildren();
-    items = deck.map(g => {
-      const el = document.createElement('div');
-      el.className = 'rowitem';
-      const lift = document.createElement('div');
-      lift.className = 'lift';
-      lift.appendChild(cartSlot(g, true).querySelector('.cart'));
-      el.appendChild(lift);
-      dexRow.appendChild(el);
-      return el;
-    });
+    items = deck.map(() => null);
+  }
+  function ensureItem(i){
+    if (items[i]) return items[i];
+    const el = document.createElement('div');
+    el.className = 'rowitem';
+    const lift = document.createElement('div');
+    lift.className = 'lift';
+    lift.appendChild(cartSlot(deck[i], Math.abs(i - target) < 3).querySelector('.cart'));
+    const dim = document.createElement('div');
+    dim.className = 'dim';
+    el.appendChild(lift); el.appendChild(dim);
+    dexRow.appendChild(el);
+    items[i] = el;
+    return el;
   }
   function render(){
-    const G = geom();
-    items.forEach((el, i) => {
+    const G = geom(), R = MOBQ.matches ? 2.6 : 4; /* en móvil, ventana más corta */
+    const lo = Math.max(0, Math.floor(posX - R)), hi = Math.min(deck.length - 1, Math.ceil(posX + R));
+    for (let i = 0; i < items.length; i++){
+      if (items[i] && (i < lo || i > hi)) items[i].style.display = 'none';
+    }
+    for (let i = lo; i <= hi; i++){
+      const el = ensureItem(i);
       const o = i - posX, a = Math.abs(o);
-      if (a > 4){ el.style.display = 'none'; return; }
       el.style.display = '';
       el.style.transform = `translate(-50%,-50%) translateX(${(o*G.gap).toFixed(1)}px)`
         + ` translateZ(${(-a*G.z).toFixed(1)}px)`
         + ` rotateY(${(Math.max(-1, Math.min(1, -o))*G.rot).toFixed(1)}deg)`;
       el.style.opacity = Math.max(0, Math.min(1, 1.9 - a*.42)).toFixed(2);
-      el.style.filter = `brightness(${(1 - Math.min(a, 1.6)*.33).toFixed(2)})`;
+      /* penumbra por overlay compositado: nada de filter por frame */
+      el.lastChild.style.opacity = (Math.min(a, 1.6)*.30).toFixed(2);
       el.style.zIndex = 40 - Math.round(a*4);
       el.classList.toggle('center', a < .5);
-    });
+    }
   }
-  function animate(){ /* muelle hacia el objetivo, con "clac" al cruzar cada cartucho */
+  let renderReq = 0;
+  function scheduleRender(){ /* coalesce: el arrastre tactil dispara pointermove a >60Hz */
+    if (!renderReq) renderReq = requestAnimationFrame(() => { renderReq = 0; render(); });
+  }
+  let animTs = 0;
+  function animate(){ /* muelle exponencial independiente del framerate */
     cancelAnimationFrame(animId);
-    const step = () => {
+    animTs = 0;
+    const step = (ts) => {
+      if (!animTs) animTs = ts;
+      const dt = Math.min(0.05, (ts - animTs) / 1000); animTs = ts;
       const d = target - posX;
-      if (Math.abs(d) < .0015){ posX = target; render(); return; }
-      posX += d * .16;
+      if (Math.abs(d) < .0015){
+        posX = target; render();
+        const idle = window.requestIdleCallback || (f => setTimeout(f, 120));
+        idle(() => { for (let j = Math.max(0, target-4); j <= Math.min(deck.length-1, target+4); j++) ensureItem(j); });
+        return;
+      }
+      posX += d * (1 - Math.exp(-11 * dt));
       const idx = Math.round(posX);
       if (idx !== lastTick){ lastTick = idx; sfx('tick'); }
       render();
@@ -983,6 +1018,7 @@
   }
   function settle(i){ /* fija el objetivo y deja que el muelle lo traiga al centro */
     i = Math.max(0, Math.min(deck.length - 1, i));
+    for (let j = Math.max(0, i-2); j <= Math.min(deck.length-1, i+2); j++) ensureItem(j);
     if (i !== target){
       target = i;
       dex.classList.remove('nudge','ready'); clearTimeout(nudgeTimer);
@@ -999,7 +1035,9 @@
     target = Math.max(0, deck.findIndex(x => x.name === g.name));
     posX = target; lastTick = target;
     dex.classList.toggle('solo', deck.length < 2);
-    buildRow(); render();
+    buildRow();
+    for (let j = Math.max(0, target-3); j <= Math.min(deck.length-1, target+3); j++) ensureItem(j);
+    render();
     setInfo(g, true);
     dex.hidden = false;
     document.body.style.overflow = 'hidden';
@@ -1022,7 +1060,7 @@
   let nudgeTimer = null;
   function playNudge(){
     if (reduce || inserting || dex.hidden) return;
-    const c = items[target]?.querySelector('.cart'); if (!c) return;
+    const c = deck.length ? ensureItem(target).querySelector('.cart') : null; if (!c) return;
     const wr = dexWell.getBoundingClientRect(), cr = c.getBoundingClientRect();
     dexStage.style.setProperty('--nudge', Math.max(50, (wr.bottom - cr.bottom) * .8).toFixed(0) + 'px');
     dex.classList.remove('nudge'); void dexStage.offsetWidth;
@@ -1054,7 +1092,7 @@
       if (Math.abs(dx) > 9 && Math.abs(dx) > Math.abs(dv)) dragMode = 'scroll';
       else if (dv > 12 && dv > Math.abs(dx)){
         dragMode = 'insert';
-        const c = items[target]?.querySelector('.cart');
+        const c = deck.length ? ensureItem(target).querySelector('.cart') : null;
         if (!c){ dragMode = 'scroll'; }
         else {
           const wr = dexWell.getBoundingClientRect(), cr = c.getBoundingClientRect();
@@ -1075,9 +1113,9 @@
       const idx = Math.max(0, Math.min(max, Math.round(posX)));
       if (idx !== lastTick){ lastTick = idx; sfx('tick'); }
       if (idx !== target){ target = idx; setInfo(deck[idx]); }
-      render();
+      scheduleRender();
     } else {
-      const it = items[target]; if (!it) return;
+      const it = deck.length ? ensureItem(target) : null; if (!it) return;
       dy = Math.max(0, (e.clientY - downY) * .92);
       it.querySelector('.lift').style.transform = `translateY(${Math.min(dy, insertGap + 30).toFixed(1)}px)`;
       it.style.setProperty('--k', Math.min(dy / insertGap, 1).toFixed(3));
