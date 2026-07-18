@@ -699,6 +699,18 @@ const GAMES = [
     "model": "opus-4.7"
   },
   {
+    "name": "terminal-mundo",
+    "title": "🌍 Terminal Mundo",
+    "tagline": "Aprende países, capitales y banderas embarcando en vuelos de un panel de salidas split-flap: millas, rangos de piloto y pasaporte con sellos.",
+    "type": "web",
+    "play": "https://gavilanbe.github.io/terminal-mundo/",
+    "repo": "https://github.com/gavilanbe/terminal-mundo",
+    "thumb": "thumbs/terminal-mundo.jpg",
+    "wip": false,
+    "kind": "juego",
+    "model": "fable"
+  },
+  {
     "name": "terminal-platformer",
     "title": "🟦 Terminal Platformer",
     "tagline": "Un plataformas clásico que vive enteramente en tu terminal — salta, esquiva y llega a la meta.",
