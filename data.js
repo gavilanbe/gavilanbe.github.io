@@ -394,7 +394,8 @@ const GAMES = [
     "thumb": "thumbs/nima.jpg",
     "wip": false,
     "new": true,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "fable"
   },
   {
     "name": "ofis",
@@ -430,7 +431,8 @@ const GAMES = [
     "thumb": "thumbs/pliego.jpg",
     "wip": false,
     "new": true,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "fable"
   },
   {
     "name": "plumo",
@@ -442,7 +444,8 @@ const GAMES = [
     "thumb": "thumbs/plumo.jpg",
     "wip": false,
     "new": true,
-    "kind": "juego"
+    "kind": "juego",
+    "model": "fable"
   },
   {
     "name": "png-to-svg-app",
