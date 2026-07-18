@@ -385,6 +385,18 @@ const GAMES = [
     "model": "fable"
   },
   {
+    "name": "nima",
+    "title": "🦊 LÁGRIMAS DE SOL",
+    "tagline": "Action-adventure estilo GBA a 240×160 nativo: pixel art píxel a píxel, espada con estela, cofres custodiados y el Rey Limo.",
+    "type": "web",
+    "play": "https://gavilanbe.github.io/nima/",
+    "repo": "https://github.com/gavilanbe/nima",
+    "thumb": "thumbs/nima.jpg",
+    "wip": false,
+    "new": true,
+    "kind": "juego"
+  },
+  {
     "name": "ofis",
     "title": "🏢 Chibi Office",
     "tagline": "Chibi Office es una experiencia isométrica relajante hecha al 100% con p5.js.",
@@ -407,6 +419,30 @@ const GAMES = [
     "wip": false,
     "kind": "juego",
     "model": "opus-4.7"
+  },
+  {
+    "name": "pliego",
+    "title": "📄 PLIEGO",
+    "tagline": "Mini-RPG de recortes de papel estilo Paper Mario: diorama pop-up, combates por turnos con timing y LA GRAPADORA como jefa final.",
+    "type": "web",
+    "play": "https://gavilanbe.github.io/pliego/",
+    "repo": "https://github.com/gavilanbe/pliego",
+    "thumb": "thumbs/pliego.jpg",
+    "wip": false,
+    "new": true,
+    "kind": "juego"
+  },
+  {
+    "name": "plumo",
+    "title": "💜 PLUMO",
+    "tagline": "Un plataformas tipo Kirby: flota hinchándote, aspira enemigos, copia sus poderes de fuego y chispa, y planta cara al Rey Gluto.",
+    "type": "web",
+    "play": "https://gavilanbe.github.io/plumo/",
+    "repo": "https://github.com/gavilanbe/plumo",
+    "thumb": "thumbs/plumo.jpg",
+    "wip": false,
+    "new": true,
+    "kind": "juego"
   },
   {
     "name": "png-to-svg-app",
