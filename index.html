@@ -497,7 +497,7 @@
   .dex.booting .console .off{opacity:0}
   @keyframes lcdon{0%{background:#6F7C33} 25%{background:#B9C48A} 50%{background:#A8B56F} 100%{background:#E3E8CF}}
   /* la pantalla grande: cuando el zoom termina, el LCD ocupa la sala a tamaño real (nítido) y arranca */
-  .gbboot{position:absolute; inset:0; z-index:6; padding:14px; background:#1B1E23; visibility:hidden; opacity:0}
+  .gbboot{position:absolute; inset:0; z-index:6; padding:14px; background:#1B1E23; visibility:hidden; opacity:0; container-type:inline-size}
   .dex.booting .gbboot{animation:bootshow .12s linear .68s forwards}
   @keyframes bootshow{to{visibility:visible; opacity:1}}
   .gbboot .lcd2{position:relative; width:100%; height:100%; border-radius:6px; overflow:hidden; background:#E3E8CF;
@@ -506,29 +506,47 @@
   .gbboot .lcd2::before{content:""; position:absolute; inset:0; z-index:3; pointer-events:none; opacity:.5;
     background:repeating-linear-gradient(0deg, rgba(0,0,0,.08) 0 1px, transparent 1px 3px), repeating-linear-gradient(90deg, rgba(0,0,0,.06) 0 1px, transparent 1px 3px)}
   .gbboot .lcd2::after{content:""; position:absolute; inset:0; z-index:4; pointer-events:none; background:linear-gradient(115deg, rgba(255,255,255,.18) 0%, transparent 30%)}
-  .gba{position:relative; z-index:2; text-align:center; opacity:0}
-  .dex.booting .gba{animation:gbain .32s cubic-bezier(.2,.9,.3,1.3) .86s forwards}
-  @keyframes gbain{from{opacity:0; transform:translateY(-18px) scale(.92)} to{opacity:1; transform:none}}
-  .gba .logo{position:relative; display:inline-block; font:700 clamp(30px,7.5vw,50px)/1 'Unbounded',sans-serif; letter-spacing:.01em; color:#1C2C8A;
-    -webkit-text-stroke:1.5px #7DA2E8; paint-order:stroke fill; text-shadow:0 2px 0 rgba(255,255,255,.55)}
-  .gba .logo .sh{ /* el barrido arcoíris que recorre las letras, como el de la GBA: texto degradado bajo una máscara que viaja */
-    position:absolute; left:0; top:0; color:transparent; -webkit-text-stroke:0; text-shadow:none; pointer-events:none;
-    background:linear-gradient(100deg,#FF6B8A,#FFD166 25%,#7BE495 50%,#5EC8FF 75%,#B58CFF); -webkit-background-clip:text; background-clip:text;
-    -webkit-mask-image:linear-gradient(100deg, transparent 38%, #000 50%, transparent 62%); mask-image:linear-gradient(100deg, transparent 38%, #000 50%, transparent 62%);
-    -webkit-mask-size:300% 100%; mask-size:300% 100%; -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
-    -webkit-mask-position:120% 0; mask-position:120% 0; opacity:0}
-  .dex.booting .gba .logo .sh{animation:shimmer 1.1s cubic-bezier(.45,0,.35,1) 1.15s forwards}
+  /* la coreografía GBA: el logo cae de golpe desde arriba y rebota (con estela de LCD), el arcoíris lo recorre con un filo
+     de luz, la cápsula de abajo aparece con su destello y una estrella parpadea dos veces cuando el barrido llega al final */
+  .gba{position:relative; z-index:2; text-align:center; --navy:#1C2C8A; --peri:#7DA2E8}
+  .gba .lg{position:relative; display:inline-block; opacity:0; transform:translateY(-160px)}
+  .dex.booting .gba .lg{animation:logodrop .5s cubic-bezier(.25,1.45,.45,1) .78s both}
+  @keyframes logodrop{from{opacity:1; transform:translateY(-160px)} to{opacity:1; transform:translateY(0)}}
+  .gba .logo, .gba .ghost{display:block; font:700 clamp(26px,11.2cqw,64px)/1 'Unbounded',sans-serif; letter-spacing:.005em; white-space:nowrap}
+  .gba .logo{position:relative; color:var(--navy); -webkit-text-stroke:.11em var(--peri); paint-order:stroke fill; transform-origin:50% 100%}
+  .dex.booting .gba .logo{animation:land .32s cubic-bezier(.3,1.6,.5,1) 1.2s}
+  @keyframes land{30%{transform:scaleY(.9) scaleX(1.03)}}
+  .gba .ghost{ /* estela: un LCD sin retroiluminación deja rastro */
+    position:absolute; left:0; top:0; color:var(--navy); opacity:0; -webkit-text-stroke:.11em var(--peri); paint-order:stroke fill; pointer-events:none}
+  .dex.booting .gba .ghost{animation:ghostdrop .62s cubic-bezier(.25,1.2,.45,1) .82s both}
+  @keyframes ghostdrop{0%{opacity:.35; transform:translateY(-120px)} 70%{opacity:.25; transform:translateY(-8px)} 100%{opacity:0; transform:translateY(0)}}
+  .gba .logo .sh, .gba .logo .gl{position:absolute; left:0; top:0; color:transparent; -webkit-text-stroke:0; pointer-events:none; opacity:0;
+    -webkit-background-clip:text; background-clip:text; -webkit-mask-size:300% 100%; mask-size:300% 100%; -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
+    -webkit-mask-position:120% 0; mask-position:120% 0}
+  .gba .logo .sh{background-image:linear-gradient(100deg,#FF4D6D,#FFB347 22%,#FFE84D 38%,#5DE28A 55%,#3EC7FF 72%,#8A7DFF 88%,#FF4D6D);
+    -webkit-mask-image:linear-gradient(100deg, transparent 34%, #000 44%, #000 56%, transparent 66%); mask-image:linear-gradient(100deg, transparent 34%, #000 44%, #000 56%, transparent 66%)}
+  .gba .logo .gl{background-image:linear-gradient(#fff,#fff); -webkit-mask-image:linear-gradient(100deg, transparent 56%, #fff 58.5%, transparent 61%); mask-image:linear-gradient(100deg, transparent 56%, #fff 58.5%, transparent 61%)}
+  .dex.booting .gba .logo .sh{animation:shimmer 1.05s cubic-bezier(.5,0,.4,1) 1.32s forwards}
+  .dex.booting .gba .logo .gl{animation:shimmer 1.05s cubic-bezier(.5,0,.4,1) 1.32s forwards}
   @keyframes shimmer{0%{opacity:1; -webkit-mask-position:120% 0; mask-position:120% 0} 100%{opacity:1; -webkit-mask-position:-20% 0; mask-position:-20% 0}}
-  .gba .spark{position:absolute; right:-22px; top:-20px; font-style:normal; font-size:38px; line-height:1; color:#fff;
-    text-shadow:0 0 8px #fff, 0 0 18px #9BD1FF, 0 0 30px #5EC8FF; opacity:0; transform:scale(0)}
-  .dex.booting .gba .spark{animation:sparkle .6s cubic-bezier(.2,1.2,.3,1) 2.05s}
-  @keyframes sparkle{0%{opacity:0; transform:scale(0) rotate(0)} 35%{opacity:1; transform:scale(1.4) rotate(90deg)} 100%{opacity:0; transform:scale(.3) rotate(200deg)}}
-  .gba small{display:block; margin-top:12px; font:500 12px 'IBM Plex Mono',monospace; letter-spacing:.55em; text-indent:.55em; opacity:0;
-    background:linear-gradient(180deg,#8A96B8,#2B3A7A 45%,#8A96B8 55%,#1C2C8A); -webkit-background-clip:text; background-clip:text; color:transparent}
-  .dex.booting .gba small{animation:gbfade .3s ease 1.75s forwards}
-  @keyframes gbfade{to{opacity:1}}
+  .gba .spark{position:absolute; right:-.22em; top:-.28em; width:.62em; height:.62em; pointer-events:none; opacity:0}
+  .gba .spark i, .gba .spark::before{content:""; position:absolute; inset:0; background:#fff;
+    clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%);
+    filter:drop-shadow(0 0 3px #fff) drop-shadow(0 0 8px #9BD1FF)}
+  .gba .spark i{transform:rotate(45deg) scale(.55); opacity:.9}
+  .dex.booting .gba .spark{animation:twinkle .9s cubic-bezier(.2,1,.4,1) 2.25s}
+  @keyframes twinkle{0%{opacity:0; transform:scale(0) rotate(0)} 22%{opacity:1; transform:scale(1.35) rotate(70deg)} 45%{opacity:.2; transform:scale(.5) rotate(120deg)}
+    65%{opacity:1; transform:scale(1.1) rotate(170deg)} 100%{opacity:0; transform:scale(0) rotate(240deg)}}
+  .gba .box{position:relative; display:inline-block; margin-top:.55em; padding:.28em 1.1em .3em; border:2.5px solid var(--navy); border-radius:999px; overflow:hidden;
+    font:700 clamp(10px,3.4cqw,16px)/1 'Unbounded',sans-serif; letter-spacing:.05em; color:var(--navy); opacity:0; transform:scale(.8)}
+  .dex.booting .gba .box{animation:boxin .35s cubic-bezier(.2,1.3,.4,1) 1.6s forwards}
+  @keyframes boxin{to{opacity:1; transform:none}}
+  .gba .box::after{content:""; position:absolute; top:-40%; bottom:-40%; left:-60%; width:36%; transform:skewX(-25deg) translateX(0);
+    background:linear-gradient(90deg, transparent, rgba(255,255,255,.95), transparent); opacity:0}
+  .dex.booting .gba .box::after{animation:boxshine .6s ease 1.95s}
+  @keyframes boxshine{0%{opacity:1; transform:skewX(-25deg) translateX(0)} 100%{opacity:1; transform:skewX(-25deg) translateX(520%)}}
   .gbboot .flash{position:absolute; inset:0; z-index:5; background:#fff; opacity:0}
-  .dex.booting .gbboot .flash{animation:outflash .26s ease 2.95s forwards}
+  .dex.booting .gbboot .flash{animation:outflash .26s ease 3.25s forwards}
   @keyframes outflash{to{opacity:1}}
   .dex-info{padding:30px 30px 26px; display:flex; flex-direction:column; gap:12px; overflow:auto}
   .dex-info h3{font-family:'Unbounded',sans-serif; font-weight:700; font-size:clamp(19px,2.6vw,26px);
@@ -851,7 +869,7 @@
         </span>
       </button>
       <div class="gbboot" aria-hidden="true"><div class="lcd2">
-        <div class="gba"><b class="logo">GAVILANBE<span class="sh" aria-hidden="true">GAVILANBE</span><i class="spark">✦</i></b><small>games™</small></div>
+        <div class="gba"><div class="lg"><b class="ghost" aria-hidden="true">GAVILANBE</b><b class="logo">GAVILANBE<span class="sh" aria-hidden="true">GAVILANBE</span><span class="gl" aria-hidden="true">GAVILANBE</span><i class="spark" aria-hidden="true"><i></i></i></b></div><span class="box">games™</span></div>
         <i class="flash"></i>
       </div></div>
     </div>
@@ -1387,11 +1405,11 @@
       sfx('thunk', .62);
       /* un compás: LED rojo y el LCD parpadea; después la consola se acerca hasta que la pantalla llena la sala */
       dexTimers.push(setTimeout(() => { dex.classList.add('poweron'); sfx('power'); }, 1000));
-      dexTimers.push(setTimeout(() => { dex.classList.add('booting'); sfx('boot', .98); }, 1500));
+      dexTimers.push(setTimeout(() => { dex.classList.add('booting'); sfx('boot', 1.18); }, 1500));
       dexTimers.push(setTimeout(() => {
         if (!window.open(url, '_blank')) location.assign(url);
         closeDex();
-      }, 1500 + 3250));
+      }, 1500 + 3550));
     }, 210));
   }
   document.addEventListener('click', e => {
@@ -1459,12 +1477,23 @@
       if (kind === 'power'){ const o = note(220, t0, .18, .035, 'triangle'); o.frequency.exponentialRampToValueAtTime(880, t0 + .16); }
       /* el "ba-DING" de la GBA: campana con armónicos, cola larga, arpegio chispeante y un "tsss" de brillo */
       if (kind === 'boot'){
-        const bell = (f, t, dur, vol) => { note(f, t, dur, vol, 'sine'); note(f*2, t, dur*.6, vol*.35, 'sine'); note(f*3, t, dur*.35, vol*.18, 'triangle'); };
-        bell(1046.5, t0, .16, .07);
-        bell(2093, t0 + .16, 1.15, .075);
-        bell(1568, t0 + .16, .9, .03);
-        [2637, 3136, 4186, 5274].forEach((f, i) => note(f, t0 + .30 + i*.045, .22, .018, 'triangle'));
-        noise(t0 + .18, .5, .012, 6000);
+        const bell = (f, t, dur, vol) => { note(f, t, dur, vol, 'sine'); note(f*2, t, dur*.55, vol*.4, 'sine'); note(f*2.76, t, dur*.3, vol*.16, 'sine'); note(f*4, t, dur*.2, vol*.1, 'triangle'); };
+        /* "ba": golpe corto y grave con un pelo de cuerpo */
+        bell(523.25, t0, .12, .07); note(261.6, t0, .08, .05, 'triangle');
+        /* "DING": la campana, con su quinta y su octava por debajo para que llene */
+        bell(2093, t0 + .15, 1.5, .085);
+        note(1568, t0 + .15, 1.1, .022, 'sine');
+        note(1046.5, t0 + .15, 1.3, .018, 'sine');
+        /* chispas: arpegio rapidísimo hacia arriba mientras el arcoíris recorre el logo */
+        [2637, 3136, 3520, 4186, 5274, 6272].forEach((f, i) => note(f, t0 + .30 + i*.055, .26, .014, 'triangle'));
+        /* "tsss": ruido filtrado que sube con el barrido */
+        { const n = a.sampleRate * .9 | 0, buf = a.createBuffer(1, n, a.sampleRate), d = buf.getChannelData(0);
+          for (let i = 0; i < n; i++) d[i] = Math.random()*2-1;
+          const src = a.createBufferSource(), g = a.createGain(), f = a.createBiquadFilter();
+          src.buffer = buf; f.type = 'bandpass'; f.Q.value = 6;
+          f.frequency.setValueAtTime(2500, t0 + .2); f.frequency.exponentialRampToValueAtTime(11000, t0 + 1.0);
+          g.gain.setValueAtTime(.0001, t0 + .2); g.gain.exponentialRampToValueAtTime(.02, t0 + .55); g.gain.exponentialRampToValueAtTime(.0001, t0 + 1.1);
+          src.connect(f); f.connect(g); g.connect(a.destination); src.start(t0 + .2); }
       }
       if (kind === 'coin'){ note(880, t0, .12, .045); note(1320, t0 + .06, .16, .045); }
     }catch(e){}
