@@ -10,13 +10,14 @@
 
 Una sola página estática, sin frameworks ni build: los juegos viven en
 [`data.js`](data.js) y las miniaturas en [`thumbs/`](thumbs/). Con buscador
-(tecla `/`), filtros por tipo y por **pegatina de modelo** (`✦ Fable` holográfica
-u `Opus 4.8/4.7/4.6`, el modelo que construyó cada juego), **juego del día**
+(tecla `/`), filtros por tipo y por **pegatina de modelo** (`✦ Fable 5.1` cromo
+oscuro, `✦ Fable 5` holográfica u `Opus 4.8/4.7/4.6`, el modelo que construyó cada juego), **juego del día**
 (rotación diaria determinista) y una ranura para **echar una moneda** que lanza
 un juego al azar.
 
 Cada juego web es un **cartucho 3D flotante** (CSS puro): la carcasa delata su
-chip — nácar tornasolado para Fable; oro, plata y bronce para Opus — con tilt
+chip — cromo oscuro tornasolado para Fable 5.1, nácar para Fable 5; oro, plata y
+bronce para Opus — con tilt
 que sigue al ratón y brillo especular. Al tocarlo se abre su **ficha**: el
 cartucho gira en una sala oscura sobre la **ranura de carga** de la consola,
 que es el propio botón de jugar. Arrástralo hasta la ranura (se enciende al
@@ -52,7 +53,7 @@ sala de máquinas. Tipografía: Unbounded + IBM Plex Sans/Mono.
   "wip": false,                                          // cinta dorada "WIP"
   "new": true,                                           // cinta verde "NUEVO"
   "kind": "juego",
-  "model": "fable"            // pegatina del cartucho: "fable" | "opus-4.8" | "opus-4.7" | "opus-4.6"
+  "model": "fable-5.1"        // pegatina del cartucho: "fable-5.1" | "fable" (Fable 5) | "opus-4.8" | "opus-4.7" | "opus-4.6"
 }
 ```
 

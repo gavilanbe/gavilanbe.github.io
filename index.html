@@ -142,6 +142,11 @@
     background-size:280% 100%; color:#3A2140; border-color:rgba(58,33,64,.35);
     animation:foil 7s linear infinite;
   }
+  .chip.on.m-f51{
+    background:linear-gradient(110deg,#3A2A5A,#1E4A5E,#2E5A44,#5A3E6E,#3A2A5A);
+    background-size:280% 100%; color:#F4EEFF; border-color:rgba(244,238,255,.35);
+    animation:foil 7s linear infinite;
+  }
   .chip.on.m-o48{background:var(--coin); color:#3A2604; border-color:var(--coin-dark)}
   .chip.on.m-o47{background:#8E99A8; color:#fff; border-color:#5B6470}
   .chip.on.m-o46{background:#B06A38; color:#fff; border-color:#7A4B2A}
@@ -283,6 +288,13 @@
   .tier-fable{--edge:#A796C9; --g:linear-gradient(125deg,#F2E7FF,#D4F1FF 28%,#DDFBE7 52%,#FFF2D2 76%,#F2E7FF)}
   .tier-fable .fr, .tier-fable .bk{background-size:220% 220%; animation:pearl 9s linear infinite}
   @keyframes pearl{to{background-position:220% 220%}}
+  /* Fable 5.1: edición oscura, cromo tornasolado tipo mancha de gasolina; la serigrafía pasa a claro */
+  .tier-f51{--edge:#4A3A6A; --g:linear-gradient(125deg,#241C3A,#1E3F52 22%,#2E5A3E 44%,#5A3E6E 66%,#4A3620 84%,#241C3A)}
+  .tier-f51 .fr, .tier-f51 .bk{background-size:220% 220%; animation:pearl 9s linear infinite}
+  .tier-f51 .band{color:rgba(255,255,255,.62); text-shadow:0 1px 0 rgba(0,0,0,.5); background:rgba(255,255,255,.06);
+    box-shadow:inset 0 2px 4px rgba(0,0,0,.45), inset 0 -1px 0 rgba(255,255,255,.14)}
+  .tier-f51 .band .arw{border-top-color:rgba(255,255,255,.58); filter:drop-shadow(0 1px 0 rgba(0,0,0,.5))}
+  .tier-f51 .plate{color:rgba(255,255,255,.6); text-shadow:0 1px 0 rgba(0,0,0,.5)}
   .tier-o48{--edge:#8A5F14; --g:linear-gradient(155deg,#F6DA8C,#E2AC3C 55%,#C9911F)}
   .tier-o47{--edge:#77828F; --g:linear-gradient(155deg,#F3F5F9,#C9D2DE 55%,#ACB8C7)}
   .tier-o46{--edge:#7A4B2A; --g:linear-gradient(155deg,#EBBE93,#CD8148 55%,#AC6531)}
@@ -342,14 +354,14 @@
   .rowitem:not(.center) .cart{animation:none; transform:rotateX(6deg)}
   /* fuera del centro, los acabados animados descansan (nácar y foil repintan) */
   .rowitem:not(.center) .fr, .rowitem:not(.center) .bk,
-  .rowitem:not(.center) .mchip.fable{animation:none}
+  .rowitem:not(.center) .mchip.fable, .rowitem:not(.center) .mchip.f51{animation:none}
   @keyframes spin{from{transform:rotateX(6deg) rotateY(0)}to{transform:rotateX(6deg) rotateY(360deg)}}
   /* táctil: el central no gira (WebKit iOS descompone el preserve-3d cuando el padre
      lleva una animación de transform: las caras laterales se pintan sueltas) y los
      acabados animados descansan también en el centro — menos raster por frame */
   @media (hover:none){
     .rowitem.center .cart{animation:none; transform:rotateX(6deg)}
-    .rowitem .fr, .rowitem .bk, .rowitem .mchip.fable{animation:none}
+    .rowitem .fr, .rowitem .bk, .rowitem .mchip.fable, .rowitem .mchip.f51{animation:none}
   }
   .rowitem::after{ /* sombra en el suelo de la sala; crece cuando bajas el cartucho */
     content:""; position:absolute; left:10%; right:10%; bottom:-30px; height:14px; border-radius:50%;
@@ -486,6 +498,11 @@
     background-size:280% 100%; color:#3A2140; border:1px solid rgba(58,33,64,.28);
     animation:foil 7s linear infinite;
   }
+  .mchip.f51{
+    background:linear-gradient(110deg,#3A2A5A,#1E4A5E,#2E5A44,#5A3E6E,#3A2A5A);
+    background-size:280% 100%; color:#F4EEFF; border:1px solid rgba(58,33,64,.55);
+    animation:foil 7s linear infinite;
+  }
   @keyframes foil{to{background-position:280% 50%}}
   .mchip.o48{background:rgba(217,154,43,.16); color:#8A5F14; border:1px solid rgba(138,95,20,.4)}
   .mchip.o47{background:rgba(91,100,112,.11); color:#5B6470; border:1px solid rgba(91,100,112,.38)}
@@ -578,7 +595,8 @@
   body.dexopen .room .cart, body.dexopen .room .slot3d::after,
   body.dexopen .room .fr, body.dexopen .room .bk,
   body.dexopen .room .mchip.fable, body.dexopen footer .mchip.fable,
-  body.dexopen .deck .chip.m-fable{animation-play-state:paused}
+  body.dexopen .room .mchip.f51, body.dexopen footer .mchip.f51,
+  body.dexopen .deck .chip.m-fable, body.dexopen .deck .chip.m-f51{animation-play-state:paused}
 
   /* aparición al hacer scroll */
   .reveal{opacity:0; transform:translateY(14px); transition:opacity .5s, transform .5s}
@@ -610,7 +628,7 @@
     .wall-col{animation:none}
     .reveal{opacity:1; transform:none; transition:none}
     .crt-body, .crt .shot, .crt .tty{transition:none}
-    .cart, .slot3d::after, .rowitem .cart, .tier-fable .fr, .tier-fable .bk{animation:none !important}
+    .cart, .slot3d::after, .rowitem .cart, .tier-fable .fr, .tier-fable .bk, .tier-f51 .fr, .tier-f51 .bk{animation:none !important}
     .dock .cta b{animation:none}
     .crt.in .scr, .crt .cur{animation:none}
     .cart{transition:none}
@@ -647,7 +665,8 @@
       <button class="chip" data-f="web" type="button">Jugables online</button>
       <button class="chip" data-f="terminal" type="button">De terminal</button>
       <span class="sep" aria-hidden="true"></span>
-      <button class="chip m-fable" data-m="fable" type="button" title="Juegos construidos con Claude Fable 5">✦ Fable</button>
+      <button class="chip m-f51" data-m="fable-5.1" type="button" title="Juegos construidos con Claude Fable 5.1">✦ Fable 5.1</button>
+      <button class="chip m-fable" data-m="fable" type="button" title="Juegos construidos con Claude Fable 5">✦ Fable 5</button>
       <button class="chip m-o48" data-m="opus-4.8" type="button" title="Juegos construidos con Claude Opus 4.8">Opus 4.8</button>
       <button class="chip m-o47" data-m="opus-4.7" type="button" title="Juegos construidos con Claude Opus 4.7">Opus 4.7</button>
       <button class="chip m-o46" data-m="opus-4.6" type="button" title="Juegos construidos con Claude Opus 4.6">Opus 4.6</button>
@@ -683,7 +702,8 @@
 <footer>
   <div class="legend">
     <span>Cada juego lleva la pegatina del modelo que lo construyó conmigo:</span>
-    <span class="mchip fable">✦ FABLE</span>
+    <span class="mchip f51">✦ FABLE 5.1</span>
+    <span class="mchip fable">✦ FABLE 5</span>
     <span class="mchip o48">OPUS 4.8</span>
     <span class="mchip o47">OPUS 4.7</span>
     <span class="mchip o46">OPUS 4.6</span>
@@ -735,7 +755,7 @@
   const firstEmoji = s => { const m = [...s].find(c => /\p{Extended_Pictographic}/u.test(c)); return m || '🎮'; };
   const stripEmoji = s => s.replace(/^\s*\p{Extended_Pictographic}[️‍]*\s*/u, '');
 
-  const FEATURED = ['spore-quest','rana-gba','bitxo','sprout-game','nahugavi','gacha-zoo','libreta','makinamon','doodli','chef-game','poke-autobattler','short-hike-demo'];
+  const FEATURED = ['chromara','isomate','spore-quest','rana-gba','bitxo','sprout-game','nahugavi','gacha-zoo','libreta','makinamon','doodli','chef-game','poke-autobattler','short-hike-demo'];
   const rk = n => { const i = FEATURED.indexOf(n); return i < 0 ? 999 : i; };
 
   const webGames  = GAMES.filter(g => g.type === 'web').sort((a,b) => rk(a.name)-rk(b.name) || a.title.localeCompare(b.title));
@@ -744,7 +764,8 @@
   const daily = pool[Math.floor(Date.now()/86400000) % pool.length];
 
   const MCHIP = {
-    'fable':    ['fable', '✦ FABLE',  'Construido con Claude Fable 5'],
+    'fable-5.1':['f51',   '✦ FABLE 5.1', 'Construido con Claude Fable 5.1'],
+    'fable':    ['fable', '✦ FABLE 5',   'Construido con Claude Fable 5'],
     'opus-4.8': ['o48',   'OPUS 4.8', 'Construido con Claude Opus 4.8'],
     'opus-4.7': ['o47',   'OPUS 4.7', 'Construido con Claude Opus 4.7'],
     'opus-4.6': ['o46',   'OPUS 4.6', 'Construido con Claude Opus 4.6'],
@@ -753,7 +774,7 @@
     const [cls, label, title] = MCHIP[g.model] || [];
     return cls ? `<span class="mchip ${cls}" title="${title}">${label}</span>` : '';
   };
-  const nFable = GAMES.filter(g => g.model === 'fable').length;
+  const nFable = GAMES.filter(g => g.model === 'fable' || g.model === 'fable-5.1').length;
 
   $('#total-b').textContent = GAMES.length;
   $('#hero-stats').innerHTML =
@@ -781,7 +802,7 @@
     g.wip ? '<span class="badge wip">WIP</span>' :
     g.new ? '<span class="badge nuevo">NUEVO</span>' : '';
 
-  const TIER = {'fable':'tier-fable','opus-4.8':'tier-o48','opus-4.7':'tier-o47','opus-4.6':'tier-o46'};
+  const TIER = {'fable-5.1':'tier-f51','fable':'tier-fable','opus-4.8':'tier-o48','opus-4.7':'tier-o47','opus-4.6':'tier-o46'};
   function cartSlot(g, eager, num){
     const el = document.createElement('div');
     el.className = 'slot3d reveal';

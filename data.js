@@ -73,6 +73,19 @@ const GAMES = [
     "model": "opus-4.7"
   },
   {
+    "name": "chromara",
+    "title": "🎨 CHROMARA",
+    "tagline": "JRPG a lo Chrono Trigger con gotas de color: mezcla rojo, amarillo y azul en batallas Mode 7 sobre el propio mapa, GUI de cuaderno y música SNES.",
+    "type": "web",
+    "play": "https://gavilanbe.github.io/chromara/",
+    "repo": "https://github.com/gavilanbe/chromara",
+    "thumb": "thumbs/chromara.jpg",
+    "wip": false,
+    "new": true,
+    "kind": "juego",
+    "model": "fable-5.1"
+  },
+  {
     "name": "command-wars",
     "title": "⚔️ Command Wars",
     "tagline": "Estrategia táctica por turnos en la terminal, al estilo Advance Wars.",
@@ -253,6 +266,19 @@ const GAMES = [
     "model": "opus-4.7"
   },
   {
+    "name": "isomate",
+    "title": "♞ ISOMATE",
+    "tagline": "Ajedrez isométrico micro pixel art: motor propio verificado con perft, CPU en Worker y piezas que saltan, planean y explotan al capturar.",
+    "type": "web",
+    "play": "https://gavilanbe.github.io/isomate/",
+    "repo": "https://github.com/gavilanbe/isomate",
+    "thumb": "thumbs/isomate.jpg",
+    "wip": false,
+    "new": true,
+    "kind": "juego",
+    "model": "fable-5.1"
+  },
+  {
     "name": "jub",
     "title": "🥊 Doodle Smash",
     "tagline": "Un Smash Bros de garabatos en una sola página HTML: dos jugadores, un cuaderno y mamporros hasta sacar al otro del papel.",
@@ -393,7 +419,6 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/nima",
     "thumb": "thumbs/nima.jpg",
     "wip": false,
-    "new": true,
     "kind": "juego",
     "model": "fable"
   },
@@ -430,7 +455,6 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/pliego",
     "thumb": "thumbs/pliego.jpg",
     "wip": false,
-    "new": true,
     "kind": "juego",
     "model": "fable"
   },
@@ -443,7 +467,6 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/plumo",
     "thumb": "thumbs/plumo.jpg",
     "wip": false,
-    "new": true,
     "kind": "juego",
     "model": "fable"
   },
@@ -540,7 +563,6 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/rana-gba",
     "thumb": "thumbs/rana-gba.jpg",
     "wip": false,
-    "new": true,
     "kind": "juego",
     "model": "fable"
   },
@@ -637,7 +659,6 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/spore-quest",
     "thumb": "thumbs/spore-quest.jpg",
     "wip": false,
-    "new": true,
     "kind": "juego",
     "model": "fable"
   },
