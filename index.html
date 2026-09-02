@@ -338,7 +338,7 @@
     .dex-back{backdrop-filter:none; background:rgba(26,29,35,.85)}
   }
   .dex-card{
-    position:relative; width:min(960px,100%); max-height:min(92vh,660px);
+    position:relative; width:min(960px,100%); max-height:min(94vh,720px);
     display:grid; grid-template-columns:minmax(300px,1fr) minmax(0,1.05fr);
     background:var(--card); border:1px solid var(--line); border-radius:20px; overflow:hidden;
     box-shadow:0 40px 80px -30px rgba(32,36,42,.65);
@@ -346,7 +346,7 @@
   .dex-x{position:absolute; top:12px; right:12px; z-index:6; width:34px; height:34px; border-radius:50%;
     border:1px solid var(--line); background:var(--card); color:var(--dim); font-size:15px; cursor:pointer}
   .dex-x:hover{color:var(--ink); border-color:var(--dim)}
-  .dex-stage{position:relative; overflow:hidden; min-height:480px; touch-action:none;
+  .dex-stage{position:relative; overflow:hidden; min-height:570px; touch-action:none;
     background:radial-gradient(120% 80% at 50% -10%, #343B45 0%, #23272E 55%, #16181D 100%)}
   .dex-stage::before{ /* suelo de rejilla en perspectiva */
     content:""; position:absolute; left:-24%; right:-24%; bottom:70px; height:56%;
@@ -367,11 +367,11 @@
   .dex.solo .dexcount{visibility:hidden}
   .dex-info{transition:opacity .12s}
   .dex-info.swap{opacity:.35}
-  .cartwell{position:absolute; left:0; right:0; top:34px; bottom:236px; z-index:2;
+  .cartwell{position:absolute; left:0; right:0; top:34px; bottom:322px; z-index:2;
     overflow:hidden; cursor:grab; perspective:1100px}
   .cartwell:active{cursor:grabbing}
   .dexrow{position:absolute; inset:0; transform-style:preserve-3d}
-  .rowitem{position:absolute; left:50%; top:50%; width:180px;
+  .rowitem{position:absolute; left:50%; top:50%; width:160px;
     transform-style:preserve-3d; will-change:transform}
   .rowitem .lift{transform-style:preserve-3d}
   .rowitem .cart{--dz:14px}
@@ -403,32 +403,36 @@
     transition:opacity .25s}
   .dex.ready .drag-hint, .dex.inserting .drag-hint{opacity:0}
   .drag-hint .h-mini{display:none}
-  /* la consola de verdad: asoma por abajo, con su ranura arriba y su pantalla; tragar el cartucho es jugar */
-  .console{position:absolute; left:0; right:0; bottom:-58px; margin:auto; width:340px; height:270px; z-index:3;
-    display:block; padding:0; font:inherit; color:inherit; text-align:center; cursor:pointer; border:0;
+  /* la consola de verdad: una DMG de frente que asoma por abajo de la sala; el cartucho entra por detrás y queda asomando */
+  .console{position:absolute; left:0; right:0; bottom:-118px; margin:auto; width:300px; height:440px; z-index:3;
+    display:block; padding:0; font:inherit; color:inherit; text-align:left; cursor:pointer; border:0;
     -webkit-appearance:none; appearance:none; background:transparent;
-    transform-origin:var(--ox,50%) var(--oy,40%); transition:transform .75s cubic-bezier(.5,0,.15,1); will-change:transform}
+    transform-origin:var(--ox,50%) var(--oy,40%); transition:transform .8s cubic-bezier(.55,0,.12,1); will-change:transform}
   .console:focus-visible{outline:none}
-  .console .cslot{position:absolute; left:26px; right:26px; top:0; height:22px; border-radius:6px 6px 0 0;
-    background:linear-gradient(180deg,#B9B3A3,#CFC9B8 40%,#B0AA9A); box-shadow:0 -1px 0 #E7E3D8, inset 0 -3px 0 rgba(0,0,0,.18)}
-  .console .cslot i{position:absolute; left:14px; right:14px; top:5px; height:10px; border-radius:3px;
-    background:linear-gradient(180deg,#07090B,#14171B); box-shadow:inset 0 3px 5px rgba(0,0,0,.95), 0 1px 0 rgba(255,255,255,.35); transition:box-shadow .25s}
-  .console .cbody{position:absolute; left:0; right:0; top:20px; bottom:0; border-radius:16px 16px 22px 22px;
-    background:linear-gradient(180deg,#EDE9DE,#E2DDCF 30%,#D8D2C2); border:1px solid #B9B3A3;
-    box-shadow:inset 0 2px 0 #FBF9F2, inset 0 -6px 0 rgba(0,0,0,.08), 0 18px 30px -14px rgba(0,0,0,.8)}
-  .console .cbody::before{ /* la línea moldeada de la tapa y los tornillos */
-    content:""; position:absolute; left:14px; right:14px; top:12px; height:2px; border-radius:2px; background:rgba(0,0,0,.09); box-shadow:0 1px 0 rgba(255,255,255,.7)}
-  .console .bezel{position:absolute; left:22px; right:22px; top:26px; height:168px; border-radius:10px 10px 10px 34px;
-    background:linear-gradient(170deg,#3A3F48,#23272E 60%,#1B1E23); border:1px solid #14171B;
-    box-shadow:inset 0 1px 0 rgba(242,240,228,.1), 0 2px 0 rgba(255,255,255,.4)}
-  .console .bz-line{position:absolute; left:0; right:0; top:8px; font:500 7px 'IBM Plex Mono',monospace; letter-spacing:.26em; color:#8B93A0}
-  .console .bz-line::before, .console .bz-line::after{content:""; position:absolute; top:4px; height:1px; width:22%; background:#5C646F}
-  .console .bz-line::before{left:10%} .console .bz-line::after{right:10%}
-  .console .led{position:absolute; left:16px; top:70px; width:8px; height:8px; border-radius:50%; background:#4A2A28; box-shadow:inset 0 0 2px #000; transition:.2s}
-  .console .led-l{position:absolute; left:8px; top:82px; font:500 5.5px 'IBM Plex Mono',monospace; letter-spacing:.1em; color:#6E7683}
-  .console .screen{position:absolute; left:38px; right:22px; top:24px; bottom:18px; border-radius:4px; overflow:hidden;
+  .console > span{display:block}
+  .console .cbody{position:absolute; inset:0; border-radius:14px 14px 54px 14px;
+    background:linear-gradient(175deg,#EEEADF 0%,#E3DECF 40%,#D6D0BF 100%); border:1px solid #B5AE9C;
+    box-shadow:inset 0 2px 0 #FBF9F2, inset 0 -4px 0 rgba(0,0,0,.08), inset 2px 0 0 rgba(255,255,255,.5), 0 24px 40px -18px rgba(0,0,0,.85)}
+  .console .cslot{ /* la ranura vive en la trasera: desde delante solo se ve el canto superior con su hendidura */
+    position:absolute; left:0; right:0; top:0; height:10px; border-radius:14px 14px 0 0;
+    background:linear-gradient(180deg,#C8C2B0,#DAD5C5)}
+  .console .cslot i{position:absolute; left:18%; right:18%; top:0; height:5px; border-radius:0 0 4px 4px;
+    background:linear-gradient(180deg,#0B0D10,#2A2E36); box-shadow:inset 0 -1px 0 rgba(255,255,255,.12), 0 0 0 rgba(217,154,43,0); transition:box-shadow .25s}
+  .console .lines{position:absolute; left:16px; right:16px; top:20px; height:6px;
+    border-top:2px solid #6E6A5C; border-bottom:2px solid #6E6A5C; opacity:.55}
+  .console .lines::after{content:""; position:absolute; left:0; right:0; top:2px; height:0}
+  .console .bezel{position:absolute; left:18px; right:18px; top:34px; height:176px; border-radius:8px 8px 40px 8px;
+    background:linear-gradient(172deg,#5A5F69,#3D424B 45%,#2E3239 100%); border:1px solid #23272E;
+    box-shadow:inset 0 1px 0 rgba(242,240,228,.16), inset 0 -2px 0 rgba(0,0,0,.35), 0 1px 0 rgba(255,255,255,.55)}
+  .console .bz-line{position:absolute; left:0; right:0; top:9px; text-align:center; font:500 6.5px 'IBM Plex Mono',monospace; letter-spacing:.24em; color:#C9CDD3}
+  .console .bz-line::before, .console .bz-line::after{content:""; position:absolute; top:3px; height:1px; width:16%; background:#8B93A0}
+  .console .bz-line::before{left:9%} .console .bz-line::after{right:9%}
+  .console .bz-line b{font-weight:500; color:#C42B67}
+  .console .led{position:absolute; left:19px; top:74px; width:7px; height:7px; border-radius:50%; background:#3A1F1E; box-shadow:inset 0 0 2px #000; transition:.2s}
+  .console .led-l{position:absolute; left:10px; top:85px; font:500 5px 'IBM Plex Mono',monospace; letter-spacing:.08em; color:#B9C2CE}
+  .console .screen{position:absolute; left:44px; right:26px; top:30px; bottom:26px; border-radius:3px; overflow:hidden;
     background:radial-gradient(110% 90% at 50% 40%, #9AA854 0%, #86953F 60%, #6F7C33 100%);
-    box-shadow:inset 0 0 18px rgba(0,0,0,.45), inset 0 0 0 1px rgba(0,0,0,.3)}
+    box-shadow:inset 0 0 14px rgba(0,0,0,.5), inset 0 0 0 1px rgba(0,0,0,.35)}
   .console .screen::before{ /* rejilla de píxeles del LCD */
     content:""; position:absolute; inset:0; z-index:3; pointer-events:none; opacity:.55;
     background:repeating-linear-gradient(0deg, rgba(0,0,0,.09) 0 1px, transparent 1px 3px),
@@ -436,42 +440,61 @@
   .console .screen::after{ /* reflejo del cristal */
     content:""; position:absolute; inset:0; z-index:4; pointer-events:none;
     background:linear-gradient(115deg, rgba(255,255,255,.16) 0%, transparent 32%)}
-  .console .off{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; z-index:2;
-    font:500 8px 'IBM Plex Mono',monospace; letter-spacing:.3em; color:rgba(32,37,26,.55); transition:opacity .2s}
-  .console .cbrand{position:absolute; left:0; right:0; top:202px; font:700 15px 'Unbounded',sans-serif; letter-spacing:-.01em; color:#4A505A}
-  .console .cbrand i{font:700 8px 'IBM Plex Mono',monospace; letter-spacing:.3em; vertical-align:2px; margin-left:5px; color:#7A828E}
-  .console .cta{position:absolute; left:0; right:0; top:-30px; font:500 11px 'IBM Plex Mono',monospace; letter-spacing:.22em; text-indent:.22em;
-    color:#9BA3AE; transition:color .2s, opacity .2s}
+  .console .off{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; z-index:2; text-align:center;
+    font:500 7.5px 'IBM Plex Mono',monospace; letter-spacing:.3em; color:rgba(32,37,26,.55); transition:opacity .2s}
+  .console .cbrand{position:absolute; left:20px; top:220px; font:700 15px/1 'Unbounded',sans-serif; letter-spacing:-.02em; color:#3A3F48}
+  .console .cbrand i{font:700 7.5px 'IBM Plex Mono',monospace; letter-spacing:.32em; vertical-align:3px; margin-left:5px; color:#5C646F}
+  .console .cta{position:absolute; right:20px; top:224px; font:500 7.5px 'IBM Plex Mono',monospace; letter-spacing:.2em; color:#8B8577; transition:color .2s}
   .console .cta b{display:inline-block; font-weight:500; color:var(--coin); animation:dockarw 1.5s ease-in-out infinite}
-  @keyframes dockarw{50%{transform:translateY(3px)}}
-  .console:hover .cta, .console:focus-visible .cta{color:var(--phosphor)}
-  .console:hover .cslot i, .console:focus-visible .cslot i{box-shadow:inset 0 3px 5px rgba(0,0,0,.95), 0 0 14px rgba(217,154,43,.5), 0 1px 0 rgba(255,255,255,.35)}
-  .console:focus-visible .cbody{box-shadow:inset 0 2px 0 #FBF9F2, inset 0 -6px 0 rgba(0,0,0,.08), 0 18px 30px -14px rgba(0,0,0,.8), 0 0 0 3px rgba(196,43,103,.45)}
+  @keyframes dockarw{50%{transform:translateY(2px)}}
+  .console .dpad{position:absolute; left:34px; top:252px; width:72px; height:72px}
+  .console .dpad::before, .console .dpad::after{content:""; position:absolute; background:linear-gradient(180deg,#3A3F48,#23272E); border-radius:4px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.18), 0 2px 0 rgba(0,0,0,.35)}
+  .console .dpad::before{left:24px; right:24px; top:0; bottom:0}
+  .console .dpad::after{top:24px; bottom:24px; left:0; right:0}
+  .console .dpad i{position:absolute; left:50%; top:50%; width:16px; height:16px; margin:-8px 0 0 -8px; border-radius:50%; z-index:1;
+    background:radial-gradient(circle at 50% 40%, #2A2E36, #1C1F25 70%); box-shadow:inset 0 1px 2px rgba(0,0,0,.8)}
+  .console .ab{position:absolute; right:22px; top:244px; width:112px; height:80px; transform:rotate(-22deg)}
+  .console .ab i{position:absolute; width:34px; height:34px; border-radius:50%;
+    background:radial-gradient(circle at 40% 32%, #D94B85, var(--play) 55%, var(--play-dark));
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.35), 0 3px 0 var(--play-dark), 0 5px 6px rgba(0,0,0,.35)}
+  .console .ab i:first-child{left:0; top:30px} .console .ab i:last-child{right:0; top:0}
+  .console .ab b{position:absolute; font:700 8px 'Unbounded',sans-serif; color:#5C646F}
+  .console .ab b:nth-child(3){left:13px; top:66px} .console .ab b:nth-child(4){right:13px; top:36px}
+  .console .pills{position:absolute; left:92px; top:352px; display:flex; gap:12px; transform:rotate(-22deg)}
+  .console .pills i{width:34px; height:10px; border-radius:6px; background:linear-gradient(180deg,#8B8577,#6E6A5C); box-shadow:0 2px 0 rgba(0,0,0,.3)}
+  .console .grille{position:absolute; right:22px; bottom:26px; width:86px; height:60px; transform:rotate(-22deg); opacity:.5;
+    background:repeating-linear-gradient(90deg,#8B8577 0 5px,transparent 5px 14px)}
+  .console:hover .cta, .console:focus-visible .cta{color:var(--ink)}
+  .console:hover .cslot i, .console:focus-visible .cslot i{box-shadow:inset 0 -1px 0 rgba(255,255,255,.12), 0 0 14px rgba(217,154,43,.65)}
+  .console:focus-visible .cbody{box-shadow:inset 0 2px 0 #FBF9F2, inset 0 -4px 0 rgba(0,0,0,.08), 0 24px 40px -18px rgba(0,0,0,.85), 0 0 0 3px rgba(196,43,103,.45)}
   /* el cartucho se acerca: la ranura se enciende, lista para tragarlo */
-  .dex.ready .console .cslot i{box-shadow:inset 0 3px 5px rgba(0,0,0,.95), 0 0 22px rgba(217,154,43,.85), 0 1px 0 rgba(255,255,255,.35)}
-  .dex.ready .console .cta{color:var(--coin)}
+  .dex.ready .console .cslot i{box-shadow:inset 0 -1px 0 rgba(255,255,255,.12), 0 0 22px rgba(217,154,43,.9), 0 0 6px rgba(255,220,140,.9)}
+  .dex.ready .console .cta{color:var(--coin-dark)}
   .dex.ready .console .cta b{animation-duration:.5s}
   /* demo diegética: el cartucho hace una reverencia hacia la ranura ("yo voy ahí") */
   .dex.nudge .rowitem.center .lift{animation:nudgedip 1.5s cubic-bezier(.45,0,.35,1)}
   @keyframes nudgedip{0%,100%{transform:translateY(0)}42%,58%{transform:translateY(var(--nudge,90px))}}
   .dex.nudge .console .cslot i{animation:nudgeglow 1.5s ease}
-  @keyframes nudgeglow{42%,70%{box-shadow:inset 0 3px 5px rgba(0,0,0,.95), 0 0 22px rgba(217,154,43,.85), 0 1px 0 rgba(255,255,255,.35)}}
-  .dex.nudge .console .cta{color:var(--coin)}
-  /* inserción: el cartucho entra, la consola encaja con un golpe seco, el LED se enciende */
+  @keyframes nudgeglow{42%,70%{box-shadow:inset 0 -1px 0 rgba(255,255,255,.12), 0 0 22px rgba(217,154,43,.9)}}
+  .dex.nudge .console .cta{color:var(--coin-dark)}
+  /* inserción: el cartucho baja por detrás y queda asomando; la consola encaja con un golpe seco; el LED se enciende */
   .dex.inserting .rowitem::after{opacity:0}
   .dex.inserting .rowitem:not(.center){opacity:0 !important; transition:opacity .35s}
+  .dex.inserting .rowitem.center .cart{transition:transform .5s cubic-bezier(.6,-.2,.9,.6)}
   .dex.inserting .console .cta{opacity:0}
-  .dex.inserting .console .cslot i{animation:slotflash .5s .3s}
-  @keyframes slotflash{50%{box-shadow:inset 0 3px 5px rgba(0,0,0,.95), 0 0 20px rgba(217,154,43,.85)}}
-  .dex.inserting .console{animation:thunk .32s .48s cubic-bezier(.2,.9,.3,1)}
-  @keyframes thunk{30%{transform:translateY(5px) rotate(.4deg)} 60%{transform:translateY(-2px) rotate(-.3deg)}}
-  .dex.inserting .dex-stage{animation:stageshake .3s .5s}
+  .dex.inserting .console .cslot i{animation:slotflash .5s .55s}
+  @keyframes slotflash{50%{box-shadow:inset 0 -1px 0 rgba(255,255,255,.12), 0 0 20px rgba(217,154,43,.9)}}
+  .dex.inserting .console{animation:thunk .34s .62s cubic-bezier(.2,.9,.3,1)}
+  @keyframes thunk{30%{transform:translateY(6px) rotate(.5deg)} 60%{transform:translateY(-2px) rotate(-.3deg)}}
+  .dex.inserting .dex-stage{animation:stageshake .3s .64s}
   @keyframes stageshake{25%{transform:translate(1px,2px)} 50%{transform:translate(-1px,1px)} 75%{transform:translate(1px,-1px)}}
-  .dex.inserting .console .led, .dex.booting .console .led{background:#E4574A; box-shadow:0 0 10px rgba(228,87,74,.95), 0 0 2px #fff inset}
+  .dex.poweron .console .led, .dex.booting .console .led{background:#E4574A; box-shadow:0 0 9px rgba(228,87,74,.95), 0 0 2px #fff inset}
+  .dex.poweron .console .off{opacity:0}
+  .dex.poweron .console .screen{animation:lcdon .5s steps(4) forwards}
   /* arranque: la consola se acerca hasta que su pantalla llena la sala; el LCD enciende; el logo estilo GBA */
-  .dex.booting .console{transform:translate(var(--zx,0px),var(--zy,0px)) scale(var(--zs,2.4))}
+  .dex.booting .console{transform:translate(var(--zx,0px),var(--zy,0px)) scale(var(--zs,2.4)) !important}
   .dex.booting .console .off{opacity:0}
-  .dex.booting .console .screen{animation:lcdon .5s steps(4) forwards; animation-delay:.35s}
   @keyframes lcdon{0%{background:#6F7C33} 25%{background:#B9C48A} 50%{background:#A8B56F} 100%{background:#E3E8CF}}
   /* la pantalla grande: cuando el zoom termina, el LCD ocupa la sala a tamaño real (nítido) y arranca */
   .gbboot{position:absolute; inset:0; z-index:6; padding:14px; background:#1B1E23; visibility:hidden; opacity:0}
@@ -527,20 +550,27 @@
     .dex{padding:10px}
     /* la ficha no es un scroller que envuelva la escena 3D (iOS pinta mal el preserve-3d
        dentro de overflow:auto): el escenario queda fijo y solo la info scrollea */
-    .dex-card{grid-template-columns:1fr; grid-template-rows:minmax(390px,auto) minmax(0,1fr);
+    .dex-card{grid-template-columns:1fr; grid-template-rows:minmax(420px,auto) minmax(0,1fr);
       max-height:94vh; overflow:hidden}
-    .dex-stage{min-height:390px}
-    .cartwell{top:30px; bottom:198px}
-    .rowitem{width:118px}
+    .dex-stage{min-height:420px}
+    .cartwell{top:30px; bottom:242px}
+    .rowitem{width:104px}
     .dexcount{left:50%; top:14px; transform:translateX(-50%); white-space:nowrap}
     .drag-hint{left:0; right:0; bottom:auto; top:34px; padding:0 54px; text-align:center}
     .drag-hint .h-full{display:none}
     .drag-hint .h-mini{display:inline}
-    .console{width:270px; height:230px; bottom:-70px}
-    .console .bezel{height:140px; left:16px; right:16px}
-    .console .screen{left:32px; right:16px}
-    .console .cbrand{top:172px; font-size:13px}
-    .console .cta{top:-26px; font-size:10px}
+    .console{width:232px; height:340px; bottom:-100px}
+    .console .lines{top:16px}
+    .console .bezel{top:28px; height:132px; left:14px; right:14px; border-radius:7px 7px 30px 7px}
+    .console .screen{left:34px; right:20px; top:24px; bottom:20px}
+    .console .led{top:60px; left:15px} .console .led-l{top:70px; left:7px}
+    .console .cbrand{top:170px; font-size:12px; left:16px}
+    .console .cta{top:173px; right:16px; font-size:6.5px}
+    .console .dpad{left:26px; top:196px; width:56px; height:56px}
+    .console .dpad::before{left:19px; right:19px} .console .dpad::after{top:19px; bottom:19px}
+    .console .ab{right:20px; top:192px; width:78px; height:62px}
+    .console .ab i{width:26px; height:26px} .console .ab i:first-child{top:22px}
+    .console .pills{top:270px; left:70px} .console .grille{display:none}
   }
 
   .badge{
@@ -804,17 +834,20 @@
       <div class="cartwell" id="dex-well"><div class="dexrow" id="dex-row"></div></div>
       <p class="drag-hint"><span class="h-full">◂ ▸ HOJEAR · ▼ ARRASTRA A LA RANURA</span><span class="h-mini">◂ ▸ DESLIZA · ▼ A LA RANURA</span></p>
       <button class="console" id="dex-dock" type="button" aria-label="Meter el cartucho y jugar">
-        <span class="cta"><b aria-hidden="true">▼</b> METER EL CARTUCHO</span>
-        <span class="cslot"><i aria-hidden="true"></i></span>
         <span class="cbody">
+          <span class="cslot"><i aria-hidden="true"></i></span>
+          <span class="lines" aria-hidden="true"></span>
           <span class="bezel">
-            <span class="bz-line">GAVILANBE™ · DOT MATRIX</span>
+            <span class="bz-line">DOT MATRIX WITH <b>STEREO</b> SOUND</span>
             <span class="led" aria-hidden="true"></span><span class="led-l">BATTERY</span>
-            <span class="screen" id="dex-screen">
-              <span class="off">INSERTA UN GAME PAK</span>
-            </span>
+            <span class="screen" id="dex-screen"><span class="off">INSERTA<br>UN GAME PAK</span></span>
           </span>
           <span class="cbrand">gavilanbe<i>ARCADE</i></span>
+          <span class="cta"><b aria-hidden="true">▼</b> TOCA PARA JUGAR</span>
+          <span class="dpad" aria-hidden="true"><i></i></span>
+          <span class="ab" aria-hidden="true"><i></i><i></i><b>B</b><b>A</b></span>
+          <span class="pills" aria-hidden="true"><i></i><i></i></span>
+          <span class="grille" aria-hidden="true"></span>
         </span>
       </button>
       <div class="gbboot" aria-hidden="true"><div class="lcd2">
@@ -1167,7 +1200,7 @@
   }
   function openDex(g, autoplay){
     clearDexTimers(); clearTimeout(nudgeTimer); cancelAnimationFrame(animId);
-    dex.classList.remove('inserting','booting','ready','nudge');
+    dex.classList.remove('inserting','booting','poweron','ready','nudge');
     inserting = false; dragging = false; dragMode = null; dy = 0;
     deck = dexPool(g);
     target = Math.max(0, deck.findIndex(x => x.name === g.name));
@@ -1189,7 +1222,7 @@
     cancelAnimationFrame(animId);
     dex.hidden = true;
     dexDock.style.transition = 'none'; dexDock.style.transform = ''; void dexDock.offsetWidth; dexDock.style.transition = '';
-    dex.classList.remove('inserting','booting','ready','nudge');
+    dex.classList.remove('inserting','booting','poweron','ready','nudge');
     dexInfo.classList.remove('swap');
     document.body.style.overflow = '';
     document.body.classList.remove('dexopen');
@@ -1343,18 +1376,22 @@
     }
     dexTimers.push(setTimeout(() => {
       dex.classList.add('inserting');
-      sfx('clack', .44);
-      if (lift){ /* cae a la ranura y desaparece tras la consola */
-        lift.style.transition = 'transform .5s cubic-bezier(.6,-.28,.9,.5)';
-        lift.style.transform = 'translateY(520px)';
+      sfx('clack', .5);
+      if (lift && c){ /* baja por detrás de la consola y se queda asomando por el canto, como en una DMG */
+        const cr = c.getBoundingClientRect(), kr = dexDock.getBoundingClientRect();
+        const cur = new DOMMatrix(getComputedStyle(lift).transform).m42 || 0;
+        const drop = (kr.top - cr.top) + cur - cr.height * .16;
+        lift.style.transition = 'transform .55s cubic-bezier(.55,-.15,.85,.55)';
+        lift.style.transform = `translateY(${drop.toFixed(1)}px)`;
       }
-      sfx('thunk', .5);
-      /* la consola se acerca y enciende; el logo aterriza con el chime; se abre tras el destello */
-      dexTimers.push(setTimeout(() => { dex.classList.add('booting'); sfx('power'); sfx('boot', .95); }, 820));
+      sfx('thunk', .62);
+      /* un compás: LED rojo y el LCD parpadea; después la consola se acerca hasta que la pantalla llena la sala */
+      dexTimers.push(setTimeout(() => { dex.classList.add('poweron'); sfx('power'); }, 1000));
+      dexTimers.push(setTimeout(() => { dex.classList.add('booting'); sfx('boot', .98); }, 1500));
       dexTimers.push(setTimeout(() => {
         if (!window.open(url, '_blank')) location.assign(url);
         closeDex();
-      }, 820 + 3250));
+      }, 1500 + 3250));
     }, 210));
   }
   document.addEventListener('click', e => {
