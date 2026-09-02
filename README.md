@@ -15,17 +15,25 @@ oscuro, `✦ Fable 5` holográfica u `Opus 4.8/4.7/4.6`, el modelo que construy�
 (rotación diaria determinista) y una ranura para **echar una moneda** que lanza
 un juego al azar.
 
-Cada juego web es un **cartucho 3D flotante** (CSS puro): la carcasa delata su
-chip — cromo oscuro tornasolado para Fable 5.1, nácar para Fable 5; oro, plata y
-bronce para Opus — con tilt
-que sigue al ratón y brillo especular. Al tocarlo se abre su **ficha**: el
-cartucho gira en una sala oscura sobre la **ranura de carga** de la consola,
-que es el propio botón de jugar. Arrástralo hasta la ranura (se enciende al
-acercarse) o toca la ranura: la consola lo traga, arranca el destello
-`GAVILANBE games™` estilo Game Boy Color con su chime chiptune (Web Audio) y el
-juego se abre en otra pestaña. Si no está claro dónde va, el cartucho hace una
-pequeña reverencia hacia la ranura al abrir la ficha (hasta tu primera
-inserción) o al tocarlo.
+Cada juego web es un **Game Pak 3D** (CSS puro) de pie sobre las baldas de la
+estantería: etiqueta grande con el arte, el título, su número y la pegatina del
+chip; la carcasa delata el modelo — cromo oscuro tornasolado para Fable 5.1, nácar
+para Fable 5; oro, plata y bronce para Opus — con tilt que sigue al ratón, brillo
+especular y un pequeño respingo al cogerlo. Arriba, el **panel de mandos** es un
+trozo de consola: interruptor deslizante de tres posiciones (todos · online ·
+terminal), pegatinas de chip con su material y cuántos cartuchos lleva cada una,
+buscador en una pantallita LCD y botón de sonido (SND, se recuerda).
+
+Al tocar un cartucho se abre su **ficha**: el cartucho gira en la sala oscura
+sobre una **consola de verdad** que asoma por abajo (ranura, bisel, LED, pantalla
+LCD). Arrástralo hasta la ranura (se enciende al acercarse) o toca la consola: el
+cartucho entra, la consola encaja con un golpe seco, el LED se enciende, la
+consola se acerca hasta que su pantalla llena la sala y arranca **estilo Game Boy
+Advance**: el LCD parpadea, el logo `GAVILANBE` aterriza, un barrido arcoíris
+recorre las letras, un destello, `games™` en cromo, y el chime de campana con su
+arpegio (Web Audio, todo sintetizado). Después el juego se abre en otra pestaña.
+Si no está claro dónde va, el cartucho hace una pequeña reverencia hacia la
+ranura al abrir la ficha (hasta tu primera inserción) o al tocarlo.
 
 Los juegos de terminal viven en **la sala de máquinas**: cada uno es un
 monitor CRT encendido — fósforo verde, scanlines, reflejo en el cristal y LED —

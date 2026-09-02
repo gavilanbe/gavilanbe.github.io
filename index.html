@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🕹️ gavilanbe//arcade — 61 juegos hechos a mano</title>
-<meta name="description" content="El salón recreativo de gavilanbe: 61 juegos hechos a mano — pixel art, mundos 3D, roguelikes de terminal y homebrew de Game Boy. Elige un cartucho, mételo en la consola y juega en tu navegador.">
+<title>🕹️ gavilanbe//arcade — 67 juegos hechos a mano</title>
+<meta name="description" content="El salón recreativo de gavilanbe: 67 juegos hechos a mano — pixel art, mundos 3D, roguelikes de terminal y homebrew de Game Boy. Elige un cartucho, mételo en la consola y juega en tu navegador.">
 <meta name="theme-color" content="#E7E3D8">
-<meta property="og:title" content="gavilanbe//arcade — 61 juegos hechos a mano">
+<meta property="og:title" content="gavilanbe//arcade — 67 juegos hechos a mano">
 <meta property="og:description" content="Pixel art, mundos 3D, terminal y homebrew de Game Boy. Elige un cartucho, mételo en la consola y juega al instante.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="gavilanbe//arcade">
@@ -91,6 +91,10 @@
   }
   .coinbtn .slot::after{content:""; position:absolute; left:50%; top:6px; transform:translateX(-50%);
     width:3px; height:22px; border-radius:2px; background:var(--coin)}
+  .coinbtn .cn{position:absolute; left:50%; top:-4px; width:16px; height:16px; margin-left:-8px; border-radius:50%; opacity:0;
+    background:radial-gradient(circle at 35% 30%,#FFE6A3,#D99A2B 60%,#8A5F14); box-shadow:0 0 0 1.5px #8A5F14 inset}
+  .coinbtn.drop .cn{animation:coindrop .55s cubic-bezier(.5,0,.8,.4) forwards}
+  @keyframes coindrop{0%{opacity:1; transform:translateY(-22px) rotateX(0)} 60%{opacity:1; transform:translateY(4px) rotateX(70deg) scaleX(.3)} 100%{opacity:0; transform:translateY(16px) scaleX(.1)}}
   .coinbtn small{display:block; font-family:'IBM Plex Mono',monospace; font-size:10px;
     font-weight:500; letter-spacing:.12em; opacity:.75}
   .ghlink{
@@ -119,46 +123,65 @@
   .wall-col a:hover img{opacity:1}
   .wall:hover .wall-col{animation-play-state:paused}
 
-  /* ============ barra de mandos ============ */
+  /* ============ panel de mandos: un trozo de consola pegado arriba ============ */
   .deck{
-    position:sticky; top:0; z-index:40;
-    background:rgba(231,227,216,.88); backdrop-filter:blur(10px);
-    border-bottom:1px solid var(--line);
-    margin-top:26px;
+    position:sticky; top:0; z-index:40; margin-top:26px;
+    background:linear-gradient(180deg,#2B3038,#20242A);
+    border-top:1px solid #3B414B; border-bottom:1px solid #0F1215;
+    box-shadow:0 10px 24px -14px rgba(0,0,0,.7);
   }
-  .deck .wrap{display:flex; gap:10px; align-items:center; padding:12px 22px; flex-wrap:wrap}
-  .deck .chips{display:flex; gap:10px; align-items:center; flex-wrap:wrap; min-width:0}
-  .deck .sep{width:1px; height:20px; background:var(--line); flex:none}
+  .deck .wrap{display:flex; gap:14px; align-items:center; padding:10px 22px; flex-wrap:wrap}
+  /* interruptor de tres posiciones: TODOS · ONLINE · TERMINAL */
+  .sw{position:relative; display:grid; grid-template-columns:repeat(3,auto); align-items:stretch;
+    background:#0F1215; border-radius:9px; padding:3px; gap:0; flex:none;
+    box-shadow:inset 0 2px 5px rgba(0,0,0,.85), 0 1px 0 rgba(255,255,255,.06)}
+  .sw .knob{position:absolute; top:3px; bottom:3px; left:3px; width:calc((100% - 6px)/3); border-radius:7px;
+    background:linear-gradient(180deg,#F2F0E4,#D9D4C4); box-shadow:0 2px 0 #9A9484, 0 3px 6px rgba(0,0,0,.6), inset 0 1px 0 #fff;
+    transform:translateX(calc(var(--k,0)*100%)); transition:transform .28s cubic-bezier(.3,1.5,.5,1)}
+  .sw button{position:relative; z-index:1; font:500 11px/1 'IBM Plex Mono',monospace; letter-spacing:.14em; text-transform:uppercase;
+    background:transparent; border:0; color:#8B93A0; padding:9px 14px; cursor:pointer; transition:color .2s; white-space:nowrap}
+  .sw button.on{color:#20242A}
+  .sw button:hover:not(.on){color:var(--phosphor)}
+  .sw button:focus-visible{box-shadow:none; outline:2px solid var(--coin); outline-offset:-2px; border-radius:7px}
+  /* pegatinas de chip: el propio material del cartucho, con cuántos hay de cada */
+  .deck .chips{display:flex; gap:7px; align-items:center; flex-wrap:wrap; min-width:0}
   .chip{
-    font-family:'IBM Plex Mono',monospace; font-size:12.5px; font-weight:500;
-    padding:8px 14px; border-radius:999px; cursor:pointer; user-select:none;
-    background:transparent; border:1px solid var(--line); color:var(--dim);
-    transition:.15s; font-variant-numeric:tabular-nums;
+    position:relative; font-family:'IBM Plex Mono',monospace; font-size:10.5px; font-weight:500; letter-spacing:.08em;
+    padding:7px 9px 7px 10px; border-radius:7px; cursor:pointer; user-select:none; white-space:nowrap;
+    border:1px solid rgba(0,0,0,.45); color:#3A2604; line-height:1;
+    box-shadow:0 2px 0 rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.45);
+    opacity:.58; transition:opacity .18s, transform .12s, box-shadow .12s;
   }
-  .chip:hover{color:var(--ink); border-color:var(--dim)}
-  .chip.on{background:var(--bezel); color:var(--phosphor); border-color:var(--bezel)}
-  .chip.on.m-fable{
-    background:linear-gradient(110deg,#F2C4FF,#9AD9FF,#A7F3C0,#FFE28A,#F2C4FF);
-    background-size:280% 100%; color:#3A2140; border-color:rgba(58,33,64,.35);
-    animation:foil 7s linear infinite;
-  }
-  .chip.on.m-f51{
-    background:linear-gradient(110deg,#3A2A5A,#1E4A5E,#2E5A44,#5A3E6E,#3A2A5A);
-    background-size:280% 100%; color:#F4EEFF; border-color:rgba(244,238,255,.35);
-    animation:foil 7s linear infinite;
-  }
-  .chip.on.m-o48{background:var(--coin); color:#3A2604; border-color:var(--coin-dark)}
-  .chip.on.m-o47{background:#8E99A8; color:#fff; border-color:#5B6470}
-  .chip.on.m-o46{background:#B06A38; color:#fff; border-color:#7A4B2A}
-  #search{
-    flex:1; min-width:160px; max-width:320px; margin-left:auto;
-    font-family:'IBM Plex Mono',monospace; font-size:13.5px;
-    background:var(--card); color:var(--ink);
-    border:1px solid var(--line); border-radius:10px; padding:9px 13px; outline:none;
-  }
-  #search::placeholder{color:#A29C8C}
-  #search:focus{border-color:var(--play); box-shadow:var(--focus)}
-  #hits{font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--dim); white-space:nowrap}
+  .chip b{font-weight:500; opacity:.7; margin-left:6px}
+  .chip:hover{opacity:.9}
+  .chip.on{opacity:1; transform:translateY(2px); box-shadow:0 0 0 rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.45), 0 0 0 2px #0F1215, 0 0 0 3.5px var(--coin)}
+  .chip.m-f51{background:linear-gradient(110deg,#3A2A5A,#1E4A5E,#2E5A44,#5A3E6E,#3A2A5A); background-size:280% 100%; color:#F4EEFF}
+  .chip.m-fable{background:linear-gradient(110deg,#F2C4FF,#9AD9FF,#A7F3C0,#FFE28A,#F2C4FF); background-size:280% 100%; color:#3A2140}
+  .chip.on.m-f51, .chip.on.m-fable{animation:foil 7s linear infinite}
+  .chip.m-o48{background:linear-gradient(155deg,#F6DA8C,#E2AC3C 55%,#C9911F); color:#3A2604}
+  .chip.m-o47{background:linear-gradient(155deg,#F3F5F9,#C9D2DE 55%,#ACB8C7); color:#2B3038}
+  .chip.m-o46{background:linear-gradient(155deg,#EBBE93,#CD8148 55%,#AC6531); color:#3A1E0C}
+  /* buscador: una pantallita LCD */
+  .lcd{flex:1; min-width:170px; max-width:300px; margin-left:auto; position:relative; display:flex; align-items:center;
+    background:radial-gradient(120% 100% at 50% 0%, #2A3320, #1A2014 70%); border-radius:8px;
+    border:2px solid #0B0E0A; box-shadow:inset 0 2px 8px rgba(0,0,0,.9), 0 1px 0 rgba(255,255,255,.06);
+    padding:0 10px; height:36px}
+  .lcd::before{content:">"; font:500 13px 'IBM Plex Mono',monospace; color:#93A24B; margin-right:6px}
+  #search{flex:1; min-width:0; background:transparent; border:0; outline:none; height:100%;
+    font:500 13px 'IBM Plex Mono',monospace; color:#D6DFB2; text-shadow:0 0 6px rgba(147,162,75,.5); caret-color:#D6DFB2}
+  #search::placeholder{color:#5C6A3E}
+  #search::-webkit-search-cancel-button{-webkit-appearance:none}
+  .lcd .cur{display:none; width:8px; height:14px; background:#93A24B; margin-left:-6px; animation:ttyblink 1.1s steps(1) infinite}
+  #search:placeholder-shown:not(:focus) + .cur{display:block}
+  .lcd:focus-within{box-shadow:inset 0 2px 8px rgba(0,0,0,.9), 0 0 0 2px rgba(147,162,75,.35)}
+  #hits{font:500 10px 'IBM Plex Mono',monospace; letter-spacing:.1em; color:#93A24B; white-space:nowrap; margin-left:8px}
+  /* sonido */
+  .snd{flex:none; display:inline-flex; align-items:center; gap:7px; font:500 10px 'IBM Plex Mono',monospace; letter-spacing:.16em;
+    color:#8B93A0; background:#171A1F; border:1px solid #0F1215; border-radius:7px; padding:9px 10px; cursor:pointer;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
+  .snd .led{width:7px; height:7px; border-radius:50%; background:#3A404A; transition:.2s}
+  .snd.on{color:var(--phosphor)}
+  .snd.on .led{background:#7AC74F; box-shadow:0 0 8px rgba(122,199,79,.9)}
 
   /* ============ la sala de juegos: el catálogo vive en pantalla oscura ============ */
   main.room{
@@ -180,31 +203,39 @@
   .sec-head .count{font-family:'IBM Plex Mono',monospace; font-size:12px; color:#8B93A0}
   .sec-head .rail{flex:1; height:1px; background:#343A44}
 
-  /* ============ cartuchos ============ */
+  /* ============ cartuchos: Game Paks de pie sobre las baldas ============ */
   .shelf{
-    display:grid; grid-auto-flow:column; grid-auto-columns:200px;
-    gap:34px; overflow-x:auto; padding:26px 10px 34px;
-    scroll-snap-type:x proximity; scrollbar-width:thin; scrollbar-color:var(--line) transparent;
+    display:grid; grid-auto-flow:column; grid-auto-columns:196px;
+    gap:34px; overflow-x:auto; overflow-y:hidden; padding:30px 18px 40px; --px:18px;
+    scroll-snap-type:x proximity; scrollbar-width:thin; scrollbar-color:#3B414B transparent;
   }
   .shelf > *{scroll-snap-align:start}
-  .cartgrid{display:grid; gap:36px 24px; grid-template-columns:repeat(auto-fill,minmax(164px,1fr)); padding-top:18px}
+  .cartgrid{display:grid; gap:44px 24px; grid-template-columns:repeat(auto-fill,minmax(164px,1fr)); padding:22px 10px 10px; --px:14px}
 
   /* el cartucho: caja 3D real de seis caras; la carcasa delata el chip que lleva dentro */
-  .slot3d{perspective:1100px; position:relative; cursor:pointer; -webkit-tap-highlight-color:transparent}
+  .slot3d{perspective:1100px; position:relative; cursor:pointer; -webkit-tap-highlight-color:transparent;
+    opacity:0; transform:translateY(26px) rotateX(-14deg)}
+  .slot3d.in{opacity:1; transform:none; transition:opacity .5s ease calc(var(--i,0)*45ms), transform .6s cubic-bezier(.2,1.1,.3,1) calc(var(--i,0)*45ms)}
+  .slot3d.pop{animation:pop .5s cubic-bezier(.2,1.4,.4,1) calc(var(--j,0)*28ms) both}
+  @keyframes pop{from{opacity:0; transform:translateY(14px) scale(.9)}}
+  .slot3d::before{ /* la balda: cada cartucho pinta su tramo y entre todos forman el estante */
+    content:""; position:absolute; left:calc(var(--px)*-1); right:calc(var(--px)*-1); bottom:-16px; height:11px; border-radius:2px;
+    background:linear-gradient(180deg,#3E444F,#2A2F37 60%,#22262D); border-top:1px solid #4E5661;
+    box-shadow:0 8px 12px -5px rgba(0,0,0,.7), inset 0 -2px 0 rgba(0,0,0,.35)}
+  .slot3d::after{ /* la sombra sobre la balda */
+    content:""; position:absolute; left:8%; right:8%; bottom:-12px; height:12px; border-radius:50%;
+    background:radial-gradient(ellipse, rgba(0,0,0,.6), transparent 68%); transition:transform .25s, opacity .25s}
+  .slot3d:hover::after, .slot3d:focus-visible::after{transform:scaleX(1.12) translateY(3px); opacity:.55}
   .cart{
     --edge:#8B8577; --dz:12px;
     position:relative; width:100%; aspect-ratio:57/64;
     transform-style:preserve-3d; will-change:transform;
-    transition:transform .22s ease-out;
-    animation:bob 5.6s ease-in-out infinite; animation-delay:var(--d,0s);
+    transform:rotateX(4deg); transition:transform .28s cubic-bezier(.2,1.2,.3,1);
   }
-  @keyframes bob{0%,100%{transform:translateY(0) rotateX(4deg) rotateY(-6deg)}50%{transform:translateY(-8px) rotateX(7deg) rotateY(6deg)}}
-  .slot3d::after{ /* sombra en el suelo */
-    content:""; position:absolute; left:10%; right:10%; bottom:-17px; height:14px;
-    border-radius:50%; background:radial-gradient(ellipse, rgba(0,0,0,.5), transparent 68%);
-    animation:bobshadow 5.6s ease-in-out infinite; animation-delay:var(--d,0s);
-  }
-  @keyframes bobshadow{0%,100%{transform:scale(1); opacity:.9}50%{transform:scale(.86); opacity:.55}}
+  .slot3d:hover .cart, .slot3d:focus-visible .cart{transform:translateY(-14px) rotateX(8deg) scale(1.04)}
+  .slot3d:hover .cart{animation:pick .55s cubic-bezier(.2,1.4,.4,1)}
+  @keyframes pick{35%{transform:translateY(-18px) rotateX(10deg) rotateZ(-1.5deg) scale(1.05)}}
+  .slot3d:active .cart{transform:translateY(-6px) rotateX(6deg) scale(1.01); transition-duration:.08s}
   .cart .f{position:absolute; inset:0}
   .cart .fr{
     transform:translateZ(var(--dz)); backface-visibility:hidden;
@@ -235,38 +266,43 @@
     opacity:0; transition:opacity .25s;
   }
   .slot3d:hover .fr::after, .slot3d:focus-visible .fr::after{opacity:1}
-  /* frontal: banda moldeada con flecha + hueco rehundido con la etiqueta */
+  /* frontal: banda moldeada fina con la flecha + el hueco rehundido donde va la etiqueta, ahora grande */
   .fr .band{
-    position:absolute; top:6%; left:7%; right:7%; height:12.5%; border-radius:5px;
-    display:flex; align-items:center; justify-content:center; gap:7px;
-    font-family:'IBM Plex Mono',monospace; font-size:7.5px; font-weight:500; letter-spacing:.22em;
+    position:absolute; top:4.5%; left:8%; right:8%; height:8.5%; border-radius:4px;
+    display:flex; align-items:center; justify-content:space-between; padding:0 8px;
+    font-family:'IBM Plex Mono',monospace; font-size:7px; font-weight:500; letter-spacing:.2em;
     color:rgba(0,0,0,.42); text-shadow:0 1px 0 rgba(255,255,255,.35);
     background:rgba(0,0,0,.05);
     box-shadow:inset 0 2px 4px rgba(0,0,0,.22), inset 0 -1px 0 rgba(255,255,255,.45);
   }
-  .fr .band .arw{width:0; height:0; border:5px solid transparent;
-    border-top-color:rgba(0,0,0,.38); margin-top:6px;
+  .fr .band .arw{width:0; height:0; border:4px solid transparent;
+    border-top-color:rgba(0,0,0,.4); margin-top:4px;
     filter:drop-shadow(0 1px 0 rgba(255,255,255,.35))}
   .fr .well{
-    position:absolute; left:8.5%; right:8.5%; top:23.5%; bottom:9%; border-radius:7px; padding:5px;
+    position:absolute; left:7.5%; right:7.5%; top:15.5%; bottom:6%; border-radius:7px; padding:4px;
     background:rgba(0,0,0,.10);
     box-shadow:inset 0 2px 6px rgba(0,0,0,.30), inset 0 -1px 0 rgba(255,255,255,.35);
   }
   .sticker{position:relative; width:100%; height:100%; border-radius:5px; overflow:hidden; background:#14171B;
+    display:flex; flex-direction:column;
     box-shadow:0 0 0 1px rgba(255,255,255,.22), 0 1px 3px rgba(0,0,0,.4)}
-  .sticker img{width:100%; height:70%; object-fit:cover}
-  .sticker .noart{width:100%; height:70%; display:flex; align-items:center; justify-content:center;
-    font-size:38px; background:#20242A}
-  .sticker .strip{position:absolute; left:0; right:0; bottom:0; top:70%;
-    display:flex; align-items:center; justify-content:center; padding:2px 7px;
+  .sticker .art{flex:1 1 0; min-height:0; position:relative; background:#20242A}
+  .sticker .art img{width:100%; height:100%; object-fit:cover}
+  .sticker .art::after{content:""; position:absolute; inset:0; box-shadow:inset 0 -14px 14px -12px rgba(0,0,0,.6)}
+  .sticker .noart{width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:38px; background:#20242A}
+  .sticker .strip{flex:none; height:33%; display:flex; align-items:center; justify-content:center; padding:3px 7px 2px;
     background:linear-gradient(180deg,#23272D,#181B1F)}
   .sticker .strip span{
-    font-family:'Unbounded',sans-serif; font-weight:500; font-size:9.5px; line-height:1.25;
-    color:var(--phosphor); text-align:center;
+    font-family:'Unbounded',sans-serif; font-weight:500; font-size:10.5px; line-height:1.2;
+    color:var(--phosphor); text-align:center; letter-spacing:-.01em;
     display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
   }
-  .sticker .mchip{position:absolute; top:5px; right:5px; font-size:8px; padding:3px 6px}
-  .sticker .badge{top:5px; left:5px; transform:rotate(-6deg)}
+  .sticker .foot{flex:none; height:19px; display:flex; align-items:center; justify-content:space-between; padding:0 6px;
+    background:#101317; border-top:1px solid rgba(255,255,255,.06)}
+  .sticker .foot .no{font:500 7.5px 'IBM Plex Mono',monospace; letter-spacing:.16em; color:#5C646F}
+  .sticker .foot .mchip{font-size:7px; padding:2px 5px; border-radius:4px}
+  .sticker .badge{top:6px; left:-24px; padding:2px 26px; transform:rotate(-38deg); font-size:8px; border-radius:0;
+    box-shadow:0 1px 3px rgba(0,0,0,.5)}
   /* trasera: estrías de agarre, placa embutida y tornillo */
   .bk .ridges{position:absolute; top:7%; left:8%; right:8%; height:36%;
     background:repeating-linear-gradient(180deg, rgba(0,0,0,.22) 0 4px, transparent 4px 11px)}
@@ -278,11 +314,6 @@
     box-shadow:inset 0 0 0 1px rgba(0,0,0,.3)}
   .bk .screw::after{content:""; position:absolute; left:2px; right:2px; top:50%; height:1.5px;
     background:rgba(0,0,0,.55); transform:rotate(45deg)}
-  .cart-cap{margin-top:18px; text-align:center; font-family:'IBM Plex Mono',monospace;
-    font-size:12px; color:#8B93A0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
-  .cart-cap b{color:#5C646F; font-weight:500; margin-right:6px}
-  .slot3d:hover .cart-cap, .slot3d:focus-visible .cart-cap{color:var(--phosphor)}
-  .slot3d:hover .cart-cap b{color:#8B93A0}
 
   /* carcasas por chip: nácar para Fable; oro, plata y bronce para Opus */
   .tier-fable{--edge:#A796C9; --g:linear-gradient(125deg,#F2E7FF,#D4F1FF 28%,#DDFBE7 52%,#FFF2D2 76%,#F2E7FF)}
@@ -315,7 +346,7 @@
   .dex-x{position:absolute; top:12px; right:12px; z-index:6; width:34px; height:34px; border-radius:50%;
     border:1px solid var(--line); background:var(--card); color:var(--dim); font-size:15px; cursor:pointer}
   .dex-x:hover{color:var(--ink); border-color:var(--dim)}
-  .dex-stage{position:relative; overflow:hidden; min-height:460px; touch-action:none;
+  .dex-stage{position:relative; overflow:hidden; min-height:480px; touch-action:none;
     background:radial-gradient(120% 80% at 50% -10%, #343B45 0%, #23272E 55%, #16181D 100%)}
   .dex-stage::before{ /* suelo de rejilla en perspectiva */
     content:""; position:absolute; left:-24%; right:-24%; bottom:70px; height:56%;
@@ -336,11 +367,11 @@
   .dex.solo .dexcount{visibility:hidden}
   .dex-info{transition:opacity .12s}
   .dex-info.swap{opacity:.35}
-  .cartwell{position:absolute; left:0; right:0; top:0; bottom:96px; z-index:2;
+  .cartwell{position:absolute; left:0; right:0; top:34px; bottom:236px; z-index:2;
     overflow:hidden; cursor:grab; perspective:1100px}
   .cartwell:active{cursor:grabbing}
   .dexrow{position:absolute; inset:0; transform-style:preserve-3d}
-  .rowitem{position:absolute; left:50%; top:50%; width:210px;
+  .rowitem{position:absolute; left:50%; top:50%; width:180px;
     transform-style:preserve-3d; will-change:transform}
   .rowitem .lift{transform-style:preserve-3d}
   .rowitem .cart{--dz:14px}
@@ -367,78 +398,115 @@
     content:""; position:absolute; left:10%; right:10%; bottom:-30px; height:14px; border-radius:50%;
     background:radial-gradient(ellipse, rgba(0,0,0,.65), transparent 68%);
     transform:scale(calc(1 + var(--k,0)*.4)); opacity:calc(1 - var(--k,0)*.55); transition:opacity .3s}
-  .drag-hint{position:absolute; left:0; right:0; bottom:110px; z-index:2; text-align:center; pointer-events:none;
+  .drag-hint{position:absolute; left:130px; right:16px; top:16px; z-index:2; text-align:right; pointer-events:none;
     font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:.24em; color:#5C646F;
     transition:opacity .25s}
   .dex.ready .drag-hint, .dex.inserting .drag-hint{opacity:0}
   .drag-hint .h-mini{display:none}
-  /* la consola: la propia ranura de carga es el botón de jugar */
-  .dock{position:absolute; left:0; right:0; bottom:0; height:96px; z-index:3;
-    display:block; width:100%; padding:0; font:inherit; color:inherit; text-align:center; cursor:pointer;
-    -webkit-appearance:none; appearance:none; border:0;
-    background:linear-gradient(180deg,#31363E,#23272D 30%,#1B1E23);
-    border-top:1px solid #3B414B; box-shadow:0 -8px 22px -12px rgba(0,0,0,.7)}
-  .dock i{position:absolute; left:50%; top:-9px; transform:translateX(-50%);
-    width:232px; height:17px; border-radius:5px;
-    background:linear-gradient(180deg,#07090B,#14171B);
-    box-shadow:inset 0 3px 6px rgba(0,0,0,.9), 0 1px 0 rgba(255,255,255,.07);
-    transition:box-shadow .25s}
-  .dock .cta{position:absolute; left:0; right:0; top:27px;
-    font-family:'IBM Plex Mono',monospace; font-size:12px; font-weight:500;
-    letter-spacing:.22em; text-indent:.22em; color:#9BA3AE; transition:color .2s}
-  .dock .cta b{display:inline-block; font-weight:500; color:var(--coin);
-    animation:dockarw 1.5s ease-in-out infinite}
+  /* la consola de verdad: asoma por abajo, con su ranura arriba y su pantalla; tragar el cartucho es jugar */
+  .console{position:absolute; left:0; right:0; bottom:-58px; margin:auto; width:340px; height:270px; z-index:3;
+    display:block; padding:0; font:inherit; color:inherit; text-align:center; cursor:pointer; border:0;
+    -webkit-appearance:none; appearance:none; background:transparent;
+    transform-origin:var(--ox,50%) var(--oy,40%); transition:transform .75s cubic-bezier(.5,0,.15,1); will-change:transform}
+  .console:focus-visible{outline:none}
+  .console .cslot{position:absolute; left:26px; right:26px; top:0; height:22px; border-radius:6px 6px 0 0;
+    background:linear-gradient(180deg,#B9B3A3,#CFC9B8 40%,#B0AA9A); box-shadow:0 -1px 0 #E7E3D8, inset 0 -3px 0 rgba(0,0,0,.18)}
+  .console .cslot i{position:absolute; left:14px; right:14px; top:5px; height:10px; border-radius:3px;
+    background:linear-gradient(180deg,#07090B,#14171B); box-shadow:inset 0 3px 5px rgba(0,0,0,.95), 0 1px 0 rgba(255,255,255,.35); transition:box-shadow .25s}
+  .console .cbody{position:absolute; left:0; right:0; top:20px; bottom:0; border-radius:16px 16px 22px 22px;
+    background:linear-gradient(180deg,#EDE9DE,#E2DDCF 30%,#D8D2C2); border:1px solid #B9B3A3;
+    box-shadow:inset 0 2px 0 #FBF9F2, inset 0 -6px 0 rgba(0,0,0,.08), 0 18px 30px -14px rgba(0,0,0,.8)}
+  .console .cbody::before{ /* la línea moldeada de la tapa y los tornillos */
+    content:""; position:absolute; left:14px; right:14px; top:12px; height:2px; border-radius:2px; background:rgba(0,0,0,.09); box-shadow:0 1px 0 rgba(255,255,255,.7)}
+  .console .bezel{position:absolute; left:22px; right:22px; top:26px; height:168px; border-radius:10px 10px 10px 34px;
+    background:linear-gradient(170deg,#3A3F48,#23272E 60%,#1B1E23); border:1px solid #14171B;
+    box-shadow:inset 0 1px 0 rgba(242,240,228,.1), 0 2px 0 rgba(255,255,255,.4)}
+  .console .bz-line{position:absolute; left:0; right:0; top:8px; font:500 7px 'IBM Plex Mono',monospace; letter-spacing:.26em; color:#8B93A0}
+  .console .bz-line::before, .console .bz-line::after{content:""; position:absolute; top:4px; height:1px; width:22%; background:#5C646F}
+  .console .bz-line::before{left:10%} .console .bz-line::after{right:10%}
+  .console .led{position:absolute; left:16px; top:70px; width:8px; height:8px; border-radius:50%; background:#4A2A28; box-shadow:inset 0 0 2px #000; transition:.2s}
+  .console .led-l{position:absolute; left:8px; top:82px; font:500 5.5px 'IBM Plex Mono',monospace; letter-spacing:.1em; color:#6E7683}
+  .console .screen{position:absolute; left:38px; right:22px; top:24px; bottom:18px; border-radius:4px; overflow:hidden;
+    background:radial-gradient(110% 90% at 50% 40%, #9AA854 0%, #86953F 60%, #6F7C33 100%);
+    box-shadow:inset 0 0 18px rgba(0,0,0,.45), inset 0 0 0 1px rgba(0,0,0,.3)}
+  .console .screen::before{ /* rejilla de píxeles del LCD */
+    content:""; position:absolute; inset:0; z-index:3; pointer-events:none; opacity:.55;
+    background:repeating-linear-gradient(0deg, rgba(0,0,0,.09) 0 1px, transparent 1px 3px),
+      repeating-linear-gradient(90deg, rgba(0,0,0,.07) 0 1px, transparent 1px 3px)}
+  .console .screen::after{ /* reflejo del cristal */
+    content:""; position:absolute; inset:0; z-index:4; pointer-events:none;
+    background:linear-gradient(115deg, rgba(255,255,255,.16) 0%, transparent 32%)}
+  .console .off{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; z-index:2;
+    font:500 8px 'IBM Plex Mono',monospace; letter-spacing:.3em; color:rgba(32,37,26,.55); transition:opacity .2s}
+  .console .cbrand{position:absolute; left:0; right:0; top:202px; font:700 15px 'Unbounded',sans-serif; letter-spacing:-.01em; color:#4A505A}
+  .console .cbrand i{font:700 8px 'IBM Plex Mono',monospace; letter-spacing:.3em; vertical-align:2px; margin-left:5px; color:#7A828E}
+  .console .cta{position:absolute; left:0; right:0; top:-30px; font:500 11px 'IBM Plex Mono',monospace; letter-spacing:.22em; text-indent:.22em;
+    color:#9BA3AE; transition:color .2s, opacity .2s}
+  .console .cta b{display:inline-block; font-weight:500; color:var(--coin); animation:dockarw 1.5s ease-in-out infinite}
   @keyframes dockarw{50%{transform:translateY(3px)}}
-  .dock small{position:absolute; left:0; right:0; bottom:13px; text-align:center;
-    font-family:'IBM Plex Mono',monospace; font-size:9px; letter-spacing:.22em; color:#5C646F}
-  .dock:hover .cta, .dock:focus-visible .cta{color:var(--phosphor)}
-  .dock:hover i, .dock:focus-visible i{box-shadow:inset 0 3px 6px rgba(0,0,0,.9),
-    0 0 16px rgba(217,154,43,.45), 0 1px 0 rgba(255,255,255,.07)}
-  .dock:focus-visible{outline:none; border-radius:0;
-    box-shadow:inset 0 0 0 3px rgba(196,43,103,.45), 0 -8px 22px -12px rgba(0,0,0,.7)}
-  .dock .led{position:absolute; right:26px; top:24px; width:9px; height:9px; border-radius:50%;
-    background:#E4574A; box-shadow:0 0 10px rgba(228,87,74,.8); transition:background .2s, box-shadow .2s}
+  .console:hover .cta, .console:focus-visible .cta{color:var(--phosphor)}
+  .console:hover .cslot i, .console:focus-visible .cslot i{box-shadow:inset 0 3px 5px rgba(0,0,0,.95), 0 0 14px rgba(217,154,43,.5), 0 1px 0 rgba(255,255,255,.35)}
+  .console:focus-visible .cbody{box-shadow:inset 0 2px 0 #FBF9F2, inset 0 -6px 0 rgba(0,0,0,.08), 0 18px 30px -14px rgba(0,0,0,.8), 0 0 0 3px rgba(196,43,103,.45)}
   /* el cartucho se acerca: la ranura se enciende, lista para tragarlo */
-  .dex.ready .dock i{box-shadow:inset 0 3px 6px rgba(0,0,0,.9),
-    0 0 22px rgba(217,154,43,.75), 0 1px 0 rgba(255,255,255,.07)}
-  .dex.ready .dock .cta{color:var(--coin)}
-  .dex.ready .dock .cta b{animation-duration:.5s}
+  .dex.ready .console .cslot i{box-shadow:inset 0 3px 5px rgba(0,0,0,.95), 0 0 22px rgba(217,154,43,.85), 0 1px 0 rgba(255,255,255,.35)}
+  .dex.ready .console .cta{color:var(--coin)}
+  .dex.ready .console .cta b{animation-duration:.5s}
   /* demo diegética: el cartucho hace una reverencia hacia la ranura ("yo voy ahí") */
   .dex.nudge .rowitem.center .lift{animation:nudgedip 1.5s cubic-bezier(.45,0,.35,1)}
   @keyframes nudgedip{0%,100%{transform:translateY(0)}42%,58%{transform:translateY(var(--nudge,90px))}}
-  .dex.nudge .dock i{animation:nudgeglow 1.5s ease}
-  @keyframes nudgeglow{42%,70%{box-shadow:inset 0 3px 6px rgba(0,0,0,.9),
-    0 0 22px rgba(217,154,43,.75), 0 1px 0 rgba(255,255,255,.07)}}
-  .dex.nudge .dock .cta{color:var(--coin)}
-  .dex.inserting .dock .led, .dex.booting .dock .led{
-    background:#7AC74F; box-shadow:0 0 12px rgba(122,199,79,.95)}
+  .dex.nudge .console .cslot i{animation:nudgeglow 1.5s ease}
+  @keyframes nudgeglow{42%,70%{box-shadow:inset 0 3px 5px rgba(0,0,0,.95), 0 0 22px rgba(217,154,43,.85), 0 1px 0 rgba(255,255,255,.35)}}
+  .dex.nudge .console .cta{color:var(--coin)}
+  /* inserción: el cartucho entra, la consola encaja con un golpe seco, el LED se enciende */
   .dex.inserting .rowitem::after{opacity:0}
   .dex.inserting .rowitem:not(.center){opacity:0 !important; transition:opacity .35s}
-  .dex.inserting .dock i{animation:slotflash .5s .3s}
-  @keyframes slotflash{50%{box-shadow:inset 0 3px 6px rgba(0,0,0,.9), 0 0 20px rgba(217,154,43,.85)}}
-  .dex.inserting .dex-stage{animation:thunk .18s .44s}
-  @keyframes thunk{50%{transform:translateY(3px)}}
-  /* pantalla de arranque estilo Game Boy Color: blanco, el logo cae y destella en colores */
-  .gbboot{position:absolute; inset:0; z-index:5; background:#F7F7EF;
-    display:flex; align-items:center; justify-content:center;
-    opacity:0; visibility:hidden; transition:opacity .25s, visibility .25s}
-  .dex.booting .gbboot{opacity:1; visibility:visible}
-  .gblogo{text-align:center}
-  .dex.booting .gblogo{animation:bootdrop .8s cubic-bezier(.2,.8,.3,1) forwards}
-  @keyframes bootdrop{from{transform:translateY(-200px)}to{transform:translateY(0)}}
-  .gblogo b{display:block; font-family:'Unbounded',sans-serif; font-weight:700;
-    font-size:clamp(24px,4.5vw,34px); letter-spacing:.02em; color:#1A1A8C}
-  .gblogo b i{font-style:normal}
-  .dex.booting .gblogo b i{animation:gbcflash .6s steps(1) forwards;
-    animation-delay:calc(.84s + var(--i)*.05s)}
-  @keyframes gbcflash{
-    0%{color:#D8334A} 18%{color:#E8821D} 36%{color:#3BA53B}
-    54%{color:#2C6FD1} 72%{color:#8A46C4} 100%{color:#1A1A8C}
-  }
-  .gblogo small{display:block; margin-top:9px; font-family:'IBM Plex Mono',monospace;
-    font-size:12px; letter-spacing:.5em; text-indent:.5em; color:#1A1A8C; opacity:0}
-  .dex.booting .gblogo small{animation:gbfade .3s ease .92s forwards}
-  @keyframes gbfade{to{opacity:.85}}
+  .dex.inserting .console .cta{opacity:0}
+  .dex.inserting .console .cslot i{animation:slotflash .5s .3s}
+  @keyframes slotflash{50%{box-shadow:inset 0 3px 5px rgba(0,0,0,.95), 0 0 20px rgba(217,154,43,.85)}}
+  .dex.inserting .console{animation:thunk .32s .48s cubic-bezier(.2,.9,.3,1)}
+  @keyframes thunk{30%{transform:translateY(5px) rotate(.4deg)} 60%{transform:translateY(-2px) rotate(-.3deg)}}
+  .dex.inserting .dex-stage{animation:stageshake .3s .5s}
+  @keyframes stageshake{25%{transform:translate(1px,2px)} 50%{transform:translate(-1px,1px)} 75%{transform:translate(1px,-1px)}}
+  .dex.inserting .console .led, .dex.booting .console .led{background:#E4574A; box-shadow:0 0 10px rgba(228,87,74,.95), 0 0 2px #fff inset}
+  /* arranque: la consola se acerca hasta que su pantalla llena la sala; el LCD enciende; el logo estilo GBA */
+  .dex.booting .console{transform:translate(var(--zx,0px),var(--zy,0px)) scale(var(--zs,2.4))}
+  .dex.booting .console .off{opacity:0}
+  .dex.booting .console .screen{animation:lcdon .5s steps(4) forwards; animation-delay:.35s}
+  @keyframes lcdon{0%{background:#6F7C33} 25%{background:#B9C48A} 50%{background:#A8B56F} 100%{background:#E3E8CF}}
+  /* la pantalla grande: cuando el zoom termina, el LCD ocupa la sala a tamaño real (nítido) y arranca */
+  .gbboot{position:absolute; inset:0; z-index:6; padding:14px; background:#1B1E23; visibility:hidden; opacity:0}
+  .dex.booting .gbboot{animation:bootshow .12s linear .68s forwards}
+  @keyframes bootshow{to{visibility:visible; opacity:1}}
+  .gbboot .lcd2{position:relative; width:100%; height:100%; border-radius:6px; overflow:hidden; background:#E3E8CF;
+    box-shadow:inset 0 0 40px rgba(0,0,0,.25), inset 0 0 0 2px rgba(0,0,0,.35);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px}
+  .gbboot .lcd2::before{content:""; position:absolute; inset:0; z-index:3; pointer-events:none; opacity:.5;
+    background:repeating-linear-gradient(0deg, rgba(0,0,0,.08) 0 1px, transparent 1px 3px), repeating-linear-gradient(90deg, rgba(0,0,0,.06) 0 1px, transparent 1px 3px)}
+  .gbboot .lcd2::after{content:""; position:absolute; inset:0; z-index:4; pointer-events:none; background:linear-gradient(115deg, rgba(255,255,255,.18) 0%, transparent 30%)}
+  .gba{position:relative; z-index:2; text-align:center; opacity:0}
+  .dex.booting .gba{animation:gbain .32s cubic-bezier(.2,.9,.3,1.3) .86s forwards}
+  @keyframes gbain{from{opacity:0; transform:translateY(-18px) scale(.92)} to{opacity:1; transform:none}}
+  .gba .logo{position:relative; display:inline-block; font:700 clamp(30px,7.5vw,50px)/1 'Unbounded',sans-serif; letter-spacing:.01em; color:#1C2C8A;
+    -webkit-text-stroke:1.5px #7DA2E8; paint-order:stroke fill; text-shadow:0 2px 0 rgba(255,255,255,.55)}
+  .gba .logo .sh{ /* el barrido arcoíris que recorre las letras, como el de la GBA: texto degradado bajo una máscara que viaja */
+    position:absolute; left:0; top:0; color:transparent; -webkit-text-stroke:0; text-shadow:none; pointer-events:none;
+    background:linear-gradient(100deg,#FF6B8A,#FFD166 25%,#7BE495 50%,#5EC8FF 75%,#B58CFF); -webkit-background-clip:text; background-clip:text;
+    -webkit-mask-image:linear-gradient(100deg, transparent 38%, #000 50%, transparent 62%); mask-image:linear-gradient(100deg, transparent 38%, #000 50%, transparent 62%);
+    -webkit-mask-size:300% 100%; mask-size:300% 100%; -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
+    -webkit-mask-position:120% 0; mask-position:120% 0; opacity:0}
+  .dex.booting .gba .logo .sh{animation:shimmer 1.1s cubic-bezier(.45,0,.35,1) 1.15s forwards}
+  @keyframes shimmer{0%{opacity:1; -webkit-mask-position:120% 0; mask-position:120% 0} 100%{opacity:1; -webkit-mask-position:-20% 0; mask-position:-20% 0}}
+  .gba .spark{position:absolute; right:-22px; top:-20px; font-style:normal; font-size:38px; line-height:1; color:#fff;
+    text-shadow:0 0 8px #fff, 0 0 18px #9BD1FF, 0 0 30px #5EC8FF; opacity:0; transform:scale(0)}
+  .dex.booting .gba .spark{animation:sparkle .6s cubic-bezier(.2,1.2,.3,1) 2.05s}
+  @keyframes sparkle{0%{opacity:0; transform:scale(0) rotate(0)} 35%{opacity:1; transform:scale(1.4) rotate(90deg)} 100%{opacity:0; transform:scale(.3) rotate(200deg)}}
+  .gba small{display:block; margin-top:12px; font:500 12px 'IBM Plex Mono',monospace; letter-spacing:.55em; text-indent:.55em; opacity:0;
+    background:linear-gradient(180deg,#8A96B8,#2B3A7A 45%,#8A96B8 55%,#1C2C8A); -webkit-background-clip:text; background-clip:text; color:transparent}
+  .dex.booting .gba small{animation:gbfade .3s ease 1.75s forwards}
+  @keyframes gbfade{to{opacity:1}}
+  .gbboot .flash{position:absolute; inset:0; z-index:5; background:#fff; opacity:0}
+  .dex.booting .gbboot .flash{animation:outflash .26s ease 2.95s forwards}
+  @keyframes outflash{to{opacity:1}}
   .dex-info{padding:30px 30px 26px; display:flex; flex-direction:column; gap:12px; overflow:auto}
   .dex-info h3{font-family:'Unbounded',sans-serif; font-weight:700; font-size:clamp(19px,2.6vw,26px);
     line-height:1.1; padding-right:34px}
@@ -459,18 +527,20 @@
     .dex{padding:10px}
     /* la ficha no es un scroller que envuelva la escena 3D (iOS pinta mal el preserve-3d
        dentro de overflow:auto): el escenario queda fijo y solo la info scrollea */
-    .dex-card{grid-template-columns:1fr; grid-template-rows:minmax(330px,auto) minmax(0,1fr);
+    .dex-card{grid-template-columns:1fr; grid-template-rows:minmax(390px,auto) minmax(0,1fr);
       max-height:94vh; overflow:hidden}
-    .dex-stage{min-height:330px}
-    .cartwell{top:30px; bottom:84px}
-    .rowitem{width:150px}
+    .dex-stage{min-height:390px}
+    .cartwell{top:30px; bottom:198px}
+    .rowitem{width:118px}
     .dexcount{left:50%; top:14px; transform:translateX(-50%); white-space:nowrap}
-    .drag-hint{bottom:auto; top:34px; padding:0 54px}
+    .drag-hint{left:0; right:0; bottom:auto; top:34px; padding:0 54px; text-align:center}
     .drag-hint .h-full{display:none}
     .drag-hint .h-mini{display:inline}
-    .dock{height:84px}
-    .dock .cta{top:22px}
-    .dock small{bottom:11px}
+    .console{width:270px; height:230px; bottom:-70px}
+    .console .bezel{height:140px; left:16px; right:16px}
+    .console .screen{left:32px; right:16px}
+    .console .cbrand{top:172px; font-size:13px}
+    .console .cta{top:-26px; font-size:10px}
   }
 
   .badge{
@@ -597,6 +667,7 @@
   body.dexopen .room .mchip.fable, body.dexopen footer .mchip.fable,
   body.dexopen .room .mchip.f51, body.dexopen footer .mchip.f51,
   body.dexopen .deck .chip.m-fable, body.dexopen .deck .chip.m-f51{animation-play-state:paused}
+  .slot3d.hidden{display:none !important}
 
   /* aparición al hacer scroll */
   .reveal{opacity:0; transform:translateY(14px); transition:opacity .5s, transform .5s}
@@ -611,10 +682,13 @@
   }
   @media (max-width:640px){
     /* barra de mandos compacta: búsqueda arriba, chips en carril deslizante */
-    .deck .wrap{padding:10px 14px}
-    #search{order:-1; flex:1 1 auto; max-width:none}
-    #hits{order:-1}
-    .deck .chips{flex:1 1 100%; flex-wrap:nowrap; overflow-x:auto; padding-bottom:2px;
+    .deck .wrap{padding:8px 12px; gap:8px}
+    .sw{order:-2; flex:1 1 auto}
+    .sw button{padding:8px 6px; width:100%; font-size:10px}
+    .lcd{order:-1; flex:1 1 200px; max-width:none; margin:0}
+    .snd{order:-1}
+    .sec-head .count{display:none}
+    .deck .chips{flex:1 1 100%; flex-wrap:nowrap; overflow-x:auto; padding-bottom:3px;
       scrollbar-width:none}
     .deck .chips::-webkit-scrollbar{display:none}
     .chip{flex:none}
@@ -629,7 +703,8 @@
     .reveal{opacity:1; transform:none; transition:none}
     .crt-body, .crt .shot, .crt .tty{transition:none}
     .cart, .slot3d::after, .rowitem .cart, .tier-fable .fr, .tier-fable .bk, .tier-f51 .fr, .tier-f51 .bk{animation:none !important}
-    .dock .cta b{animation:none}
+    .console .cta b{animation:none}
+    .slot3d{opacity:1; transform:none}
     .crt.in .scr, .crt .cur{animation:none}
     .cart{transition:none}
   }
@@ -648,7 +723,7 @@
       <p class="hero-stats" id="hero-stats"></p>
       <div class="hero-actions">
         <button class="coinbtn" id="coin" type="button">
-          <span class="slot" aria-hidden="true"></span>
+          <span class="slot" aria-hidden="true"><i class="cn"></i></span>
           <span>Echa una moneda<small>JUEGO AL AZAR</small></span>
         </button>
         <a class="ghlink" href="https://github.com/gavilanbe" target="_blank" rel="noopener">github.com/gavilanbe ↗</a>
@@ -660,19 +735,24 @@
 
 <nav class="deck" aria-label="filtros">
   <div class="wrap">
-    <div class="chips">
-      <button class="chip on" data-f="all" type="button">Todos</button>
-      <button class="chip" data-f="web" type="button">Jugables online</button>
-      <button class="chip" data-f="terminal" type="button">De terminal</button>
-      <span class="sep" aria-hidden="true"></span>
-      <button class="chip m-f51" data-m="fable-5.1" type="button" title="Juegos construidos con Claude Fable 5.1">✦ Fable 5.1</button>
-      <button class="chip m-fable" data-m="fable" type="button" title="Juegos construidos con Claude Fable 5">✦ Fable 5</button>
-      <button class="chip m-o48" data-m="opus-4.8" type="button" title="Juegos construidos con Claude Opus 4.8">Opus 4.8</button>
-      <button class="chip m-o47" data-m="opus-4.7" type="button" title="Juegos construidos con Claude Opus 4.7">Opus 4.7</button>
-      <button class="chip m-o46" data-m="opus-4.6" type="button" title="Juegos construidos con Claude Opus 4.6">Opus 4.6</button>
+    <div class="sw" id="sw" role="group" aria-label="Tipo de juego">
+      <span class="knob" aria-hidden="true"></span>
+      <button class="on" data-f="all" type="button">Todos</button>
+      <button data-f="web" type="button">Online</button>
+      <button data-f="terminal" type="button">Terminal</button>
     </div>
-    <input id="search" type="search" placeholder="buscar…  /" autocomplete="off" aria-label="Buscar juego">
-    <span id="hits"></span>
+    <div class="chips" id="chips">
+      <button class="chip m-f51" data-m="fable-5.1" type="button" title="Juegos construidos con Claude Fable 5.1">✦ FABLE 5.1<b></b></button>
+      <button class="chip m-fable" data-m="fable" type="button" title="Juegos construidos con Claude Fable 5">✦ FABLE 5<b></b></button>
+      <button class="chip m-o48" data-m="opus-4.8" type="button" title="Juegos construidos con Claude Opus 4.8">OPUS 4.8<b></b></button>
+      <button class="chip m-o47" data-m="opus-4.7" type="button" title="Juegos construidos con Claude Opus 4.7">OPUS 4.7<b></b></button>
+      <button class="chip m-o46" data-m="opus-4.6" type="button" title="Juegos construidos con Claude Opus 4.6">OPUS 4.6<b></b></button>
+    </div>
+    <label class="lcd">
+      <input id="search" type="search" placeholder="BUSCAR  [/]" autocomplete="off" aria-label="Buscar juego"><i class="cur" aria-hidden="true"></i>
+      <span id="hits"></span>
+    </label>
+    <button class="snd" id="snd" type="button" aria-pressed="true" title="Sonido de la consola"><i class="led" aria-hidden="true"></i>SND</button>
   </div>
 </nav>
 
@@ -722,15 +802,24 @@
     <div class="dex-stage" id="dex-stage">
       <span class="dexcount" id="dex-count"></span>
       <div class="cartwell" id="dex-well"><div class="dexrow" id="dex-row"></div></div>
-      <p class="drag-hint"><span class="h-full">◂ ▸ DESLIZA PARA CAMBIAR · ▼ BAJA EL CARTUCHO A LA RANURA</span><span class="h-mini">◂ ▸ DESLIZA · ▼ A LA RANURA</span></p>
-      <button class="dock" id="dex-dock" type="button">
-        <i aria-hidden="true"></i><span class="led" aria-hidden="true"></span>
+      <p class="drag-hint"><span class="h-full">◂ ▸ HOJEAR · ▼ ARRASTRA A LA RANURA</span><span class="h-mini">◂ ▸ DESLIZA · ▼ A LA RANURA</span></p>
+      <button class="console" id="dex-dock" type="button" aria-label="Meter el cartucho y jugar">
         <span class="cta"><b aria-hidden="true">▼</b> METER EL CARTUCHO</span>
-        <small>RANURA DE CARGA · SE ABRE EN OTRA PESTAÑA</small>
+        <span class="cslot"><i aria-hidden="true"></i></span>
+        <span class="cbody">
+          <span class="bezel">
+            <span class="bz-line">GAVILANBE™ · DOT MATRIX</span>
+            <span class="led" aria-hidden="true"></span><span class="led-l">BATTERY</span>
+            <span class="screen" id="dex-screen">
+              <span class="off">INSERTA UN GAME PAK</span>
+            </span>
+          </span>
+          <span class="cbrand">gavilanbe<i>ARCADE</i></span>
+        </span>
       </button>
-      <div class="gbboot" aria-hidden="true"><div class="gblogo">
-        <b><i style="--i:0">G</i><i style="--i:1">A</i><i style="--i:2">V</i><i style="--i:3">I</i><i style="--i:4">L</i><i style="--i:5">A</i><i style="--i:6">N</i><i style="--i:7">B</i><i style="--i:8">E</i></b>
-        <small>games™</small>
+      <div class="gbboot" aria-hidden="true"><div class="lcd2">
+        <div class="gba"><b class="logo">GAVILANBE<span class="sh" aria-hidden="true">GAVILANBE</span><i class="spark">✦</i></b><small>games™</small></div>
+        <i class="flash"></i>
       </div></div>
     </div>
     <div class="dex-info">
@@ -740,7 +829,7 @@
       <p class="tagline2" id="dex-tag"></p>
       <div class="dex-shot" id="dex-shot"><img id="dex-img" alt="" decoding="async"></div>
       <div class="dex-actions">
-        <p class="howto"><b>Cómo jugar</b>Lleva el cartucho hasta la ranura de carga — o toca la ranura — y la consola arranca sola.</p>
+        <p class="howto"><b>Cómo jugar</b>Arrastra el cartucho hasta la ranura de la consola — o toca la consola — y arranca sola.</p>
         <a class="repo" id="dex-repo" target="_blank" rel="noopener">ver código ↗</a>
       </div>
     </div>
@@ -813,22 +902,26 @@
     el.tabIndex = 0;
     el.setAttribute('role','button');
     el.setAttribute('aria-label', `Ver el cartucho de ${stripEmoji(g.title)}`);
-    el.style.setProperty('--d', (-(Math.random()*5)).toFixed(2)+'s');
+    el.style.setProperty('--i', num ? (num - 1) % 12 : 0);
     const art = g.thumb
       ? `<img src="${esc(g.thumb)}" alt="" ${eager ? '' : 'loading="lazy"'}>`
       : `<div class="noart">${firstEmoji(g.title)}</div>`;
-    const cap = (num ? `<b>${String(num).padStart(2,'0')}</b>` : '') + esc(g.title);
+    const no = num ? `Nº ${String(num).padStart(2,'0')}` : (firstEmoji(g.title) || '');
     el.innerHTML = `
       <div class="cart ${TIER[g.model]||''}">
         <i class="f bk"><span class="ridges"></span><span class="plate">GAVILANBE™<br>GAME PAK<br>HECHO A MANO</span><span class="screw"></span></i>
         <i class="f lf"></i><i class="f rt"></i><i class="f tp"></i>
         <i class="f bt"><span class="pins"></span></i>
         <div class="f fr">
-          <span class="band"><b class="arw"></b>GAVILANBE™ GAME PAK</span>
-          <div class="well"><div class="sticker">${art}<span class="strip"><span>${esc(stripEmoji(g.title))}</span></span>${badge(g)}${mchip(g)}</div></div>
+          <span class="band"><b class="arw"></b><span>GAME PAK</span></span>
+          <div class="well"><div class="sticker">
+            <div class="art">${art}</div>
+            <span class="strip"><span>${esc(stripEmoji(g.title))}</span></span>
+            <span class="foot"><span class="no">${no}</span>${mchip(g)}</span>
+            ${badge(g)}
+          </div></div>
         </div>
-      </div>
-      <p class="cart-cap">${cap}</p>`;
+      </div>`;
     return el;
   }
 
@@ -920,7 +1013,7 @@
         const r = s.getBoundingClientRect();
         const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
         c.style.animation = 'none';
-        c.style.transform = `translateY(-10px) scale(1.05) rotateX(${((.5-y)*2*MAXT).toFixed(2)}deg) rotateY(${((x-.5)*2*MAXT).toFixed(2)}deg)`;
+        c.style.transform = `translateY(-14px) scale(1.05) rotateX(${((.5-y)*2*MAXT+4).toFixed(2)}deg) rotateY(${((x-.5)*2*MAXT).toFixed(2)}deg)`;
         const b = c.querySelector('.fr');
         b.style.setProperty('--gx', (x*100).toFixed(1)+'%');
         b.style.setProperty('--gy', (y*100).toFixed(1)+'%');
@@ -1095,6 +1188,7 @@
     clearDexTimers(); clearTimeout(nudgeTimer); clearTimeout(infoTimer);
     cancelAnimationFrame(animId);
     dex.hidden = true;
+    dexDock.style.transition = 'none'; dexDock.style.transform = ''; void dexDock.offsetWidth; dexDock.style.transition = '';
     dex.classList.remove('inserting','booting','ready','nudge');
     dexInfo.classList.remove('swap');
     document.body.style.overflow = '';
@@ -1211,6 +1305,16 @@
     settle(target + (d > 0 ? 1 : -1));
   }, {passive:false});
 
+  const dexScreen = $('#dex-screen');
+  function aimConsole(){ /* la consola crece hasta que su pantalla llena la sala: origen en el centro de la pantalla */
+    const st = dexStage.getBoundingClientRect(), cs = dexDock.getBoundingClientRect(), sc = dexScreen.getBoundingClientRect();
+    const ox = sc.left + sc.width/2 - cs.left, oy = sc.top + sc.height/2 - cs.top;
+    dexDock.style.setProperty('--ox', ox.toFixed(1)+'px');
+    dexDock.style.setProperty('--oy', oy.toFixed(1)+'px');
+    dexDock.style.setProperty('--zx', ((st.left + st.width/2) - (sc.left + sc.width/2)).toFixed(1)+'px');
+    dexDock.style.setProperty('--zy', ((st.top + st.height/2) - (sc.top + sc.height/2)).toFixed(1)+'px');
+    dexDock.style.setProperty('--zs', Math.min(st.width/sc.width*.94, st.height/sc.height*.88).toFixed(3));
+  }
   function insertCart(){
     if (!dexGame || inserting) return;
     const url = dexGame.play;
@@ -1222,6 +1326,7 @@
     dex.classList.add('ready');
     cancelAnimationFrame(animId);
     posX = target; lastTick = target; render(); /* clavado al centro antes de tragarlo */
+    aimConsole();
     const it = items[target];
     const c = it?.querySelector('.cart'), lift = it?.querySelector('.lift');
     if (c){
@@ -1238,17 +1343,18 @@
     }
     dexTimers.push(setTimeout(() => {
       dex.classList.add('inserting');
-      sfx('clack', .42);
-      if (lift){ /* pequeño impulso hacia arriba y a la ranura */
-        lift.style.transition = 'transform .48s cubic-bezier(.6,-.28,.9,.5)';
-        lift.style.transform = 'translateY(460px)';
+      sfx('clack', .44);
+      if (lift){ /* cae a la ranura y desaparece tras la consola */
+        lift.style.transition = 'transform .5s cubic-bezier(.6,-.28,.9,.5)';
+        lift.style.transform = 'translateY(520px)';
       }
-      /* el chime suena justo cuando el logo aterriza; se abre tras el destello de colores */
-      dexTimers.push(setTimeout(() => { dex.classList.add('booting'); sfx('boot', .78); }, 720));
+      sfx('thunk', .5);
+      /* la consola se acerca y enciende; el logo aterriza con el chime; se abre tras el destello */
+      dexTimers.push(setTimeout(() => { dex.classList.add('booting'); sfx('power'); sfx('boot', .95); }, 820));
       dexTimers.push(setTimeout(() => {
         if (!window.open(url, '_blank')) location.assign(url);
         closeDex();
-      }, 2680));
+      }, 820 + 3250));
     }, 210));
   }
   document.addEventListener('click', e => {
@@ -1276,23 +1382,54 @@
   });
 
   /* ---- chiptune de la consola ---- */
+  let muted = false;
+  try{ muted = localStorage.getItem('gb-mute') === '1'; }catch(e){}
+  const sndBtn = $('#snd');
+  const paintSnd = () => { sndBtn.classList.toggle('on', !muted); sndBtn.setAttribute('aria-pressed', String(!muted)); };
+  paintSnd();
+  sndBtn.addEventListener('click', () => { muted = !muted; try{ localStorage.setItem('gb-mute', muted ? '1' : '0'); }catch(e){} paintSnd(); if (!muted) sfx('click'); });
   function sfx(kind, delay = 0){
+    if (muted) return;
     try{
       const a = sfx.ctx || (sfx.ctx = new (window.AudioContext || window.webkitAudioContext)());
+      if (a.state === 'suspended') a.resume();
       const t0 = a.currentTime + delay;
-      const note = (f, t, dur, vol = .05) => {
+      const note = (f, t, dur, vol = .05, type = 'square', ramp = true) => {
         const o = a.createOscillator(), g = a.createGain();
-        o.type = 'square'; o.frequency.value = f;
+        o.type = type; o.frequency.value = f;
         g.gain.setValueAtTime(vol, t);
         g.gain.exponentialRampToValueAtTime(.0001, t + dur);
         o.connect(g); g.connect(a.destination);
         o.start(t); o.stop(t + dur + .02);
+        return o;
+      };
+      const noise = (t, dur, vol, hp) => {
+        const n = a.sampleRate * dur | 0, buf = a.createBuffer(1, n, a.sampleRate), d = buf.getChannelData(0);
+        for (let i = 0; i < n; i++) d[i] = Math.random()*2-1;
+        const src = a.createBufferSource(), g = a.createGain(), f = a.createBiquadFilter();
+        src.buffer = buf; f.type = hp ? 'highpass' : 'lowpass'; f.frequency.value = hp || 300;
+        g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+        src.connect(f); f.connect(g); g.connect(a.destination); src.start(t);
       };
       if (kind === 'clack'){ note(150, t0, .06, .06); note(85, t0 + .05, .09, .07); }
       /* el "clac" de hojear la caja de cartuchos */
       if (kind === 'tick'){ note(1250, t0, .03, .028); note(720, t0 + .025, .04, .03); }
-      /* el "ba-DING" del arranque: dos notas cuadradas a una octava, la segunda larga */
-      if (kind === 'boot'){ note(1046.5, t0, .07, .05); note(2093, t0 + .085, .55, .05); }
+      /* el clic de un interruptor de plástico */
+      if (kind === 'click'){ note(900, t0, .025, .04); note(560, t0 + .03, .04, .035); noise(t0, .03, .05, 2500); }
+      /* el golpe seco del cartucho encajando */
+      if (kind === 'thunk'){ note(70, t0, .14, .12, 'sine'); noise(t0, .08, .12, 0); }
+      /* la consola enciende: un barrido cortito hacia arriba */
+      if (kind === 'power'){ const o = note(220, t0, .18, .035, 'triangle'); o.frequency.exponentialRampToValueAtTime(880, t0 + .16); }
+      /* el "ba-DING" de la GBA: campana con armónicos, cola larga, arpegio chispeante y un "tsss" de brillo */
+      if (kind === 'boot'){
+        const bell = (f, t, dur, vol) => { note(f, t, dur, vol, 'sine'); note(f*2, t, dur*.6, vol*.35, 'sine'); note(f*3, t, dur*.35, vol*.18, 'triangle'); };
+        bell(1046.5, t0, .16, .07);
+        bell(2093, t0 + .16, 1.15, .075);
+        bell(1568, t0 + .16, .9, .03);
+        [2637, 3136, 4186, 5274].forEach((f, i) => note(f, t0 + .30 + i*.045, .22, .018, 'triangle'));
+        noise(t0 + .18, .5, .012, 6000);
+      }
+      if (kind === 'coin'){ note(880, t0, .12, .045); note(1320, t0 + .06, .16, .045); }
     }catch(e){}
   }
 
@@ -1309,8 +1446,12 @@
   /* ---- filtro + búsqueda ---- */
   let filter = 'all', fmodel = null, q = '';
   const hits = $('#hits'), empty = $('#empty');
-  function apply(){
-    let shown = 0;
+  /* cada pegatina dice cuántos cartuchos lleva */
+  document.querySelectorAll('.chip[data-m]').forEach(c => {
+    c.querySelector('b').textContent = GAMES.filter(g => g.model === c.dataset.m).length;
+  });
+  function apply(animate){
+    let shown = 0, j = 0;
     const test = el => (filter === 'all' || el.dataset.type === filter)
       && (!fmodel || el.dataset.model === fmodel)
       && (!q || el.dataset.search.includes(q));
@@ -1320,25 +1461,33 @@
         const ok = test(el);
         el.classList.toggle('hidden', !ok);
         el.classList.add('in');
-        if (ok) vis++;
+        if (ok){
+          vis++;
+          if (animate && !reduce && el.classList.contains('slot3d') && j < 24){
+            el.classList.remove('pop'); void el.offsetWidth;
+            el.style.setProperty('--j', j++); el.classList.add('pop');
+          }
+        }
       });
       shown += vis;
       grid.closest('section').classList.toggle('hidden', vis === 0);
     });
     $('#sec-feat').classList.toggle('hidden', !!q || !!fmodel || filter === 'terminal');
-    hits.textContent = (q || fmodel || filter !== 'all') ? `${shown} resultado${shown === 1 ? '' : 's'}` : '';
+    hits.textContent = (q || fmodel || filter !== 'all') ? `${String(shown).padStart(2,'0')} RES` : '';
     empty.style.display = shown === 0 ? 'block' : 'none';
     $('#empty-q').textContent = q ? `«${q}»` : 'ese filtro';
   }
-  document.querySelectorAll('.chip[data-f]').forEach(c => c.addEventListener('click', () => {
-    document.querySelectorAll('.chip[data-f]').forEach(x => x.classList.remove('on'));
-    c.classList.add('on'); filter = c.dataset.f; apply();
+  const sw = $('#sw');
+  sw.querySelectorAll('button').forEach((c, i) => c.addEventListener('click', () => {
+    if (c.classList.contains('on')) return;
+    sw.querySelectorAll('button').forEach(x => x.classList.remove('on'));
+    c.classList.add('on'); sw.style.setProperty('--k', i); filter = c.dataset.f; sfx('click'); apply(true);
   }));
   document.querySelectorAll('.chip[data-m]').forEach(c => c.addEventListener('click', () => {
     const wasOn = c.classList.contains('on');
     document.querySelectorAll('.chip[data-m]').forEach(x => x.classList.remove('on'));
     if (!wasOn) c.classList.add('on');
-    fmodel = wasOn ? null : c.dataset.m; apply();
+    fmodel = wasOn ? null : c.dataset.m; sfx('click'); apply(true);
   }));
   const search = $('#search');
   search.addEventListener('input', () => { q = search.value.trim().toLowerCase(); apply(); });
@@ -1353,20 +1502,12 @@
   });
 
   /* ---- la moneda ---- */
-  $('#coin').addEventListener('click', () => {
-    try{
-      const a = new (window.AudioContext || window.webkitAudioContext)();
-      [880, 1320].forEach((f,i) => {
-        const o = a.createOscillator(), g = a.createGain();
-        o.type = 'square'; o.frequency.value = f;
-        g.gain.setValueAtTime(.045, a.currentTime + i*.06);
-        g.gain.exponentialRampToValueAtTime(.0001, a.currentTime + i*.06 + .12);
-        o.connect(g); g.connect(a.destination);
-        o.start(a.currentTime + i*.06); o.stop(a.currentTime + i*.06 + .14);
-      });
-    }catch(e){}
+  const coinBtn = $('#coin');
+  coinBtn.addEventListener('click', () => {
+    coinBtn.classList.remove('drop'); void coinBtn.offsetWidth; coinBtn.classList.add('drop');
+    sfx('coin', .25);
     const g = pool[Math.floor(Math.random()*pool.length)];
-    openDex(g, true);
+    setTimeout(() => openDex(g, true), 520);
   });
 })();
 </script>
