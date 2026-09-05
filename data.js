@@ -777,7 +777,7 @@ const GAMES = [
     "type": "web",
     "play": "https://gavilanbe.github.io/trazo/",
     "repo": "https://github.com/gavilanbe/trazo",
-    "thumb": "thumbs/trazo.jpg",
+    "thumb": "thumbs/trazo.jpg?v=2",
     "wip": false,
     "new": true,
     "kind": "juego",
