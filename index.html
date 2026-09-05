@@ -363,11 +363,11 @@
   }
   /* la estantería-carrusel: los cartuchos en fila, el del centro manda */
   .dexcount{position:absolute; left:16px; top:16px; z-index:4;
-    font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:.22em; color:#5C646F}
+    font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:.22em; color:#9b93ae}
   .dex.solo .dexcount{visibility:hidden}
   .dex-info{transition:opacity .12s}
   .dex-info.swap{opacity:.35}
-  .cartwell{position:absolute; left:0; right:0; top:34px; bottom:322px; z-index:2;
+  .cartwell{position:absolute; left:0; right:0; top:38px; bottom:302px; z-index:2;
     overflow:hidden; cursor:grab; perspective:1100px}
   .cartwell:active{cursor:grabbing}
   .dexrow{position:absolute; inset:0; transform-style:preserve-3d}
@@ -399,155 +399,132 @@
     background:radial-gradient(ellipse, rgba(0,0,0,.65), transparent 68%);
     transform:scale(calc(1 + var(--k,0)*.4)); opacity:calc(1 - var(--k,0)*.55); transition:opacity .3s}
   .drag-hint{position:absolute; left:130px; right:16px; top:16px; z-index:2; text-align:right; pointer-events:none;
-    font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:.24em; color:#5C646F;
+    font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:.16em; color:#a39aae;
     transition:opacity .25s}
   .dex.ready .drag-hint, .dex.inserting .drag-hint{opacity:0}
   .drag-hint .h-mini{display:none}
-  /* la consola de verdad: una DMG de frente que asoma por abajo de la sala; el cartucho entra por detrás y queda asomando */
-  .console{position:absolute; left:0; right:0; bottom:-118px; margin:auto; width:300px; height:440px; z-index:3;
-    display:block; padding:0; font:inherit; color:inherit; text-align:left; cursor:pointer; border:0;
-    -webkit-appearance:none; appearance:none; background:transparent;
-    transform-origin:var(--ox,50%) var(--oy,40%); transition:transform .8s cubic-bezier(.55,0,.12,1); will-change:transform}
-  .console:focus-visible{outline:none}
+  /* AGB-style handheld: every part shares the same responsive coordinate system. */
+  .console{position:absolute; left:0; right:0; bottom:46px; margin:auto; width:min(92%,440px); aspect-ratio:1.82; z-index:3;
+    display:block; padding:0; border:0; background:transparent; color:#cbc7ed; cursor:pointer;
+    -webkit-appearance:none; appearance:none; container-type:inline-size;
+    transform-origin:var(--ox,50%) var(--oy,50%); transition:transform .68s cubic-bezier(.4,0,.16,1); will-change:transform}
+  .console:focus-visible{outline:3px solid #c0b7ff; outline-offset:12px; border-radius:32%}
   .console > span{display:block}
-  .console .cbody{position:absolute; inset:0; border-radius:14px 14px 54px 14px;
-    background:linear-gradient(175deg,#EEEADF 0%,#E3DECF 40%,#D6D0BF 100%); border:1px solid #B5AE9C;
-    box-shadow:inset 0 2px 0 #FBF9F2, inset 0 -4px 0 rgba(0,0,0,.08), inset 2px 0 0 rgba(255,255,255,.5), 0 24px 40px -18px rgba(0,0,0,.85)}
-  .console .cslot{ /* la ranura vive en la trasera: desde delante solo se ve el canto superior con su hendidura */
-    position:absolute; left:0; right:0; top:0; height:10px; border-radius:14px 14px 0 0;
-    background:linear-gradient(180deg,#C8C2B0,#DAD5C5)}
-  .console .cslot i{position:absolute; left:18%; right:18%; top:0; height:5px; border-radius:0 0 4px 4px;
-    background:linear-gradient(180deg,#0B0D10,#2A2E36); box-shadow:inset 0 -1px 0 rgba(255,255,255,.12), 0 0 0 rgba(217,154,43,0); transition:box-shadow .25s}
-  .console .lines{position:absolute; left:16px; right:16px; top:20px; height:6px;
-    border-top:2px solid #6E6A5C; border-bottom:2px solid #6E6A5C; opacity:.55}
-  .console .lines::after{content:""; position:absolute; left:0; right:0; top:2px; height:0}
-  .console .bezel{position:absolute; left:18px; right:18px; top:34px; height:176px; border-radius:8px 8px 40px 8px;
-    background:linear-gradient(172deg,#5A5F69,#3D424B 45%,#2E3239 100%); border:1px solid #23272E;
-    box-shadow:inset 0 1px 0 rgba(242,240,228,.16), inset 0 -2px 0 rgba(0,0,0,.35), 0 1px 0 rgba(255,255,255,.55)}
-  .console .bz-line{position:absolute; left:0; right:0; top:9px; text-align:center; font:500 6.5px 'IBM Plex Mono',monospace; letter-spacing:.24em; color:#C9CDD3}
-  .console .bz-line::before, .console .bz-line::after{content:""; position:absolute; top:3px; height:1px; width:16%; background:#8B93A0}
-  .console .bz-line::before{left:9%} .console .bz-line::after{right:9%}
-  .console .bz-line b{font-weight:500; color:#C42B67}
-  .console .led{position:absolute; left:19px; top:74px; width:7px; height:7px; border-radius:50%; background:#3A1F1E; box-shadow:inset 0 0 2px #000; transition:.2s}
-  .console .led-l{position:absolute; left:10px; top:85px; font:500 5px 'IBM Plex Mono',monospace; letter-spacing:.08em; color:#B9C2CE}
-  .console .screen{position:absolute; left:44px; right:26px; top:30px; bottom:26px; border-radius:3px; overflow:hidden;
-    background:radial-gradient(110% 90% at 50% 40%, #9AA854 0%, #86953F 60%, #6F7C33 100%);
-    box-shadow:inset 0 0 14px rgba(0,0,0,.5), inset 0 0 0 1px rgba(0,0,0,.35)}
-  .console .screen::before{ /* rejilla de píxeles del LCD */
-    content:""; position:absolute; inset:0; z-index:3; pointer-events:none; opacity:.55;
-    background:repeating-linear-gradient(0deg, rgba(0,0,0,.09) 0 1px, transparent 1px 3px),
-      repeating-linear-gradient(90deg, rgba(0,0,0,.07) 0 1px, transparent 1px 3px)}
-  .console .screen::after{ /* reflejo del cristal */
-    content:""; position:absolute; inset:0; z-index:4; pointer-events:none;
-    background:linear-gradient(115deg, rgba(255,255,255,.16) 0%, transparent 32%)}
-  .console .off{position:absolute; inset:0; display:flex; align-items:center; justify-content:center; z-index:2; text-align:center;
-    font:500 7.5px 'IBM Plex Mono',monospace; letter-spacing:.3em; color:rgba(32,37,26,.55); transition:opacity .2s}
-  .console .cbrand{position:absolute; left:20px; top:220px; font:700 15px/1 'Unbounded',sans-serif; letter-spacing:-.02em; color:#3A3F48}
-  .console .cbrand i{font:700 7.5px 'IBM Plex Mono',monospace; letter-spacing:.32em; vertical-align:3px; margin-left:5px; color:#5C646F}
-  .console .cta{position:absolute; right:20px; top:224px; font:500 7.5px 'IBM Plex Mono',monospace; letter-spacing:.2em; color:#8B8577; transition:color .2s}
-  .console .cta b{display:inline-block; font-weight:500; color:var(--coin); animation:dockarw 1.5s ease-in-out infinite}
-  @keyframes dockarw{50%{transform:translateY(2px)}}
-  .console .dpad{position:absolute; left:34px; top:252px; width:72px; height:72px}
-  .console .dpad::before, .console .dpad::after{content:""; position:absolute; background:linear-gradient(180deg,#3A3F48,#23272E); border-radius:4px;
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.18), 0 2px 0 rgba(0,0,0,.35)}
-  .console .dpad::before{left:24px; right:24px; top:0; bottom:0}
-  .console .dpad::after{top:24px; bottom:24px; left:0; right:0}
-  .console .dpad i{position:absolute; left:50%; top:50%; width:16px; height:16px; margin:-8px 0 0 -8px; border-radius:50%; z-index:1;
-    background:radial-gradient(circle at 50% 40%, #2A2E36, #1C1F25 70%); box-shadow:inset 0 1px 2px rgba(0,0,0,.8)}
-  .console .ab{position:absolute; right:22px; top:244px; width:112px; height:80px; transform:rotate(-22deg)}
-  .console .ab i{position:absolute; width:34px; height:34px; border-radius:50%;
-    background:radial-gradient(circle at 40% 32%, #D94B85, var(--play) 55%, var(--play-dark));
-    box-shadow:inset 0 1px 0 rgba(255,255,255,.35), 0 3px 0 var(--play-dark), 0 5px 6px rgba(0,0,0,.35)}
-  .console .ab i:first-child{left:0; top:30px} .console .ab i:last-child{right:0; top:0}
-  .console .ab b{position:absolute; font:700 8px 'Unbounded',sans-serif; color:#5C646F}
-  .console .ab b:nth-child(3){left:13px; top:66px} .console .ab b:nth-child(4){right:13px; top:36px}
-  .console .pills{position:absolute; left:92px; top:352px; display:flex; gap:12px; transform:rotate(-22deg)}
-  .console .pills i{width:34px; height:10px; border-radius:6px; background:linear-gradient(180deg,#8B8577,#6E6A5C); box-shadow:0 2px 0 rgba(0,0,0,.3)}
-  .console .grille{position:absolute; right:22px; bottom:26px; width:86px; height:60px; transform:rotate(-22deg); opacity:.5;
-    background:repeating-linear-gradient(90deg,#8B8577 0 5px,transparent 5px 14px)}
-  .console:hover .cta, .console:focus-visible .cta{color:var(--ink)}
-  .console:hover .cslot i, .console:focus-visible .cslot i{box-shadow:inset 0 -1px 0 rgba(255,255,255,.12), 0 0 14px rgba(217,154,43,.65)}
-  .console:focus-visible .cbody{box-shadow:inset 0 2px 0 #FBF9F2, inset 0 -4px 0 rgba(0,0,0,.08), 0 24px 40px -18px rgba(0,0,0,.85), 0 0 0 3px rgba(196,43,103,.45)}
-  /* el cartucho se acerca: la ranura se enciende, lista para tragarlo */
-  .dex.ready .console .cslot i{box-shadow:inset 0 -1px 0 rgba(255,255,255,.12), 0 0 22px rgba(217,154,43,.9), 0 0 6px rgba(255,220,140,.9)}
-  .dex.ready .console .cta{color:var(--coin-dark)}
+  .console .cbody{position:absolute; inset:0; z-index:2; border-radius:28% 28% 36% 36% / 35% 35% 60% 60%;
+    background:radial-gradient(ellipse at 45% 0%,#a59ddf 0%,transparent 55%),linear-gradient(165deg,#8a80c7 4%,#7163b3 38%,#5c4b9b 70%,#433577);
+    border:1px solid #b0a5e0;
+    box-shadow:inset 0 2px 1px #c4baee,inset 3px 0 4px #b4a5e067,inset -3px -7px 1px #3d306c,inset 0 -11px 7px #655695,
+      0 2px 0 #211b3d,0 7px 0 #3c315f,0 10px 0 #201a38,0 28px 28px -12px #000a}
+  .console .cbody::before{content:""; position:absolute; inset:7px 5px 10px; border:1px solid #c0afe32b; border-bottom-color:#24194766; border-radius:inherit; pointer-events:none}
+  .console .shoulder{position:absolute; top:-1.6%; width:23%; height:14%; z-index:0; border-radius:55% 25% 8% 8%;
+    background:linear-gradient(#f4f3ed,#b6b8c8 38%,#67677c); border:1px solid #dbdbe3; box-shadow:0 -2px 0 #68657b,0 4px 5px #171421}
+  .console .shoulder.left{left:4%; transform:rotate(-5deg)}
+  .console .shoulder.right{right:4%; transform:rotate(5deg); border-radius:25% 55% 8% 8%}
+  .console .cslot{position:absolute; left:34%; right:34%; top:-2.5%; height:5%; z-index:0; border-radius:5px 5px 0 0;
+    background:linear-gradient(#171420,#524675); border:1px solid #9c8dc3; box-shadow:0 -2px 3px #0006}
+  .console .cslot i{position:absolute; inset:2px 4px 4px; border-radius:2px; background:#101018;
+    box-shadow:inset 0 2px 3px #000; transition:box-shadow .2s}
+  .console .loaded-pak{position:absolute; width:28.8%; left:35.6%; top:calc(-2.5% - 3px); z-index:1; pointer-events:none}
+  .console .loaded-pak .cart{animation:none !important; transform:none !important; transition:none !important}
+  .console .loaded-pak .cart .fr{transform:none}
+  .console .loaded-pak .cart .f:not(.fr){display:none}
+  .console .bezel{position:absolute; left:22%; right:22%; top:8%; height:78%; border-radius:9% 9% 20% 20% / 10% 10% 15% 15%;
+    background:linear-gradient(145deg,#34323e,#14141d 50%,#25232e); border:1px solid #191421;
+    box-shadow:0 1px 0 #b3a2d9,inset 0 2px 2px #777181,inset 0 -3px 2px #05040e,0 0 0 3px #584880}
+  .console .screen{position:absolute; left:9%; right:9%; top:10%; aspect-ratio:3/2; overflow:hidden; border-radius:2px;
+    background:linear-gradient(135deg,#737d70,#515c52 65%,#5a655b); box-shadow:0 0 0 3px #0b0b12,inset 0 0 12px #0008}
+  .console .screen::after{content:""; position:absolute; inset:0; z-index:4; pointer-events:none;
+    background:linear-gradient(125deg,#ffffff17 0%,#ffffff05 35%,transparent 35.5%,transparent 70%,#ffffff09)}
+  .console .off{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8%;
+    font:500 1.8cqw/1.6 'IBM Plex Mono',monospace; letter-spacing:.18em; color:#24332b; text-align:center; transition:opacity .15s}
+  .console .off svg{width:15%; height:auto; fill:none; stroke:currentColor; stroke-width:1.5}
+  .console .cbrand{position:absolute; left:8%; right:8%; bottom:5%; display:flex; align-items:center; justify-content:center; gap:4%; color:#c7c4cf}
+  .console .cbrand img{width:47%; height:auto; opacity:.85; filter:brightness(0) invert(.82)}
+  .console .cbrand i{font:italic 800 1.7cqw/1 Arial,sans-serif; letter-spacing:.03em}
+  .console .led{position:absolute; right:14.6%; top:17%; width:1.8%; aspect-ratio:1; border-radius:50%;
+    background:#294431; border:1px solid #3b3353; box-shadow:inset 0 1px 2px #000,0 1px 0 #beadd06b; transition:background .1s,box-shadow .1s}
+  .console .led-l{position:absolute; right:7%; top:17.7%; font:700 1.2cqw/1 Arial,sans-serif; letter-spacing:.06em; color:#c5bade}
+  .console .dpad{position:absolute; left:5.2%; top:32%; width:14.5%; aspect-ratio:1; border-radius:50%;
+    background:linear-gradient(145deg,#463766,#9482c2); box-shadow:0 1px 0 #b6a3d1,inset 1px 2px 4px #39234a}
+  .console .dpad::before{content:""; position:absolute; inset:8% 5% 3%; border-radius:2px;
+    clip-path:polygon(34% 0,66% 0,66% 34%,100% 34%,100% 66%,66% 66%,66% 100%,34% 100%,34% 66%,0 66%,0 34%,34% 34%);
+    background:linear-gradient(#767581,#37343e 45%,#29262f 90%); filter:drop-shadow(0 2px 0 #111)}
+  .console .dpad i{position:absolute; width:24%; aspect-ratio:1; top:38%; left:38%; border-radius:50%; background:linear-gradient(#29262e,#4b4652); box-shadow:inset 0 1px 2px #17131c}
+  .console .dpad b{position:absolute; width:12%; height:12%; background:#25212d; clip-path:polygon(50% 0,100% 100%,0 100%); box-shadow:0 1px 0 #999}
+  .console .dpad b:nth-of-type(1){left:44%; top:15%}
+  .console .dpad b:nth-of-type(2){right:14%; top:44%; transform:rotate(90deg)}
+  .console .dpad b:nth-of-type(3){left:44%; bottom:11%; transform:rotate(180deg)}
+  .console .dpad b:nth-of-type(4){left:14%; top:44%; transform:rotate(-90deg)}
+  .console .ab{position:absolute; right:3.9%; top:33%; width:16.5%; height:24%; transform:rotate(-24deg);
+    border-radius:40%; background:linear-gradient(145deg,#4c3e76,#9180b9); box-shadow:inset 0 2px 3px #342747,0 1px 0 #ad99ce}
+  .console .ab i{position:absolute; width:43%; aspect-ratio:1; top:20%; display:flex; align-items:center; justify-content:center;
+    border-radius:50%; color:#c6c1d1; font:700 3.1cqw/1 Arial,sans-serif; font-style:normal; text-shadow:0 -1px 0 #1b1724;
+    background:radial-gradient(circle at 35% 20%,#85838e,#56515f 55%,#39323f); border:1px solid #292230;
+    box-shadow:inset 0 1px 1px #b2a8bb,0 3px 0 #2b2332,0 4px 3px #211728; transform:rotate(24deg)}
+  .console .ab i:first-child{left:4%} .console .ab i:last-child{right:4%}
+  .console .pills{position:absolute; left:8.2%; top:68%; width:11%; display:flex; flex-direction:column; gap:1.8cqw}
+  .console .pills i{position:relative; display:block; width:49%; height:1.8cqw; border-radius:50%; transform:rotate(-20deg);
+    background:linear-gradient(#aba5b7,#524b60); border:1px solid #463552; box-shadow:0 2px 0 #34243e,0 0 0 2px #675183}
+  .console .pills i::after{content:attr(data-label); position:absolute; left:125%; top:2%; font:700 1.15cqw/1 Arial,sans-serif; color:#c1b2d4; transform:rotate(20deg)}
+  .console .grille{position:absolute; right:8%; top:65%; width:11%; height:21%; display:flex; gap:12%; transform:rotate(-17deg)}
+  .console .grille i{width:11%; height:88%; border-radius:5px; background:#282035; box-shadow:1px 0 0 #aa8cc66e,inset 1px 1px 2px #171322}
+  .console .grille i:nth-child(1),.console .grille i:nth-child(5){height:56%; margin-top:13%}
+  .console .cta{position:absolute; left:-10%; right:-10%; top:calc(100% + 26px); text-align:center;
+    font:500 10px/1.4 'IBM Plex Mono',monospace; letter-spacing:.16em; color:#aca4c7; transition:opacity .2s,color .2s}
+  .console .cta b{display:inline-block; font-weight:500; color:#c3b2ff; animation:dockarw 1.5s ease-in-out infinite}
+  @keyframes dockarw{50%{transform:translateY(3px)}}
+  .console:hover .cta{color:#e7dfff}
+  .console:hover .cslot i,.console:focus-visible .cslot i,.dex.ready .console .cslot i{box-shadow:inset 0 1px 1px #d9c3ff,0 -3px 14px #c3a2ffb3}
+  .dex.ready .console .cta{color:#eee0ff}
   .dex.ready .console .cta b{animation-duration:.5s}
-  /* demo diegética: el cartucho hace una reverencia hacia la ranura ("yo voy ahí") */
+  .dex.docking .cartwell,.dex.inserting .cartwell{overflow:visible}
+  .dex.docking .rowitem:not(.center){opacity:.25; transition:opacity .2s}
   .dex.nudge .rowitem.center .lift{animation:nudgedip 1.5s cubic-bezier(.45,0,.35,1)}
-  @keyframes nudgedip{0%,100%{transform:translateY(0)}42%,58%{transform:translateY(var(--nudge,90px))}}
+  @keyframes nudgedip{0%,100%{transform:translateY(0)}42%,58%{transform:translateY(var(--nudge,24px))}}
   .dex.nudge .console .cslot i{animation:nudgeglow 1.5s ease}
-  @keyframes nudgeglow{42%,70%{box-shadow:inset 0 -1px 0 rgba(255,255,255,.12), 0 0 22px rgba(217,154,43,.9)}}
-  .dex.nudge .console .cta{color:var(--coin-dark)}
-  /* inserción: el cartucho baja por detrás y queda asomando; la consola encaja con un golpe seco; el LED se enciende */
+  @keyframes nudgeglow{42%,70%{box-shadow:0 -2px 16px #c3a2ff}}
   .dex.inserting .rowitem::after{opacity:0}
-  .dex.inserting .rowitem:not(.center){opacity:0 !important; transition:opacity .35s}
-  .dex.inserting .rowitem.center .cart{transition:transform .5s cubic-bezier(.6,-.2,.9,.6)}
-  .dex.inserting .console .cta{opacity:0}
-  .dex.inserting .console .cslot i{animation:slotflash .5s .55s}
-  @keyframes slotflash{50%{box-shadow:inset 0 -1px 0 rgba(255,255,255,.12), 0 0 20px rgba(217,154,43,.9)}}
-  .dex.inserting .console{animation:thunk .34s .62s cubic-bezier(.2,.9,.3,1)}
-  @keyframes thunk{30%{transform:translateY(6px) rotate(.5deg)} 60%{transform:translateY(-2px) rotate(-.3deg)}}
-  .dex.inserting .dex-stage{animation:stageshake .3s .64s}
-  @keyframes stageshake{25%{transform:translate(1px,2px)} 50%{transform:translate(-1px,1px)} 75%{transform:translate(1px,-1px)}}
-  .dex.poweron .console .led, .dex.booting .console .led{background:#E4574A; box-shadow:0 0 9px rgba(228,87,74,.95), 0 0 2px #fff inset}
+  .dex.inserting .rowitem:not(.center){opacity:0 !important; transition:opacity .2s}
+  .dex.inserting .console .cta,.dex.inserting .drag-hint{opacity:0}
+  .dex.seated .cartwell{visibility:hidden}
+  .dex.seated .console{animation:thunk .22s ease-out}
+  @keyframes thunk{30%{translate:0 3px}65%{translate:0 -1px}}
+  .dex.poweron .console .led{background:#91ff6d; box-shadow:0 0 7px #a0ff5b,0 0 1px #eeffd1 inset}
   .dex.poweron .console .off{opacity:0}
-  .dex.poweron .console .screen{animation:lcdon .5s steps(4) forwards}
-  /* arranque: la consola se acerca hasta que su pantalla llena la sala; el LCD enciende; el logo estilo GBA */
-  .dex.booting .console{transform:translate(var(--zx,0px),var(--zy,0px)) scale(var(--zs,2.4)) !important}
-  .dex.booting .console .off{opacity:0}
-  @keyframes lcdon{0%{background:#6F7C33} 25%{background:#B9C48A} 50%{background:#A8B56F} 100%{background:#E3E8CF}}
-  /* la pantalla grande: cuando el zoom termina, el LCD ocupa la sala a tamaño real (nítido) y arranca */
-  .gbboot{position:absolute; inset:0; z-index:6; padding:14px; background:#1B1E23; visibility:hidden; opacity:0; container-type:inline-size}
-  .dex.booting .gbboot{animation:bootshow .12s linear .68s forwards}
-  @keyframes bootshow{to{visibility:visible; opacity:1}}
-  .gbboot .lcd2{position:relative; width:100%; height:100%; border-radius:6px; overflow:hidden; background:#E3E8CF;
-    box-shadow:inset 0 0 40px rgba(0,0,0,.25), inset 0 0 0 2px rgba(0,0,0,.35);
-    display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px}
-  .gbboot .lcd2::before{content:""; position:absolute; inset:0; z-index:3; pointer-events:none; opacity:.5;
-    background:repeating-linear-gradient(0deg, rgba(0,0,0,.08) 0 1px, transparent 1px 3px), repeating-linear-gradient(90deg, rgba(0,0,0,.06) 0 1px, transparent 1px 3px)}
-  .gbboot .lcd2::after{content:""; position:absolute; inset:0; z-index:4; pointer-events:none; background:linear-gradient(115deg, rgba(255,255,255,.18) 0%, transparent 30%)}
-  /* la coreografía GBA: el logo cae de golpe desde arriba y rebota (con estela de LCD), el arcoíris lo recorre con un filo
-     de luz, la cápsula de abajo aparece con su destello y una estrella parpadea dos veces cuando el barrido llega al final */
-  .gba{position:relative; z-index:2; text-align:center; --navy:#1C2C8A; --peri:#7DA2E8}
-  .gba .lg{position:relative; display:inline-block; opacity:0; transform:translateY(-160px)}
-  .dex.booting .gba .lg{animation:logodrop .5s cubic-bezier(.25,1.45,.45,1) .78s both}
-  @keyframes logodrop{from{opacity:1; transform:translateY(-160px)} to{opacity:1; transform:translateY(0)}}
-  .gba .logo, .gba .ghost{display:block; font:700 clamp(26px,11.2cqw,64px)/1 'Unbounded',sans-serif; letter-spacing:.005em; white-space:nowrap}
-  .gba .logo{position:relative; color:var(--navy); -webkit-text-stroke:.11em var(--peri); paint-order:stroke fill; transform-origin:50% 100%}
-  .dex.booting .gba .logo{animation:land .32s cubic-bezier(.3,1.6,.5,1) 1.2s}
-  @keyframes land{30%{transform:scaleY(.9) scaleX(1.03)}}
-  .gba .ghost{ /* estela: un LCD sin retroiluminación deja rastro */
-    position:absolute; left:0; top:0; color:var(--navy); opacity:0; -webkit-text-stroke:.11em var(--peri); paint-order:stroke fill; pointer-events:none}
-  .dex.booting .gba .ghost{animation:ghostdrop .62s cubic-bezier(.25,1.2,.45,1) .82s both}
-  @keyframes ghostdrop{0%{opacity:.35; transform:translateY(-120px)} 70%{opacity:.25; transform:translateY(-8px)} 100%{opacity:0; transform:translateY(0)}}
-  .gba .logo .sh, .gba .logo .gl{position:absolute; left:0; top:0; color:transparent; -webkit-text-stroke:0; pointer-events:none; opacity:0;
-    -webkit-background-clip:text; background-clip:text; -webkit-mask-size:300% 100%; mask-size:300% 100%; -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
-    -webkit-mask-position:120% 0; mask-position:120% 0}
-  .gba .logo .sh{background-image:linear-gradient(100deg,#FF4D6D,#FFB347 22%,#FFE84D 38%,#5DE28A 55%,#3EC7FF 72%,#8A7DFF 88%,#FF4D6D);
-    -webkit-mask-image:linear-gradient(100deg, transparent 34%, #000 44%, #000 56%, transparent 66%); mask-image:linear-gradient(100deg, transparent 34%, #000 44%, #000 56%, transparent 66%)}
-  .gba .logo .gl{background-image:linear-gradient(#fff,#fff); -webkit-mask-image:linear-gradient(100deg, transparent 56%, #fff 58.5%, transparent 61%); mask-image:linear-gradient(100deg, transparent 56%, #fff 58.5%, transparent 61%)}
-  .dex.booting .gba .logo .sh{animation:shimmer 1.05s cubic-bezier(.5,0,.4,1) 1.32s forwards}
-  .dex.booting .gba .logo .gl{animation:shimmer 1.05s cubic-bezier(.5,0,.4,1) 1.32s forwards}
-  @keyframes shimmer{0%{opacity:1; -webkit-mask-position:120% 0; mask-position:120% 0} 100%{opacity:1; -webkit-mask-position:-20% 0; mask-position:-20% 0}}
-  .gba .spark{position:absolute; right:-.22em; top:-.28em; width:.62em; height:.62em; pointer-events:none; opacity:0}
-  .gba .spark i, .gba .spark::before{content:""; position:absolute; inset:0; background:#fff;
-    clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%);
-    filter:drop-shadow(0 0 3px #fff) drop-shadow(0 0 8px #9BD1FF)}
-  .gba .spark i{transform:rotate(45deg) scale(.55); opacity:.9}
-  .dex.booting .gba .spark{animation:twinkle .9s cubic-bezier(.2,1,.4,1) 2.25s}
-  @keyframes twinkle{0%{opacity:0; transform:scale(0) rotate(0)} 22%{opacity:1; transform:scale(1.35) rotate(70deg)} 45%{opacity:.2; transform:scale(.5) rotate(120deg)}
-    65%{opacity:1; transform:scale(1.1) rotate(170deg)} 100%{opacity:0; transform:scale(0) rotate(240deg)}}
-  .gba .box{position:relative; display:inline-block; margin-top:.55em; padding:.28em 1.1em .3em; border:2.5px solid var(--navy); border-radius:999px; overflow:hidden;
-    font:700 clamp(10px,3.4cqw,16px)/1 'Unbounded',sans-serif; letter-spacing:.05em; color:var(--navy); opacity:0; transform:scale(.8)}
-  .dex.booting .gba .box{animation:boxin .35s cubic-bezier(.2,1.3,.4,1) 1.6s forwards}
-  @keyframes boxin{to{opacity:1; transform:none}}
-  .gba .box::after{content:""; position:absolute; top:-40%; bottom:-40%; left:-60%; width:36%; transform:skewX(-25deg) translateX(0);
-    background:linear-gradient(90deg, transparent, rgba(255,255,255,.95), transparent); opacity:0}
-  .dex.booting .gba .box::after{animation:boxshine .6s ease 1.95s}
-  @keyframes boxshine{0%{opacity:1; transform:skewX(-25deg) translateX(0)} 100%{opacity:1; transform:skewX(-25deg) translateX(520%)}}
-  .gbboot .flash{position:absolute; inset:0; z-index:5; background:#fff; opacity:0}
-  .dex.booting .gbboot .flash{animation:outflash .26s ease 3.25s forwards}
+  .dex.zooming .console{transform:translate(var(--zx,0px),var(--zy,0px)) scale(var(--zs,2))}
+  /* Keep the same 3:2 LCD throughout the zoom: no second, differently sized screen. */
+  .gbboot{position:absolute; inset:0; background:#fff; visibility:hidden; opacity:0; container-type:inline-size; overflow:hidden}
+  .dex.poweron .gbboot{visibility:visible; opacity:1; transition:opacity .12s}
+  .gbboot::after{content:""; position:absolute; inset:0; z-index:4; pointer-events:none; opacity:.17;
+    background:repeating-linear-gradient(0deg,#22213b18 0 .5px,transparent .5px 2px)}
+  .gba{position:absolute; inset:0; color:#1900db}
+  .gba-wordmark{position:absolute; left:10%; top:37%; width:80%; display:flex; align-items:flex-end; justify-content:center; gap:0}
+  .boot-letter{display:block; position:relative; flex:var(--letter-width) 1 0; aspect-ratio:var(--letter-width)/42; opacity:0;
+    transform-origin:50% 70%; color:#f000ef; will-change:transform,opacity}
+  .boot-letter svg{display:block; width:100%; height:100%; overflow:visible; fill:currentColor}
+  .dex.booting .boot-letter{animation:gba-letter-in .94s cubic-bezier(.16,.55,.34,1) calc(.08s + var(--i)*.07s) both,
+    gba-letter-shine .44s linear calc(1.9s + var(--i)*.045s) forwards}
+  @keyframes gba-letter-in{
+    0%{opacity:0; color:#ff00ee; transform:translate(var(--fly-x),var(--fly-y)) rotate(-35deg) scale(5)}
+    10%{opacity:.65; color:#ff00ee}
+    27%{opacity:1; color:#ff1648; transform:translate(-22%, -75%) rotate(-22deg) scale(2.4)}
+    44%{color:#ffd900}
+    58%{color:#73f400; transform:translate(-16%,-30%) rotate(9deg) scale(1.35)}
+    75%{color:#00d5c7; transform:translate(-5%,12%) rotate(-5deg) scale(.97)}
+    90%{color:#006aff}
+    100%{opacity:1; color:#1900db; transform:translate(0,0) rotate(0) scale(1)}
+  }
+  @keyframes gba-letter-shine{0%,100%{color:#1900db}25%{color:#a200ff}48%{color:#ff8cff}60%{color:#ffd4ff}80%{color:#9800ff}}
+  .gba .box{position:absolute; left:0; right:0; top:73%; text-align:center; font:700 5.5cqw/1 Arial,sans-serif; letter-spacing:-.025em; color:#ed00e9; opacity:0}
+  .dex.booting .gba .box{animation:gba-maker-in .22s linear forwards}
+  @keyframes gba-maker-in{from{opacity:0}to{opacity:1}}
+  .gba .box sup{font-size:.46em; vertical-align:super; margin-left:1px}
+  .gbboot .flash{position:absolute; inset:0; z-index:5; background:#fff; opacity:0; pointer-events:none}
+  .dex.booting .gbboot .flash{animation:outflash .28s ease 2.9s forwards}
   @keyframes outflash{to{opacity:1}}
+  .logo-defs{position:absolute; width:0; height:0; overflow:hidden; pointer-events:none}
+  .launch-status{position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%)}
+
   .dex-info{padding:30px 30px 26px; display:flex; flex-direction:column; gap:12px; overflow:auto}
   .dex-info h3{font-family:'Unbounded',sans-serif; font-weight:700; font-size:clamp(19px,2.6vw,26px);
     line-height:1.1; padding-right:34px}
@@ -571,24 +548,14 @@
     .dex-card{grid-template-columns:1fr; grid-template-rows:minmax(420px,auto) minmax(0,1fr);
       max-height:94vh; overflow:hidden}
     .dex-stage{min-height:420px}
-    .cartwell{top:30px; bottom:242px}
+    .cartwell{top:54px; bottom:236px}
     .rowitem{width:104px}
     .dexcount{left:50%; top:14px; transform:translateX(-50%); white-space:nowrap}
     .drag-hint{left:0; right:0; bottom:auto; top:34px; padding:0 54px; text-align:center}
     .drag-hint .h-full{display:none}
     .drag-hint .h-mini{display:inline}
-    .console{width:232px; height:340px; bottom:-100px}
-    .console .lines{top:16px}
-    .console .bezel{top:28px; height:132px; left:14px; right:14px; border-radius:7px 7px 30px 7px}
-    .console .screen{left:34px; right:20px; top:24px; bottom:20px}
-    .console .led{top:60px; left:15px} .console .led-l{top:70px; left:7px}
-    .console .cbrand{top:170px; font-size:12px; left:16px}
-    .console .cta{top:173px; right:16px; font-size:6.5px}
-    .console .dpad{left:26px; top:196px; width:56px; height:56px}
-    .console .dpad::before{left:19px; right:19px} .console .dpad::after{top:19px; bottom:19px}
-    .console .ab{right:20px; top:192px; width:78px; height:62px}
-    .console .ab i{width:26px; height:26px} .console .ab i:first-child{top:22px}
-    .console .pills{top:270px; left:70px} .console .grille{display:none}
+    .console{width:min(90%,350px); bottom:40px}
+    .console .cta{font-size:9px; letter-spacing:.09em; top:calc(100% + 22px)}
   }
 
   .badge{
@@ -851,27 +818,28 @@
       <span class="dexcount" id="dex-count"></span>
       <div class="cartwell" id="dex-well"><div class="dexrow" id="dex-row"></div></div>
       <p class="drag-hint"><span class="h-full">◂ ▸ HOJEAR · ▼ ARRASTRA A LA RANURA</span><span class="h-mini">◂ ▸ DESLIZA · ▼ A LA RANURA</span></p>
-      <button class="console" id="dex-dock" type="button" aria-label="Meter el cartucho y jugar">
-        <span class="cbody">
-          <span class="cslot"><i aria-hidden="true"></i></span>
-          <span class="lines" aria-hidden="true"></span>
+      <svg class="logo-defs" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs><path id="gba-glyph-G" d="M25.8 19.55H44.61L40.82 37.58Q37.5 39.74 32.67 41.23Q27.84 42.72 22.82 42.72Q15.02 42.72 10.87 39.19Q5.19 34.37 5.19 25.23Q5.19 19.09 7.63 13.47Q10.55 6.71 15.94 2.98Q21.33 -0.75 28.61 -0.75Q35.89 -0.75 40.29 2.64Q44.69 6.02 46.13 12.5L38.07 13.42Q37.01 9.86 34.65 8.06Q32.28 6.25 28.7 6.25Q24.51 6.25 21.01 8.43Q17.52 10.61 15.54 15.17Q13.56 19.72 13.56 25.11Q13.56 30.42 15.97 32.95Q18.38 35.49 23.02 35.49Q25.8 35.49 28.73 34.7Q31.65 33.92 33.77 32.83L35.06 26.58H24.34Z"/><path id="gba-glyph-A" d="M29.93 32.71H13.27L8.23 42H-0.66L23.11 -0.03H32.71L39.53 42H31.34ZM28.87 25.72 26.43 8.8 16.28 25.72Z"/><path id="gba-glyph-V" d="M23.42 42H14.19L6.65 -0.03H15.28L20.61 31.77L38.02 -0.03H46.59Z"/><path id="gba-glyph-I" d="M2.04 42 10.84 -0.03H19.47L10.69 42Z"/><path id="gba-glyph-L" d="M2.64 42 11.44 -0.03H20.07L12.76 34.98H34.14L32.68 42Z"/><path id="gba-glyph-N" d="M36.01 42H27.95L16.6 13.76L10.69 42H2.64L11.41 -0.03H19.49L30.88 28.1L36.75 -0.03H44.78Z"/><path id="gba-glyph-B" d="M2.35 42 11.15 -0.03H25.52Q30.19 -0.03 32.05 0.26Q35.15 0.69 37.3 1.98Q39.45 3.27 40.57 5.42Q41.68 7.57 41.68 10.18Q41.68 13.68 39.74 16.24Q37.79 18.81 33.71 20.13Q36.95 21.01 38.77 23.29Q40.6 25.57 40.6 28.44Q40.6 32.22 38.45 35.62Q36.29 39.02 32.51 40.51Q28.73 42 22.16 42ZM16.23 16.94H22.82Q27.26 16.94 29.21 16.31Q31.16 15.68 32.14 14.25Q33.11 12.82 33.11 11.18Q33.11 9.58 32.2 8.54Q31.28 7.51 29.59 7.17Q28.64 7 25.03 7H18.32ZM12.41 35.23H20.76Q26 35.23 27.79 34.56Q29.59 33.89 30.66 32.34Q31.74 30.79 31.74 29.07Q31.74 26.98 30.19 25.62Q28.64 24.25 25.03 24.25H14.71Z"/><path id="gba-glyph-E" d="M2.41 42 11.18 -0.03H42.34L40.88 7H18.38L16.37 16.54H38.13L36.67 23.57H14.91L12.27 34.98H36.72L35.23 42Z"/></defs></svg>
+      <button class="console" id="dex-dock" type="button" aria-label="Meter el cartucho y jugar" aria-describedby="dex-launch-status">
+        <span class="shoulder left" aria-hidden="true"></span><span class="shoulder right" aria-hidden="true"></span>
+        <span class="cslot" aria-hidden="true"><i></i></span>
+        <span class="loaded-pak" aria-hidden="true"></span>
+        <span class="cbody" aria-hidden="true">
           <span class="bezel">
-            <span class="bz-line">DOT MATRIX WITH <b>STEREO</b> SOUND</span>
-            <span class="led" aria-hidden="true"></span><span class="led-l">BATTERY</span>
-            <span class="screen" id="dex-screen"><span class="off">INSERTA<br>UN GAME PAK</span></span>
+            <span class="screen" id="dex-screen">
+              <span class="off"><svg viewBox="0 0 24 28"><path d="M4 3h14l2 2v20H4zM7 3v6h10V3M8 14h8M8 18h8M9 25v-3h6v3"/></svg>INSERT GAME PAK</span>
+              <span class="gbboot"><span class="gba"><span class="gba-wordmark"><span class="boot-letter" style="--i:0;--letter-width:45.67;--fly-x:480%;--fly-y:340%"><svg viewBox="0 0 45.67 44"><use href="#gba-glyph-G"/></svg></span><span class="boot-letter" style="--i:1;--letter-width:42.4;--fly-x:446%;--fly-y:358%"><svg viewBox="0 0 42.4 44"><use href="#gba-glyph-A"/></svg></span><span class="boot-letter" style="--i:2;--letter-width:39.16;--fly-x:412%;--fly-y:376%"><svg viewBox="0 0 39.16 44"><use href="#gba-glyph-V"/></svg></span><span class="boot-letter" style="--i:3;--letter-width:16.31;--fly-x:378%;--fly-y:394%"><svg viewBox="0 0 16.31 44"><use href="#gba-glyph-I"/></svg></span><span class="boot-letter" style="--i:4;--letter-width:35.86;--fly-x:344%;--fly-y:412%"><svg viewBox="0 0 35.86 44"><use href="#gba-glyph-L"/></svg></span><span class="boot-letter" style="--i:5;--letter-width:42.4;--fly-x:310%;--fly-y:430%"><svg viewBox="0 0 42.4 44"><use href="#gba-glyph-A"/></svg></span><span class="boot-letter" style="--i:6;--letter-width:42.4;--fly-x:276%;--fly-y:448%"><svg viewBox="0 0 42.4 44"><use href="#gba-glyph-N"/></svg></span><span class="boot-letter" style="--i:7;--letter-width:42.4;--fly-x:242%;--fly-y:466%"><svg viewBox="0 0 42.4 44"><use href="#gba-glyph-B"/></svg></span><span class="boot-letter" style="--i:8;--letter-width:39.16;--fly-x:208%;--fly-y:484%"><svg viewBox="0 0 39.16 44"><use href="#gba-glyph-E"/></svg></span></span><span class="box">games<sup>™</sup></span></span><i class="flash"></i></span>
+            </span>
+            <span class="cbrand"><img src="assets/gavilanbe.svg" alt="" width="312" height="46"><i>ADVANCE</i></span>
           </span>
-          <span class="cbrand">gavilanbe<i>ARCADE</i></span>
-          <span class="cta"><b aria-hidden="true">▼</b> TOCA PARA JUGAR</span>
-          <span class="dpad" aria-hidden="true"><i></i></span>
-          <span class="ab" aria-hidden="true"><i></i><i></i><b>B</b><b>A</b></span>
-          <span class="pills" aria-hidden="true"><i></i><i></i></span>
-          <span class="grille" aria-hidden="true"></span>
+          <span class="led"></span><span class="led-l">POWER</span>
+          <span class="dpad"><i></i><b></b><b></b><b></b><b></b></span>
+          <span class="ab"><i>B</i><i>A</i></span>
+          <span class="pills"><i data-label="START"></i><i data-label="SELECT"></i></span>
+          <span class="grille"><i></i><i></i><i></i><i></i><i></i></span>
         </span>
+        <span class="cta"><b>▼</b> INSERTA EL CARTUCHO O TOCA AQUÍ</span>
       </button>
-      <div class="gbboot" aria-hidden="true"><div class="lcd2">
-        <div class="gba"><div class="lg"><b class="ghost" aria-hidden="true">GAVILANBE</b><b class="logo">GAVILANBE<span class="sh" aria-hidden="true">GAVILANBE</span><span class="gl" aria-hidden="true">GAVILANBE</span><i class="spark" aria-hidden="true"><i></i></i></b></div><span class="box">games™</span></div>
-        <i class="flash"></i>
-      </div></div>
+      <span class="launch-status" id="dex-launch-status" role="status" aria-live="polite"></span>
     </div>
     <div class="dex-info">
       <p class="eyebrow">Ficha de cartucho</p>
@@ -1105,7 +1073,11 @@
   let downX = 0, downY = 0, lastX = 0, lastT = 0, vel = 0, wheelAt = 0, dragStart = 0;
   const MOBQ = matchMedia('(max-width:760px)');
   const geom = () => MOBQ.matches ? {gap:178, z:120, rot:27} : {gap:252, z:150, rot:30};
-  function clearDexTimers(){ dexTimers.forEach(clearTimeout); dexTimers = []; }
+  function clearDexTimers(){
+    dexTimers.forEach(clearTimeout); dexTimers = [];
+    cancelAnimationFrame(renderReq); renderReq = 0;
+    if (sfx.voices) { for (const voice of sfx.voices) { try{ voice.stop(); }catch(e){} } sfx.voices.clear(); }
+  }
 
   /* la caja por la que se hojea: los cartuchos visibles con el filtro/búsqueda actual */
   function dexPool(g){
@@ -1206,6 +1178,7 @@
     infoTimer = setTimeout(fill, 90);
   }
   function settle(i){ /* fija el objetivo y deja que el muelle lo traiga al centro */
+    if (inserting) return;
     i = Math.max(0, Math.min(deck.length - 1, i));
     for (let j = Math.max(0, i-2); j <= Math.min(deck.length-1, i+2); j++) ensureItem(j);
     if (i !== target){
@@ -1218,7 +1191,10 @@
   }
   function openDex(g, autoplay){
     clearDexTimers(); clearTimeout(nudgeTimer); cancelAnimationFrame(animId);
-    dex.classList.remove('inserting','booting','poweron','ready','nudge');
+    dex.classList.remove('inserting','booting','poweron','ready','nudge','docking','seated','zooming');
+    dexDock.removeAttribute('aria-busy');
+    loadedPak.replaceChildren();
+    launchStatus.textContent = '';
     inserting = false; dragging = false; dragMode = null; dy = 0;
     deck = dexPool(g);
     target = Math.max(0, deck.findIndex(x => x.name === g.name));
@@ -1240,7 +1216,10 @@
     cancelAnimationFrame(animId);
     dex.hidden = true;
     dexDock.style.transition = 'none'; dexDock.style.transform = ''; void dexDock.offsetWidth; dexDock.style.transition = '';
-    dex.classList.remove('inserting','booting','poweron','ready','nudge');
+    dex.classList.remove('inserting','booting','poweron','ready','nudge','docking','seated','zooming');
+    dexDock.removeAttribute('aria-busy');
+    loadedPak.replaceChildren();
+    launchStatus.textContent = '';
     dexInfo.classList.remove('swap');
     document.body.style.overflow = '';
     document.body.classList.remove('dexopen');
@@ -1253,8 +1232,8 @@
   function playNudge(){
     if (reduce || inserting || dex.hidden) return;
     const c = deck.length ? ensureItem(target).querySelector('.cart') : null; if (!c) return;
-    const wr = dexWell.getBoundingClientRect(), cr = c.getBoundingClientRect();
-    dexStage.style.setProperty('--nudge', Math.max(50, (wr.bottom - cr.bottom) * .8).toFixed(0) + 'px');
+    const cr = c.getBoundingClientRect(), slot = dexDock.querySelector('.cslot').getBoundingClientRect();
+    dexStage.style.setProperty('--nudge', Math.max(0, Math.min(32, (slot.top - cr.bottom) * .65)).toFixed(0) + 'px');
     dex.classList.remove('nudge'); void dexStage.offsetWidth;
     dex.classList.add('nudge');
     clearTimeout(nudgeTimer);
@@ -1287,8 +1266,9 @@
         const c = deck.length ? ensureItem(target).querySelector('.cart') : null;
         if (!c){ dragMode = 'scroll'; }
         else {
-          const wr = dexWell.getBoundingClientRect(), cr = c.getBoundingClientRect();
-          insertGap = Math.max(70, wr.bottom - cr.bottom + 24);
+          const cr = c.getBoundingClientRect(), slot = dexDock.querySelector('.cslot').getBoundingClientRect();
+          insertGap = Math.max(30, slot.top - cr.bottom + 28);
+          dex.classList.add('docking');
         }
       }
       else return;
@@ -1318,6 +1298,7 @@
   ['pointerup','pointercancel'].forEach(ev => dexWell.addEventListener(ev, e => {
     if (!dragging) return;
     dragging = false;
+    dex.classList.remove('docking');
     if (inserting) return;
     if (dragMode === 'scroll'){
       const v0 = Math.max(-14, Math.min(14, -vel * 1000 / geom().gap));
@@ -1357,60 +1338,98 @@
   }, {passive:false});
 
   const dexScreen = $('#dex-screen');
-  function aimConsole(){ /* la consola crece hasta que su pantalla llena la sala: origen en el centro de la pantalla */
+  const launchStatus = $('#dex-launch-status');
+  const loadedPak = dexDock.querySelector('.loaded-pak');
+  const launchTimers = Object.freeze({align:340, seat:900, power:1080, zoom:1200, boot:1920, launch:5200});
+  function aimConsole(){
     const st = dexStage.getBoundingClientRect(), cs = dexDock.getBoundingClientRect(), sc = dexScreen.getBoundingClientRect();
     const ox = sc.left + sc.width/2 - cs.left, oy = sc.top + sc.height/2 - cs.top;
     dexDock.style.setProperty('--ox', ox.toFixed(1)+'px');
     dexDock.style.setProperty('--oy', oy.toFixed(1)+'px');
     dexDock.style.setProperty('--zx', ((st.left + st.width/2) - (sc.left + sc.width/2)).toFixed(1)+'px');
     dexDock.style.setProperty('--zy', ((st.top + st.height/2) - (sc.top + sc.height/2)).toFixed(1)+'px');
-    dexDock.style.setProperty('--zs', Math.min(st.width/sc.width*.94, st.height/sc.height*.88).toFixed(3));
+    dexDock.style.setProperty('--zs', Math.min(st.width*.9/sc.width, st.height*.82/sc.height).toFixed(3));
+  }
+  function cartridgeTarget(c){
+    const it = c.closest('.rowitem');
+    const slot = dexDock.querySelector('.cslot').getBoundingClientRect();
+    const wr = dexWell.getBoundingClientRect();
+    const width = it.offsetWidth, height = c.offsetHeight;
+    const scale = Math.min(1, slot.width*.9/width);
+    // Use layout dimensions, never the bounding box of a spinning 3D face.
+    const restTop = wr.top + wr.height/2 - height/2;
+    const scaleInset = height*(1-scale)/2;
+    const entry = slot.top - 16 - height*scale - restTop - scaleInset;
+    const seated = slot.top - 3 - restTop - scaleInset;
+    return {scale, entry, seated};
   }
   function insertCart(){
     if (!dexGame || inserting) return;
     const url = dexGame.play;
     if (!url) return;
-    if (reduce){ if (!window.open(url,'_blank')) location.assign(url); closeDex(); return; }
-    inserting = true;
-    try{ localStorage.setItem('gb-metido','1'); }catch(e){}
-    dex.classList.remove('nudge'); clearTimeout(nudgeTimer);
-    dex.classList.add('ready');
-    cancelAnimationFrame(animId);
-    posX = target; lastTick = target; render(); /* clavado al centro antes de tragarlo */
-    aimConsole();
-    const it = items[target];
-    const c = it?.querySelector('.cart'), lift = it?.querySelector('.lift');
-    if (c){
-      /* alinear la cara al frente por el camino corto, venga del giro que venga */
-      const r = cartAngle(c);
-      c.style.animation = 'none';
-      c.style.transition = 'none';
-      c.style.transform = `rotateX(6deg) rotateY(${r.toFixed(1)}deg)`;
-      void c.offsetWidth;
-      c.style.transition = 'transform .2s ease';
-      c.style.transform = 'rotateX(0deg) rotateY(0deg)';
-      lift.style.transition = 'transform .2s ease';
-      lift.style.transform = `translateY(${Math.max(0, dy - 12).toFixed(1)}px)`;
+    if (reduce){
+      const gameWindow = window.open(url,'_blank');
+      if (gameWindow) gameWindow.opener = null;
+      else location.assign(url);
+      closeDex(); return;
     }
-    dexTimers.push(setTimeout(() => {
-      dex.classList.add('inserting');
-      sfx('clack', .5);
-      if (lift && c){ /* baja por detrás de la consola y se queda asomando por el canto, como en una DMG */
-        const cr = c.getBoundingClientRect(), kr = dexDock.getBoundingClientRect();
-        const cur = new DOMMatrix(getComputedStyle(lift).transform).m42 || 0;
-        const drop = (kr.top - cr.top) + cur - cr.height * .16;
-        lift.style.transition = 'transform .55s cubic-bezier(.55,-.15,.85,.55)';
-        lift.style.transform = `translateY(${drop.toFixed(1)}px)`;
-      }
-      sfx('thunk', .62);
-      /* un compás: LED rojo y el LCD parpadea; después la consola se acerca hasta que la pantalla llena la sala */
-      dexTimers.push(setTimeout(() => { dex.classList.add('poweron'); sfx('power'); }, 1000));
-      dexTimers.push(setTimeout(() => { dex.classList.add('booting'); sfx('boot', 1.18); }, 1500));
-      dexTimers.push(setTimeout(() => {
-        if (!window.open(url, '_blank')) location.assign(url);
-        closeDex();
-      }, 1500 + 3550));
-    }, 210));
+    inserting = true; dragging = false;
+    sfx('click'); // Unlock Web Audio inside the initiating pointer/keyboard gesture.
+    try{ localStorage.setItem('gb-metido','1'); }catch(e){}
+    clearTimeout(nudgeTimer);
+    dex.classList.remove('nudge');
+    dex.classList.add('inserting','docking','ready');
+    dexDock.setAttribute('aria-busy','true');
+    launchStatus.textContent = 'Insertando el cartucho';
+    cancelAnimationFrame(animId); cancelAnimationFrame(renderReq); renderReq = 0;
+    posX = target; lastTick = target; render();
+    aimConsole();
+    const it = items[target], c = it?.querySelector('.cart'), lift = it?.querySelector('.lift');
+    if (!c || !lift){ closeDex(); return; }
+    const r = cartAngle(c);
+    c.style.animation = 'none'; c.style.transition = 'none';
+    c.style.transform = `rotateX(6deg) rotateY(${r.toFixed(2)}deg)`;
+    lift.style.transition = 'none';
+    void c.offsetWidth;
+    const dock = cartridgeTarget(c);
+    c.style.transition = `transform ${launchTimers.align}ms cubic-bezier(.22,.8,.3,1)`;
+    c.style.transform = `rotateX(0deg) rotateY(0deg) scale(${dock.scale})`;
+    lift.style.transition = `transform ${launchTimers.align}ms cubic-bezier(.22,.8,.3,1)`;
+    // Approach the slot without pulling a dragged cartridge back upward.
+    const currentY = new DOMMatrix(getComputedStyle(lift).transform).m42 || 0;
+    lift.style.transform = `translateY(${Math.max(dock.entry,currentY).toFixed(2)}px)`;
+    const later = (time, fn) => dexTimers.push(setTimeout(fn,time));
+    later(launchTimers.align, () => {
+      lift.style.transition = `transform ${launchTimers.seat-launchTimers.align}ms cubic-bezier(.5,.02,.72,.65)`;
+      lift.style.transform = `translateY(${dock.seated.toFixed(2)}px)`;
+      sfx('slide');
+    });
+    later(launchTimers.seat, () => {
+      // Transfer the seated pak to the shell so it follows the camera zoom.
+      const seatedCart = c.cloneNode(true);
+      seatedCart.removeAttribute('style');
+      loadedPak.replaceChildren(seatedCart);
+      dex.classList.remove('ready','docking');
+      dex.classList.add('seated');
+      sfx('thunk');
+    });
+    later(launchTimers.power, () => {
+      dex.classList.add('poweron');
+      launchStatus.textContent = 'Encendiendo la consola';
+      sfx('power');
+    });
+    later(launchTimers.zoom, () => dex.classList.add('zooming'));
+    later(launchTimers.boot, () => {
+      dex.classList.add('booting');
+      launchStatus.textContent = 'Gavilanbe. Arrancando el juego';
+      sfx('boot');
+    });
+    later(launchTimers.launch, () => {
+      const gameWindow = window.open(url,'_blank');
+      if (gameWindow) gameWindow.opener = null;
+      else location.assign(url);
+      closeDex();
+    });
   }
   document.addEventListener('click', e => {
     const s = e.target.closest('.slot3d');
@@ -1449,8 +1468,10 @@
       const a = sfx.ctx || (sfx.ctx = new (window.AudioContext || window.webkitAudioContext)());
       if (a.state === 'suspended') a.resume();
       const t0 = a.currentTime + delay;
+      const voices = sfx.voices || (sfx.voices = new Set());
+      const track = source => { voices.add(source); source.addEventListener('ended', () => voices.delete(source), {once:true}); return source; };
       const note = (f, t, dur, vol = .05, type = 'square', ramp = true) => {
-        const o = a.createOscillator(), g = a.createGain();
+        const o = track(a.createOscillator()), g = a.createGain();
         o.type = type; o.frequency.value = f;
         g.gain.setValueAtTime(vol, t);
         g.gain.exponentialRampToValueAtTime(.0001, t + dur);
@@ -1461,7 +1482,7 @@
       const noise = (t, dur, vol, hp) => {
         const n = a.sampleRate * dur | 0, buf = a.createBuffer(1, n, a.sampleRate), d = buf.getChannelData(0);
         for (let i = 0; i < n; i++) d[i] = Math.random()*2-1;
-        const src = a.createBufferSource(), g = a.createGain(), f = a.createBiquadFilter();
+        const src = track(a.createBufferSource()), g = a.createGain(), f = a.createBiquadFilter();
         src.buffer = buf; f.type = hp ? 'highpass' : 'lowpass'; f.frequency.value = hp || 300;
         g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
         src.connect(f); f.connect(g); g.connect(a.destination); src.start(t);
@@ -1475,25 +1496,20 @@
       if (kind === 'thunk'){ note(70, t0, .14, .12, 'sine'); noise(t0, .08, .12, 0); }
       /* la consola enciende: un barrido cortito hacia arriba */
       if (kind === 'power'){ const o = note(220, t0, .18, .035, 'triangle'); o.frequency.exponentialRampToValueAtTime(880, t0 + .16); }
-      /* el "ba-DING" de la GBA: campana con armónicos, cola larga, arpegio chispeante y un "tsss" de brillo */
+      if (kind === 'slide'){ noise(t0,.18,.028,1800); note(120,t0,.1,.018,'triangle'); }
+      // A rising, overlapping bell phrase follows the letters; the final chime
+      // lands as the wordmark becomes blue, before the magenta light sweep.
       if (kind === 'boot'){
-        const bell = (f, t, dur, vol) => { note(f, t, dur, vol, 'sine'); note(f*2, t, dur*.55, vol*.4, 'sine'); note(f*2.76, t, dur*.3, vol*.16, 'sine'); note(f*4, t, dur*.2, vol*.1, 'triangle'); };
-        /* "ba": golpe corto y grave con un pelo de cuerpo */
-        bell(523.25, t0, .12, .07); note(261.6, t0, .08, .05, 'triangle');
-        /* "DING": la campana, con su quinta y su octava por debajo para que llene */
-        bell(2093, t0 + .15, 1.5, .085);
-        note(1568, t0 + .15, 1.1, .022, 'sine');
-        note(1046.5, t0 + .15, 1.3, .018, 'sine');
-        /* chispas: arpegio rapidísimo hacia arriba mientras el arcoíris recorre el logo */
-        [2637, 3136, 3520, 4186, 5274, 6272].forEach((f, i) => note(f, t0 + .30 + i*.055, .26, .014, 'triangle'));
-        /* "tsss": ruido filtrado que sube con el barrido */
-        { const n = a.sampleRate * .9 | 0, buf = a.createBuffer(1, n, a.sampleRate), d = buf.getChannelData(0);
-          for (let i = 0; i < n; i++) d[i] = Math.random()*2-1;
-          const src = a.createBufferSource(), g = a.createGain(), f = a.createBiquadFilter();
-          src.buffer = buf; f.type = 'bandpass'; f.Q.value = 6;
-          f.frequency.setValueAtTime(2500, t0 + .2); f.frequency.exponentialRampToValueAtTime(11000, t0 + 1.0);
-          g.gain.setValueAtTime(.0001, t0 + .2); g.gain.exponentialRampToValueAtTime(.02, t0 + .55); g.gain.exponentialRampToValueAtTime(.0001, t0 + 1.1);
-          src.connect(f); f.connect(g); g.connect(a.destination); src.start(t0 + .2); }
+        const bell = (f,t,dur,vol) => {
+          note(f,t,dur,vol,'sine'); note(f*2,t,dur*.5,vol*.26,'sine');
+          note(f*3,t,dur*.25,vol*.07,'sine');
+        };
+        [523.25,659.25,783.99,1046.5,1318.5,1568,2093,2637].forEach((f,i) => {
+          bell(f,t0+.07+i*.085,.38,.026);
+        });
+        bell(2093,t0+1.6,1.15,.06);
+        bell(1046.5,t0+1.6,.8,.018);
+        note(3136,t0+1.62,.55,.012,'sine');
       }
       if (kind === 'coin'){ note(880, t0, .12, .045); note(1320, t0 + .06, .16, .045); }
     }catch(e){}
