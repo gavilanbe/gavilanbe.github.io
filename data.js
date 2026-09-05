@@ -771,6 +771,19 @@ const GAMES = [
     "model": "opus-4.7"
   },
   {
+    "name": "trazo",
+    "title": "✏️ TRAZO",
+    "tagline": "Solo eras un garabato. Hasta que intentaron borrarte. Hack & slash en una libreta: combos de lápiz, tinta explosiva y una papelería con muy malas intenciones.",
+    "type": "web",
+    "play": "https://gavilanbe.github.io/trazo/",
+    "repo": "https://github.com/gavilanbe/trazo",
+    "thumb": "thumbs/trazo.jpg",
+    "wip": false,
+    "new": true,
+    "kind": "juego",
+    "model": "astra"
+  },
+  {
     "name": "undertale_terminal",
     "title": "👾 UNDERSHELL",
     "tagline": "Un RPG de terminal inspirado en Undertale, ambientado dentro de un sistema operativo moribundo.",

@@ -10,7 +10,7 @@
 
 Una sola página estática, sin frameworks ni build obligatorio: los juegos viven en
 [`data.js`](data.js) y las miniaturas en [`thumbs/`](thumbs/). Con buscador
-(tecla `/`), filtros por tipo y por **pegatina de modelo** (`✦ Fable 5.1` cromo
+(tecla `/`), filtros por tipo y por **pegatina de modelo** (`✦ Astra` azul petróleo y oro, `✦ Fable 5.1` cromo
 oscuro, `✦ Fable 5` holográfica u `Opus 4.8/4.7/4.6`, el modelo que construyó cada juego), **juego del día**
 (rotación diaria determinista) y una ranura para **echar una moneda** que lanza
 un juego al azar.
@@ -87,10 +87,12 @@ el teclado, el juego del día y la existencia de las imágenes locales.
   "wip": false,                                          // cinta dorada "WIP"
   "new": true,                                           // cinta verde "NUEVO"
   "kind": "juego",
-  "model": "fable-5.1"        // pegatina del cartucho: "fable-5.1" | "fable" (Fable 5) | "opus-4.8" | "opus-4.7" | "opus-4.6"
+  "model": "astra"            // pegatina del cartucho: "astra" | "fable-5.1" | "fable" (Fable 5) | "opus-4.8" | "opus-4.7" | "opus-4.6"
 }
 ```
 
 2. Deja su captura en `thumbs/mi-juego.jpg` (640×400).
 3. Si es de los buenos, ponlo en la lista `FEATURED` de `index.html`.
 4. Quita el `"new": true` de la hornada anterior.
+
+El cartucho **TRAZO** usa la pegatina `astra`, carcasa azul petróleo y acentos dorados, y se publica en [gavilanbe.github.io/trazo/](https://gavilanbe.github.io/trazo/). Su código vive en [gavilanbe/trazo](https://github.com/gavilanbe/trazo).
