@@ -81,7 +81,6 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/chromara",
     "thumb": "thumbs/chromara.jpg",
     "wip": false,
-    "new": true,
     "kind": "juego",
     "model": "fable-5.1"
   },
@@ -274,7 +273,6 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/isomate",
     "thumb": "thumbs/isomate.jpg",
     "wip": false,
-    "new": true,
     "kind": "juego",
     "model": "fable-5.1"
   },
@@ -397,6 +395,19 @@ const GAMES = [
     "wip": false,
     "kind": "juego",
     "model": "opus-4.8"
+  },
+  {
+    "name": "nagu-gavi",
+    "title": "🐆 NAGU & GAVI · El corazón de la selva",
+    "tagline": "Un jaguar, un gavilán bocazas y cinco semillas de sol. Explora, salta y planea en una aventura 3D de espíritu Nintendo 64.",
+    "type": "web",
+    "play": "https://gavilanbe.github.io/nagu-gavi/",
+    "repo": "https://github.com/gavilanbe/nagu-gavi",
+    "thumb": "thumbs/nagu-gavi.jpg",
+    "wip": false,
+    "new": true,
+    "kind": "juego",
+    "model": "astra"
   },
   {
     "name": "nahugavi",
@@ -779,7 +790,6 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/trazo",
     "thumb": "thumbs/trazo.jpg?v=2",
     "wip": false,
-    "new": true,
     "kind": "juego",
     "model": "astra"
   },
