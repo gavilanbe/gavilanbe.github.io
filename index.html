@@ -664,11 +664,18 @@
     footer .legend{justify-content:center;padding:22px 18px 0; font-size:12px}
     footer .wrap{justify-content:center;text-align:center;padding:18px 20px 28px;gap:10px;font-size:12px}
   }
+  @media (max-width:480px){
+    .hero-actions{display:grid; grid-template-columns:max-content minmax(0,1fr); gap:14px; align-items:center}
+    .coinbtn{gap:10px; padding-right:12px}
+    .coin-copy strong{font-size:13px}
+    .browse-link{max-width:98px; font-size:12px; line-height:1.55}
+  }
   @media (max-width:359px){
     .hero-copy{padding:21px 18px}
     .hero-stats{font-size:10px}
     .browse-link{font-size:12px}
-    .hero-actions{gap:13px}
+    .hero-actions{grid-template-columns:1fr; justify-items:start; gap:8px}
+    .browse-link{max-width:none}
     .coinbtn{padding-right:15px; gap:10px}
     .sec-head h2{font-size:14px}
     .sec-head .count{display:none}
