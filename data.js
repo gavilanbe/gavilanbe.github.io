@@ -265,6 +265,19 @@ const GAMES = [
     "model": "opus-4.7"
   },
   {
+    "name": "invoca",
+    "title": "🐸 INVOCA",
+    "tagline": "Ajedrez de bestias isométrico en micro pixel art: invoca a tu manada de ranas, ciervos, zorros, jabalíes, búhos y osos con haces de luz, capturas que estallan píxel a píxel, almas que vuelan al panel y un cielo que cambia del Sol a la Luna con cada turno.",
+    "type": "web",
+    "play": "https://gavilanbe.github.io/invoca/",
+    "repo": "https://github.com/gavilanbe/invoca",
+    "thumb": "thumbs/invoca.jpg",
+    "wip": false,
+    "new": true,
+    "kind": "juego",
+    "model": "fable-5.1"
+  },
+  {
     "name": "isomate",
     "title": "♞ ISOMATE",
     "tagline": "Ajedrez isométrico micro pixel art: motor propio verificado con perft, CPU en Worker y piezas que saltan, planean y explotan al capturar.",
@@ -405,7 +418,6 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/nagu-gavi",
     "thumb": "thumbs/nagu-gavi.jpg",
     "wip": false,
-    "new": true,
     "kind": "juego",
     "model": "astra"
   },

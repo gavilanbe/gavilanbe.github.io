@@ -843,7 +843,7 @@
   const firstEmoji = s => { const m = [...s].find(c => /\p{Extended_Pictographic}/u.test(c)); return m || '🎮'; };
   const stripEmoji = s => s.replace(/^\s*\p{Extended_Pictographic}[️‍]*\s*/u, '');
 
-  const FEATURED = ['nagu-gavi','trazo','chromara','isomate','spore-quest','rana-gba','bitxo','sprout-game','nahugavi','gacha-zoo','libreta','makinamon','doodli','chef-game','poke-autobattler','short-hike-demo'];
+  const FEATURED = ['invoca','nagu-gavi','trazo','chromara','isomate','spore-quest','rana-gba','bitxo','sprout-game','nahugavi','gacha-zoo','libreta','makinamon','doodli','chef-game','poke-autobattler','short-hike-demo'];
   const rk = n => { const i = FEATURED.indexOf(n); return i < 0 ? 999 : i; };
 
   const webGames  = GAMES.filter(g => g.type === 'web').sort((a,b) => rk(a.name)-rk(b.name) || a.title.localeCompare(b.title));

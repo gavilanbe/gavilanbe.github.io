@@ -98,3 +98,5 @@ el teclado, el juego del día y la existencia de las imágenes locales.
 El cartucho **TRAZO** usa la pegatina `astra`, carcasa azul petróleo y acentos dorados, y se publica en [gavilanbe.github.io/trazo/](https://gavilanbe.github.io/trazo/). Su código vive en [gavilanbe/trazo](https://github.com/gavilanbe/trazo).
 
 El cartucho **NAGU & GAVI · El corazón de la selva** sigue la edición `astra` (002): [jugar](https://gavilanbe.github.io/nagu-gavi/) · [código](https://github.com/gavilanbe/nagu-gavi). Incluye intro con retratos parlantes, cinco semillas de sol y 36 plumas.
+
+El cartucho **INVOCA** (ajedrez de bestias isométrico en micro pixel art) lleva la pegatina `fable-5.1`: [jugar](https://gavilanbe.github.io/invoca/) · [código](https://github.com/gavilanbe/invoca).
