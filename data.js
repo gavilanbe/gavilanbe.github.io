@@ -97,6 +97,19 @@ const GAMES = [
     "model": "opus-4.7"
   },
   {
+    "name": "cuchi",
+    "title": "🕳️ CỦ CHI",
+    "tagline": "Eres un guerrillero de Củ Chi: cava túneles a lo Fallout Shelter, cocina sin humo, arma púas y embosca a las patrullas desde trampillas ocultas. Sobrevive a los B-52, el gas y las ratas de túnel 21 días hasta el Tết.",
+    "type": "web",
+    "play": "https://gavilanbe.github.io/cuchi/",
+    "repo": "https://github.com/gavilanbe/cuchi",
+    "thumb": "thumbs/cuchi.jpg",
+    "wip": false,
+    "new": true,
+    "kind": "juego",
+    "model": "fable-5.1"
+  },
+  {
     "name": "dakino",
     "title": "🛒 Dakino: Supermarket Heist",
     "tagline": "Sigilo arcade con vista cenital: cuélate en el supermercado, mangonea el mejor botín y escapa sin que los guardias te pillen.",
