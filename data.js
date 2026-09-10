@@ -807,6 +807,19 @@ const GAMES = [
     "model": "opus-4.7"
   },
   {
+    "name": "torremon",
+    "title": "🗼 TORREMON",
+    "tagline": "Tower defense Pokémon para el móvil con los sprites animados de Pokémon Showdown: arrastra Pokémon al mapa, súbelos hasta que evolucionen, aprovecha los tipos y defiende cuatro rutas de salvajes y jefes legendarios.",
+    "type": "web",
+    "play": "https://gavilanbe.github.io/torremon/",
+    "repo": "https://github.com/gavilanbe/torremon",
+    "thumb": "thumbs/torremon.jpg",
+    "wip": false,
+    "new": true,
+    "kind": "juego",
+    "model": "fable-5.1"
+  },
+  {
     "name": "trazo",
     "title": "✏️ TRAZO",
     "tagline": "Solo eras un garabato. Hasta que intentaron borrarte. Hack & slash en una libreta: combos de lápiz, tinta explosiva y una papelería con muy malas intenciones.",
