@@ -73,15 +73,37 @@ for(const config of [{width:468},{width:357},{mobile:true,width:300},{mobile:tru
   tick(120);assert.ok(dex.classList.contains('zooming'));
   tick(720);assert.ok(dex.classList.contains('booting'));
   assert.equal(opened.length,0);
-  tick(3280);assert.equal(opened.length,1);assert.equal(opened[0].url,game.play);assert.equal(opened[0].child.opener,null);
+  tick(3280);assert.equal(opened.length,0,'the boot ends on the title screen, not a delayed pop-up');
+  assert.ok(dex.classList.contains('titled'));assert.equal(d.querySelector('#dex-play').dataset.state,'title');
+  assert.equal(d.querySelector('#ts-name').textContent,d.querySelector('#dex-title').textContent);
+  d.querySelector('#dex-dock').click();
+  assert.equal(opened.length,1);assert.equal(opened[0].url,game.play);assert.equal(opened[0].child.opener,null);
+  assert.ok(d.querySelector(`#grid-web .slot3d[data-name="${game.name}"]`).classList.contains('played'),'played cartridges are marked');
   assert.equal(dex.hidden,true);assert.equal(d.querySelector('.loaded-pak').childElementCount,0);
+  assert.deepEqual(f.errors,[]);f.dom.window.close();
+}
+{
+  const f=createFixture(),{d,tick,dex,opened,test}=f,play=d.querySelector('#dex-play');
+  assert.equal(play.dataset.state,'idle');
+  const before=test.getGame().name;d.querySelector('#dex-next').click();assert.notEqual(test.getGame().name,before,'arrow buttons browse');
+  d.querySelector('#dex-prev').click();assert.equal(test.getGame().name,before);
+  const pad=d.querySelector('.console .dpad');pad.getBoundingClientRect=()=>({left:0,top:0,width:40,height:40,right:40,bottom:40});
+  const padClick=x=>{const e=new f.w.MouseEvent('click',{bubbles:true,clientX:x,clientY:20});pad.dispatchEvent(e)};
+  padClick(35);assert.notEqual(test.getGame().name,before,'the cross browses');assert.equal(dex.classList.contains('inserting'),false);
+  padClick(5);assert.equal(test.getGame().name,before);
+  play.click();assert.ok(dex.classList.contains('inserting'));assert.equal(play.dataset.state,'busy');
+  play.click();tick(1000);assert.equal(dex.classList.contains('titled'),false,'no skipping before the cartridge is seated');
+  tick(920);assert.equal(play.dataset.state,'skip');
+  play.click();assert.ok(dex.classList.contains('titled'),'the intro can be skipped');assert.equal(opened.length,0);
+  tick(6000);assert.equal(opened.length,0,'no timer opens the game on its own');
+  d.dispatchEvent(new f.w.KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));assert.equal(dex.hidden,true);assert.equal(opened.length,0);
   assert.deepEqual(f.errors,[]);f.dom.window.close();
 }
 for(const cancelAt of [200,700,1100,2200,4900]){
   const f=createFixture();f.test.insertCart();f.tick(cancelAt);f.d.querySelector('#dex-x').click();f.tick(6000);
   assert.equal(f.opened.length,0,'dismissal cancels pending launch');assert.equal(f.dex.hidden,true);
   f.d.querySelector('.slot3d[data-name]').click();assert.equal(f.dex.classList.contains('booting'),false);
-  f.test.insertCart();f.tick(5200);assert.equal(f.opened.length,1,'can start another cartridge after cancellation');
+  f.test.insertCart();f.tick(5200);assert.equal(f.opened.length,0);f.d.querySelector('#dex-play').click();assert.equal(f.opened.length,1,'can start another cartridge after cancellation');
   assert.deepEqual(f.errors,[]);f.dom.window.close();
 }
 {
@@ -93,7 +115,7 @@ for(const config of [{width:468},{mobile:true,width:370}]){
   pointer('pointerdown',0);pointer('pointermove',15);assert.ok(f.dex.classList.contains('docking'));
   pointer('pointercancel',15);assert.equal(f.dex.classList.contains('docking'),false);assert.equal(f.dex.classList.contains('inserting'),false);
   pointer('pointerdown',0);pointer('pointermove',400);assert.ok(f.dex.classList.contains('inserting'),'dragging into slot launches');
-  f.tick(5200);assert.equal(f.opened.length,1);assert.deepEqual(f.errors,[]);f.dom.window.close();
+  f.tick(5200);f.d.querySelector('#dex-dock').click();assert.equal(f.opened.length,1);assert.deepEqual(f.errors,[]);f.dom.window.close();
 }
 {
   const f=createFixture(),{d,w,test,tick}=f;
@@ -129,4 +151,4 @@ for(const config of [{width:468},{mobile:true,width:370}]){
   test.closeDex();tick(6000);assert.equal(f.opened.length,0);
   assert.deepEqual(f.errors,[]);f.dom.window.close();
 }
-console.log('PASS: startup and drag gestures, 5 responsive docking sizes, cancellation, replay, reduced motion, accent and multiword search, filters and reset, daily pick, focus trap and restoration, shelf controls, local images, captions, and duplicate coin prevention.');
+console.log('PASS: startup and drag gestures, title screen and START, intro skip, console buttons and arrows, played marks, 5 responsive docking sizes, cancellation, replay, reduced motion, accent and multiword search, filters and reset, daily pick, focus trap and restoration, shelf controls, local images, captions, and duplicate coin prevention.');

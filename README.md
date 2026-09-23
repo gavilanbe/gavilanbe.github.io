@@ -44,9 +44,20 @@ la secuencia. La referencia visual es el
 [arranque original de GBA](https://www.mariowiki.com/File:GBA_Startup.gif);
 no se incluyen la BIOS ni el audio original. El logo está en
 [`assets/gavilanbe.svg`](assets/gavilanbe.svg) y no necesita descargar una fuente.
-Después el juego se abre en otra pestaña (o en la misma si el navegador la
-bloquea). Cerrar la ficha cancela el arranque y sus sonidos; con movimiento
-reducido el juego se abre directamente. El foco del teclado queda dentro de
+Tras el logo, la LCD muestra la **pantalla de título** del juego con `PRESS START`
+parpadeando: pulsa la consola, el botón dorado o Enter y el juego se abre en otra
+pestaña. Como esa pestaña nace de una pulsación nueva, los bloqueadores de
+ventanas emergentes no se la comen. Durante el logo, el botón permite **saltar la
+intro**. Cerrar la ficha cancela el arranque y sus sonidos; con movimiento
+reducido el juego se abre directamente.
+
+Para quien llega por primera vez: la cabecera explica el juego en tres pasos
+(elige, mete, START), cada cartucho enseña `▶ JUGAR` al pasar por encima y la
+ficha tiene un botón **Jugar** bien visible (en el móvil, justo bajo la
+descripción). Las flechas ‹ › de la sala y la cruceta de la consola hojean los
+cartuchos; A y START también juegan. Los cartuchos ya jugados en ese navegador
+llevan la marca `✓ JUGADO`. Los juegos de terminal avisan de que se juegan en
+tu terminal y abren su código. El foco del teclado queda dentro de
 la ficha y vuelve al elemento de origen al cerrarla; los atajos del catálogo
 no actúan detrás del diálogo.
 Si no está claro dónde va, el cartucho hace una pequeña reverencia hacia la
