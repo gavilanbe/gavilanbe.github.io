@@ -23,12 +23,15 @@ para Fable 5.1, nácar para Fable 5 y oro, plata y bronce para Opus. El brillo y
 el tilt responden al ratón; los acabados del catálogo descansan cuando no se
 están tocando.
 
-La cabecera comparte el logo vectorial de la consola y destaca **el cartucho
-del día**, que abre su ficha. Los destacados se recorren deslizando o con sus
-botones de avance. El panel fijo separa la búsqueda y el tipo de juego de las
-pegatinas de modelo. La búsqueda admite varias palabras, con o sin tildes;
-los recuentos se actualizan y «Ver toda la colección» restablece todos los
-filtros. El botón de sonido recuerda su estado.
+La página es una **tienda retro nocturna**: todo oscuro y coherente. Una barra
+fija arriba lleva la marca, el buscador y el sonido. La portada enseña la propia
+consola con **el cartucho del día metido** y su pantalla de título en la LCD:
+tocarla (o el botón morado) arranca ese juego. Debajo, una tira de filtros
+fija separa el tipo de juego de las pegatinas de modelo, y las secciones
+«Para empezar», «Todos los cartuchos» y «La sala de máquinas» dejan aire
+alrededor de cartuchos grandes. La búsqueda admite varias palabras, con o sin
+tildes; los recuentos se actualizan y «Ver toda la colección» restablece todos
+los filtros. El botón de sonido recuerda su estado.
 
 Al tocar un cartucho se abre su **ficha**: el cartucho gira en la sala oscura
 sobre una **handheld horizontal índigo**, inspirada en la Game Boy Advance,
@@ -69,9 +72,8 @@ que al pasar el ratón **ejecuta su programa**: imprime la descripción línea a
 línea y renderiza su TUI real teñido de fósforo. Al entrar en pantalla, los
 monitores se encienden con el destello CRT clásico. Clic → su código en GitHub.
 
-El catálogo combina superficies de nácar e índigo con baldas oscuras y
-acabados de cartucho. La sala de máquinas conserva sus monitores de fósforo.
-Tipografía del catálogo: Unbounded + IBM Plex Sans/Mono.
+La ficha comparte el mismo fondo nocturno que el catálogo.
+Tipografía: Unbounded + IBM Plex Sans/Mono.
 
 La página se sigue sirviendo directamente, sin instalar dependencias. Para
 preparar una copia publicable en `dist/`, ejecuta `node scripts/build.mjs`;

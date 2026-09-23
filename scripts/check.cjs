@@ -36,7 +36,7 @@ function createFixture({mobile=false,reduce=false,width=468}={}){
   const rect=(x,y,width,height)=>({x,y,left:x,top:y,right:x+width,bottom:y+height,width,height});
   d.querySelector('#dex-stage').getBoundingClientRect=()=>rect(0,0,width,H);
   d.querySelector('#dex-dock').getBoundingClientRect=()=>rect(cl,ct,cw,ch);
-  d.querySelector('.cslot').getBoundingClientRect=()=>rect(cl+cw*.34,ct-ch*.025,cw*.32,ch*.05);
+  d.querySelector('#dex-dock .cslot').getBoundingClientRect=()=>rect(cl+cw*.34,ct-ch*.025,cw*.32,ch*.05);
   d.querySelector('#dex-well').getBoundingClientRect=()=>rect(0,mobile?54:38,width,H-(mobile?236:302)-(mobile?54:38));
   d.querySelector('#dex-screen').getBoundingClientRect=()=>rect(cl+cw*.2704,ct+ch*.158,cw*.4592,cw*.4592/1.5);
   const itemWidth=mobile?128:180;
@@ -68,7 +68,7 @@ for(const config of [{width:468},{width:357},{mobile:true,width:300},{mobile:tru
   test.settle(1);assert.equal(test.getGame().name,game.name,'cannot switch cartridges during insertion');
   d.querySelector('#dex-dock').click();
   tick(899);assert.equal(dex.classList.contains('seated'),false);
-  tick(1);assert.equal(dex.classList.contains('seated'),true);assert.equal(d.querySelectorAll('.loaded-pak .cart').length,1);
+  tick(1);assert.equal(dex.classList.contains('seated'),true);assert.equal(d.querySelectorAll('#dex-dock .loaded-pak .cart').length,1);
   tick(180);assert.ok(dex.classList.contains('poweron'));
   tick(120);assert.ok(dex.classList.contains('zooming'));
   tick(720);assert.ok(dex.classList.contains('booting'));
@@ -79,7 +79,7 @@ for(const config of [{width:468},{width:357},{mobile:true,width:300},{mobile:tru
   d.querySelector('#dex-dock').click();
   assert.equal(opened.length,1);assert.equal(opened[0].url,game.play);assert.equal(opened[0].child.opener,null);
   assert.ok(d.querySelector(`#grid-web .slot3d[data-name="${game.name}"]`).classList.contains('played'),'played cartridges are marked');
-  assert.equal(dex.hidden,true);assert.equal(d.querySelector('.loaded-pak').childElementCount,0);
+  assert.equal(dex.hidden,true);assert.equal(d.querySelector('#dex-dock .loaded-pak').childElementCount,0);
   assert.deepEqual(f.errors,[]);f.dom.window.close();
 }
 {
@@ -87,7 +87,7 @@ for(const config of [{width:468},{width:357},{mobile:true,width:300},{mobile:tru
   assert.equal(play.dataset.state,'idle');
   const before=test.getGame().name;d.querySelector('#dex-next').click();assert.notEqual(test.getGame().name,before,'arrow buttons browse');
   d.querySelector('#dex-prev').click();assert.equal(test.getGame().name,before);
-  const pad=d.querySelector('.console .dpad');pad.getBoundingClientRect=()=>({left:0,top:0,width:40,height:40,right:40,bottom:40});
+  const pad=d.querySelector('#dex-dock .dpad');pad.getBoundingClientRect=()=>({left:0,top:0,width:40,height:40,right:40,bottom:40});
   const padClick=x=>{const e=new f.w.MouseEvent('click',{bubbles:true,clientX:x,clientY:20});pad.dispatchEvent(e)};
   padClick(35);assert.notEqual(test.getGame().name,before,'the cross browses');assert.equal(dex.classList.contains('inserting'),false);
   padClick(5);assert.equal(test.getGame().name,before);
