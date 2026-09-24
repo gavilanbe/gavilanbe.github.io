@@ -1,88 +1,80 @@
 <div align="center">
 
-# 🕹️ gavilanbe // ARCADE
+# 🔭 gavilanbe // OBSERVATORIO
 
-**El índice jugable de toda mi colección de juegos — web, terminal y homebrew.**
+**Un cielo navegable con toda mi colección de juegos: web, terminal y homebrew.**
 
-[![entrar al arcade](https://img.shields.io/badge/▶_entrar_al_arcade-5ee07a?style=for-the-badge&labelColor=080810)](https://gavilanbe.github.io/)
+[![entrar al observatorio](https://img.shields.io/badge/✦_entrar_al_observatorio-e9c16e?style=for-the-badge&labelColor=05060f)](https://gavilanbe.github.io/)
 
 </div>
 
-Una sola página estática, sin frameworks ni build obligatorio: los juegos viven en
-[`data.js`](data.js) y las miniaturas en [`thumbs/`](thumbs/). Con buscador
-(tecla `/`), filtros por tipo y por **pegatina de modelo** (`✦ Astra` azul petróleo y oro, `✦ Fable 5.1` cromo
-oscuro, `✦ Fable 5` holográfica, `✦ Opus 5.5` esmeralda y oro u `Opus 4.8/4.7/4.6`, el modelo que construyó cada juego), **juego del día**
-(rotación diaria determinista) y una ranura para **echar una moneda** que lanza
-un juego al azar.
+![Observatorio gavilanbe](og.jpg)
 
-Cada juego web es un **Game Pak 3D horizontal** (CSS puro), con el rebaje de
-los hombros, los cantos, los contactos dorados y una etiqueta con su captura.
-El título y la descripción también aparecen debajo para explorar la colección
-sin abrir cada ficha. La carcasa delata el modelo: cromo oscuro tornasolado
-para Fable 5.1, nácar para Fable 5, esmeralda con filo dorado para Opus 5.5 y oro, plata y bronce para las Opus 4.x. El brillo y
-el tilt responden al ratón; los acabados del catálogo descansan cuando no se
-están tocando.
+Cada **estrella es un juego** y cada **constelación es el modelo** que lo construyó
+(Opus 4.6 · *La Fragua*, Opus 4.7 · *El Enjambre*, Opus 4.8 · *La Corona*,
+Fable 5 · *La Pluma*, Fable 5.1 · *El Espejo*, Astra · *El Astrolabio* y
+Opus 5.5 · *El Faro*). Una sola página estática, sin frameworks ni build
+obligatorio: los juegos viven en [`data.js`](data.js) y las miniaturas en
+[`thumbs/`](thumbs/).
 
-La página es una **tienda retro nocturna**: todo oscuro y coherente. Una barra
-fija arriba lleva la marca, el buscador y el sonido. La portada enseña la propia
-consola con **el cartucho del día metido** y su pantalla de título en la LCD:
-tocarla (o el botón morado) arranca ese juego. Debajo, una tira de filtros
-fija separa el tipo de juego de las pegatinas de modelo, y las secciones
-«Para empezar», «Todos los cartuchos» y «La sala de máquinas» dejan aire
-alrededor de cartuchos grandes. La búsqueda admite varias palabras, con o sin
-tildes; los recuentos se actualizan y «Ver toda la colección» restablece todos
-los filtros. El botón de sonido recuerda su estado.
+## Qué hay dentro
 
-Al tocar un cartucho se abre su **ficha**: el cartucho gira en la sala oscura
-sobre una **handheld horizontal índigo**, inspirada en la Game Boy Advance,
-con gatillos, cruceta, botones A/B, altavoz, LED verde y pantalla LCD 3:2.
-Arrástralo hasta la ranura iluminada o toca la consola: el cartucho gira al
-frente, se ajusta al ancho de la ranura y baja detrás de la carcasa hasta
-encajar. El cartucho insertado acompaña a la consola durante el acercamiento.
-El arranque sucede dentro de la misma pantalla, que conserva sus proporciones:
-las nueve letras del logo vectorial `GAVILANBE` entran por separado con giro,
-escala y colores, se ordenan en azul y reciben un barrido magenta sobre fondo
-blanco, con `games™` debajo. Un arpegio y una campana sintetizados acompañan
-la secuencia. La referencia visual es el
-[arranque original de GBA](https://www.mariowiki.com/File:GBA_Startup.gif);
-no se incluyen la BIOS ni el audio original. El logo está en
-[`assets/gavilanbe.svg`](assets/gavilanbe.svg) y no necesita descargar una fuente.
-Tras el logo, la LCD muestra la **pantalla de título** del juego con `PRESS START`
-parpadeando: pulsa la consola, el botón dorado o Enter y el juego se abre en otra
-pestaña. Como esa pestaña nace de una pulsación nueva, los bloqueadores de
-ventanas emergentes no se la comen. Durante el logo, el botón permite **saltar la
-intro**. Cerrar la ficha cancela el arranque y sus sonidos; con movimiento
-reducido el juego se abre directamente.
+- **I · El cielo.** Un planetario en `<canvas>` con proyección estereográfica:
+  1.900 estrellas de fondo, vía láctea, nebulosas teñidas por constelación,
+  retícula de coordenadas y una sierra con un pequeño observatorio cuyo
+  telescopio apunta a la estrella que miras. Arrástralo (con inercia), pasa el
+  ratón por encima y aparece una sonda con la captura. Las figuras de las
+  constelaciones se calculan solas (árbol mínimo más un lazo) a partir de
+  posiciones deterministas. Hay un HUD con ascensión recta, declinación, campo
+  de visión y hora local.
+  - **Estrellas** = juegos de navegador. **Púlsares** = juegos de terminal:
+    parpadean como un cursor. **Novas** = lo más reciente, con un anillo que se
+    expande. **Protoestrellas** = WIP. Los más destacados tienen destellos.
+  - La **leyenda** enfoca una constelación: la cámara vuela hacia ella, la
+    figura se dibuja y cada estrella muestra su nombre.
+  - **Pide un deseo** (o tecla `R`): una estrella fugaz cruza el cielo, la
+    cámara la sigue y abre un juego al azar. **Estrella del día**: rotación
+    diaria determinista.
+  - **El cielo suena**: activa el sonido y cada estrella toca una nota de una
+    escala pentatónica (campana para las estrellas, *bleep* para los púlsares),
+    con eco sintetizado en WebAudio. Pasar el ratón es tocar música.
+  - **Modo planetario**: si nadie toca nada durante un rato, el cielo hace
+    una visita guiada por los mejores juegos.
+- **II · Cartas celestes.** Una carta por constelación con su figura (se traza
+  al pasar el ratón), recuentos y miniaturas. Filtra el catálogo o te lleva a
+  ella en el cielo.
+- **Amanecer.** El cielo se hace de día al bajar; un gavilán cruza al ritmo del
+  scroll.
+- **III · Catálogo general.** Papel de carta astronómica: tarjetas con número de
+  catálogo, constelación, captura, emoji y botón Jugar directo. Búsqueda (`/`)
+  sin tildes y con varias palabras, filtros por tipo y constelación, orden
+  (brillo, A→Z, constelación, sin observar) y transiciones con View Transitions.
+- **La ficha.** Se abre como un iris desde la estrella o la tarjeta. La captura
+  se «revela» como una placa fotográfica; incluye coordenadas, magnitud, carta de
+  localización, vecinas de constelación, «Jugar ahora», código, copiar enlace y,
+  para los juegos de terminal, el `git clone` listo para copiar. `←` `→`
+  hojean, `Esc` cierra, el foco queda atrapado y vuelve a su sitio. Cada ficha
+  tiene su enlace: `https://gavilanbe.github.io/#/invoca`.
+- **IV · Bitácora.** Tu progreso en este navegador: estrellas observadas,
+  juegos arrancados (ganan **una luna** que orbita su estrella en el cielo) y
+  13 **descubrimientos**, algunos secretos (hay una constelación escondida,
+  estrellas fugaces que se pueden atrapar, algo que pasa de madrugada y un
+  código muy antiguo…).
 
-Para quien llega por primera vez: la cabecera explica el juego en tres pasos
-(elige, mete, START), cada cartucho enseña `▶ JUGAR` al pasar por encima y la
-ficha tiene un botón **Jugar** bien visible (en el móvil, justo bajo la
-descripción). Las flechas ‹ › de la sala y la cruceta de la consola hojean los
-cartuchos; A y START también juegan. Los cartuchos ya jugados en ese navegador
-llevan la marca `✓ JUGADO`. Los juegos de terminal avisan de que se juegan en
-tu terminal y abren su código. El foco del teclado queda dentro de
-la ficha y vuelve al elemento de origen al cerrarla; los atajos del catálogo
-no actúan detrás del diálogo.
-Si no está claro dónde va, el cartucho hace una pequeña reverencia hacia la
-ranura al abrir la ficha (hasta tu primera inserción) o al tocarlo.
+Respeta `prefers-reduced-motion`, funciona con teclado y en el móvil (desliza
+para girar, toca una estrella para verla y otra vez para abrirla).
+Tipografía: Fraunces, Instrument Sans y JetBrains Mono.
 
-Los juegos de terminal viven en **la sala de máquinas**: cada uno es un
-monitor CRT encendido — fósforo verde, scanlines, reflejo en el cristal y LED —
-que al pasar el ratón **ejecuta su programa**: imprime la descripción línea a
-línea y renderiza su TUI real teñido de fósforo. Al entrar en pantalla, los
-monitores se encienden con el destello CRT clásico. Clic → su código en GitHub.
+La versión anterior (el arcade con la consola y los cartuchos) sigue viva en
+[`/classic/`](https://gavilanbe.github.io/classic/) y en la etiqueta git
+`arcade-v1`.
 
-La ficha comparte el mismo fondo nocturno que el catálogo.
-Tipografía: Unbounded + IBM Plex Sans/Mono.
+## Desarrollo
 
-La página se sigue sirviendo directamente, sin instalar dependencias. Para
-preparar una copia publicable en `dist/`, ejecuta `node scripts/build.mjs`;
-comprueba la sintaxis del JavaScript y copia únicamente los archivos públicos.
-
-Para ejecutar las comprobaciones de regresión: `npm ci && npm test`.
-Las dependencias son solo de desarrollo. Se comprueban la inserción y su
-cancelación, el arrastre, el movimiento reducido, la búsqueda, los filtros,
-el teclado, el juego del día y la existencia de las imágenes locales.
+La página se sirve tal cual. `node scripts/build.mjs` valida el JavaScript y
+copia lo publicable en `dist/`. Las comprobaciones de regresión:
+`npm ci && npm test` (jsdom: catálogo, miniaturas, búsqueda, filtros, ficha,
+foco, teclado, bitácora, logros y enlaces profundos).
 
 ## Añadir un juego
 
@@ -97,19 +89,19 @@ el teclado, el juego del día y la existencia de las imágenes locales.
   "play": "https://gavilanbe.github.io/mi-juego/",      // vacío si es terminal
   "repo": "https://github.com/gavilanbe/mi-juego",
   "thumb": "thumbs/mi-juego.jpg",                       // 640×400 (16:10)
-  "wip": false,                                          // cinta dorada "WIP"
-  "new": true,                                           // cinta verde "NUEVO"
+  "wip": false,                                          // protoestrella (WIP)
+  "new": true,                                           // nova: lo más nuevo
   "kind": "juego",
-  "model": "astra"            // pegatina del cartucho: "astra" | "fable-5.1" | "fable" (Fable 5) | "opus-4.8" | "opus-4.7" | "opus-4.6"
+  "model": "astra"            // constelación: "opus-5.5" | "astra" | "fable-5.1" | "fable" | "opus-4.8" | "opus-4.7" | "opus-4.6"
 }
 ```
 
 2. Deja su captura en `thumbs/mi-juego.jpg` (640×400).
-3. Si es de los buenos, ponlo en la lista `FEATURED` de `index.html`.
+3. Si es de los buenos, ponlo en la lista `FEATURED` de `index.html` (brillará más en el cielo). Un modelo nuevo aparece solo como constelación; para darle color, apodo y sitio añádelo a `META`.
 4. Quita el `"new": true` de la hornada anterior.
 
-El cartucho **TRAZO** usa la pegatina `astra`, carcasa azul petróleo y acentos dorados, y se publica en [gavilanbe.github.io/trazo/](https://gavilanbe.github.io/trazo/). Su código vive en [gavilanbe/trazo](https://github.com/gavilanbe/trazo).
+El juego **TRAZO** pertenece a la constelación `astra` y se publica en [gavilanbe.github.io/trazo/](https://gavilanbe.github.io/trazo/). Su código vive en [gavilanbe/trazo](https://github.com/gavilanbe/trazo).
 
-El cartucho **NAGU & GAVI · El corazón de la selva** sigue la edición `astra` (002): [jugar](https://gavilanbe.github.io/nagu-gavi/) · [código](https://github.com/gavilanbe/nagu-gavi). Incluye intro con retratos parlantes, cinco semillas de sol y 36 plumas.
+El juego **NAGU & GAVI · El corazón de la selva** también es de `astra`: [jugar](https://gavilanbe.github.io/nagu-gavi/) · [código](https://github.com/gavilanbe/nagu-gavi). Incluye intro con retratos parlantes, cinco semillas de sol y 36 plumas.
 
-El cartucho **INVOCA** (ajedrez de bestias isométrico en micro pixel art) lleva la pegatina `fable-5.1`: [jugar](https://gavilanbe.github.io/invoca/) · [código](https://github.com/gavilanbe/invoca).
+El juego **INVOCA** (ajedrez de bestias isométrico en micro pixel art) brilla en `fable-5.1`: [jugar](https://gavilanbe.github.io/invoca/) · [código](https://github.com/gavilanbe/invoca).

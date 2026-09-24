@@ -1,0 +1,1758 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🕹️ gavilanbe//arcade — 67 juegos hechos a mano</title>
+<meta name="description" content="El salón recreativo de gavilanbe: 67 juegos hechos a mano — pixel art, mundos 3D, roguelikes de terminal y homebrew de Game Boy. Elige un cartucho, mételo en la consola y juega en tu navegador.">
+<meta name="theme-color" content="#eeedf4">
+<meta property="og:title" content="gavilanbe//arcade — 67 juegos hechos a mano">
+<meta property="og:description" content="Pixel art, mundos 3D, terminal y homebrew de Game Boy. Elige un cartucho, mételo en la consola y juega al instante.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="gavilanbe//arcade">
+<meta property="og:locale" content="es_ES">
+<meta property="og:url" content="https://gavilanbe.github.io/">
+<meta property="og:image" content="https://gavilanbe.github.io/thumbs/bitxo.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23F2E7FF'/%3E%3Cstop offset='.45' stop-color='%23D4F1FF'/%3E%3Cstop offset='.75' stop-color='%23DDFBE7'/%3E%3Cstop offset='1' stop-color='%23FFE28A'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='4' y='1.5' width='24' height='29' rx='3.5' fill='url(%23g)' stroke='%2320242A' stroke-width='2'/%3E%3Cpath d='M9 6h14M9 9h14' stroke='%2320242A' stroke-width='1.6' opacity='.35' stroke-linecap='round'/%3E%3Crect x='8' y='12.5' width='16' height='13' rx='2' fill='%2320242A'/%3E%3Crect x='10' y='14.5' width='12' height='7' rx='1' fill='%2393A24B'/%3E%3Crect x='10' y='14.5' width='12' height='2.4' rx='1' fill='%23B8C48A'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="../apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night:#0f0c17; --night-2:#161222; --panel:#1c1729; --panel-2:#241e36; --edge-d:#322a47;
+    --text:#f1ecfb; --muted:#a99fbf; --faint:#72698c; --accent:#bfa2ff; --accent-2:#8f6bf0; --gold:#f0c75e;
+    --shell:#eeedf4; --shell-2:#e2e0ec; --card:#faf9ff; --line:#d4d0e1;
+    --bezel:#1d1b2e; --bezel-2:#2c2744; --phosphor:#f6f3ff;
+    --ink:#272239; --dim:#6c657f; --play:#7154d9; --play-dark:#4f36a7;
+    --coin:#e2b864; --coin-dark:#866023; --screen:#a9c87a; --screen-ink:#222e1b; --screen-dim:#c5dba6;
+    --r:14px; --focus:0 0 0 3px #a68bef88; --top:64px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth; scroll-padding-top:140px; background:var(--night); overflow-x:clip}
+  body{overflow-x:clip}
+  body{background:var(--night); color:var(--text); font-family:'IBM Plex Sans',system-ui,sans-serif; font-size:16px; line-height:1.55;
+    background-image:radial-gradient(900px 520px at 78% -8%,#5b3fa033,transparent 70%),radial-gradient(700px 480px at 4% 12%,#1f6a7a1f,transparent 70%),
+      radial-gradient(#ffffff09 .7px,transparent .9px);
+    background-size:auto,auto,5px 5px; background-repeat:no-repeat,no-repeat,repeat}
+  a{color:inherit;text-decoration:none}
+  button,input{font:inherit}
+  button,a{-webkit-tap-highlight-color:transparent}
+  :focus-visible{outline:3px solid #ae92fa; outline-offset:5px; border-radius:6px}
+  img{display:block; max-width:100%}
+  .wrap{max-width:1240px; margin:0 auto; padding:0 28px}
+  .mono{font-family:'IBM Plex Mono',monospace}
+  .eyebrow{font:500 11px/1.4 'IBM Plex Mono',monospace; letter-spacing:.15em; text-transform:uppercase; color:var(--dim)}
+  .sr-only{position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap}
+  .skip-link{position:fixed; left:16px; top:12px; z-index:100; padding:12px 18px; background:var(--panel-2); color:var(--text); border-radius:8px; transform:translateY(-160%)}
+  .skip-link:focus{transform:none}
+
+  /* Store front: a slim sticky bar with the brand, search and sound. */
+  .topbar{position:sticky; top:0; z-index:45; height:var(--top); background:#0f0c17d9; border-bottom:1px solid #ffffff10;
+    backdrop-filter:blur(14px) saturate(1.3); -webkit-backdrop-filter:blur(14px) saturate(1.3)}
+  .topbar .wrap{height:100%; display:flex; align-items:center; gap:18px}
+  .brand{display:flex; align-items:center; gap:10px; flex:none}
+  .brand img{height:19px; width:auto; filter:brightness(0) invert(1)}
+  .brand span{padding:3px 7px; border:1px solid #8a6fd0; border-radius:4px; color:var(--accent); font:500 9px/1 'IBM Plex Mono',monospace; letter-spacing:.2em; transform:skewX(-10deg)}
+  .lcd{display:flex; align-items:center; position:relative; min-width:0; flex:1; max-width:460px; margin-left:auto; height:40px; padding:0 8px 0 14px; gap:10px;
+    background:#ffffff0a; border:1px solid #ffffff17; border-radius:10px; transition:border-color .15s,background .15s}
+  .lcd::before{content:"⌕"; color:var(--faint); font:400 22px/1 Arial,sans-serif}
+  .lcd:focus-within{border-color:#9a7be6; background:#ffffff10; box-shadow:0 0 0 3px #8f6bf033}
+  #search{flex:1; width:100%; min-width:0; height:100%; outline:none; background:none; border:0; color:var(--text); font-size:14px}
+  #search::placeholder{color:var(--faint)}
+  #search::-webkit-search-cancel-button{-webkit-appearance:none}
+  .search-key{padding:2px 7px; border:1px solid #ffffff1f; border-radius:4px; color:var(--faint); font:11px 'IBM Plex Mono',monospace}
+  .search-clear{display:grid; place-items:center; flex:none; width:26px; height:26px; border:0; border-radius:50%; background:#ffffff14; color:var(--muted); cursor:pointer}
+  .search-clear[hidden]{display:none}
+  .snd{display:flex; align-items:center; justify-content:center; gap:8px; flex:none; min-height:40px; padding:0 13px;
+    background:transparent; color:var(--faint); border:1px solid #ffffff17; border-radius:10px; cursor:pointer; font:500 10px/1 'IBM Plex Mono',monospace; letter-spacing:.08em}
+  .snd .led{width:6px; height:6px; border-radius:50%; background:#4a4260; transition:.2s}
+  .snd.on{color:var(--muted)}
+  .snd.on .led{background:#9df07a; box-shadow:0 0 7px #9df07a99}
+  .snd:hover{border-color:#ffffff30; color:var(--text)}
+
+  /* Hero: the pitch on the left, the real console on the right with today's cartridge inside. */
+  .hero{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.02fr); align-items:center; gap:40px; padding-top:54px; padding-bottom:30px}
+  .hero-copy{min-width:0}
+  .kicker{display:inline-flex; align-items:center; gap:9px; padding:6px 12px 6px 9px; border:1px solid #ffffff17; border-radius:999px; background:#ffffff08;
+    color:var(--muted); font:500 11px/1 'IBM Plex Mono',monospace; letter-spacing:.06em}
+  .kicker i{width:7px; height:7px; border-radius:50%; background:#9df07a; box-shadow:0 0 8px #9df07a}
+  h1{margin:22px 0 18px; font:700 clamp(36px,5.2vw,64px)/1.02 'Unbounded',sans-serif; letter-spacing:-.045em; color:#fff; text-wrap:balance}
+  h1 em{font-style:normal; color:var(--gold); text-shadow:0 0 28px #f0c75e55}
+  .thesis{color:var(--muted); font-size:17px; max-width:44ch; line-height:1.6}
+  .thesis b{font-weight:600; color:var(--text)}
+  .hero-actions{display:flex; align-items:stretch; flex-wrap:wrap; gap:14px; margin-top:28px}
+  .daily-pick{display:inline-flex; align-items:center; gap:14px; min-height:62px; padding:8px 22px 8px 8px; border:0; border-radius:12px; cursor:pointer; text-align:left; color:#fff;
+    background:linear-gradient(180deg,#8565ee,#5f43c6); box-shadow:inset 0 1px 0 #ffffff45,0 3px 0 #3d2890,0 14px 30px -12px #7a5ae8;
+    transition:translate .1s,box-shadow .1s,filter .15s}
+  .daily-pick:hover{filter:brightness(1.08)}
+  .daily-pick:active{translate:0 2px; box-shadow:inset 0 1px 0 #ffffff45,0 1px 0 #3d2890}
+  .daily-pick .pb{display:grid; place-items:center; flex:none; width:46px; height:46px; border-radius:9px; background:#ffffff24; font-size:17px}
+  .daily-pick small{display:block; color:#dccfff; font:500 10px/1.3 'IBM Plex Mono',monospace; letter-spacing:.12em}
+  .daily-pick strong{display:block; max-width:22ch; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:16px; font-weight:600; line-height:1.35}
+  .hero-stats{display:flex; flex-wrap:wrap; align-items:center; gap:8px 18px; margin-top:26px; color:var(--faint); font:400 12px/1.5 'IBM Plex Mono',monospace}
+  .hero-stats b{color:var(--text); font-weight:500}
+  .hero-stats span+span{border-left:1px solid #ffffff17; padding-left:18px}
+  .steps{display:flex; flex-wrap:wrap; gap:6px 18px; margin-top:14px; list-style:none; counter-reset:step; color:var(--muted); font-size:13px}
+  .steps li{display:flex; align-items:center; gap:7px; counter-increment:step}
+  .steps li::before{content:counter(step); display:grid; place-items:center; width:19px; height:19px; border-radius:50%;
+    border:1px solid #8a6fd0; color:var(--accent); font:500 10px/1 'IBM Plex Mono',monospace}
+  .hero-stage{position:relative; min-width:0; display:flex; flex-direction:column; align-items:center; padding:40px 0 0}
+  .hero-stage::before{content:""; position:absolute; inset:-10% -12% 8%; z-index:-1; pointer-events:none;
+    background:radial-gradient(50% 50% at 50% 48%,#7b58d633,transparent 72%)}
+  .hero-stage::after{content:""; position:absolute; left:14%; right:14%; top:calc(40px + min(100%,520px)/1.82 + 10px); height:26px; z-index:-1; border-radius:50%;
+    background:radial-gradient(closest-side,#000a,transparent)}
+  .console.hero-console{position:relative; inset:auto; width:min(100%,520px); margin:0 auto; animation:herofloat 6s ease-in-out infinite}
+  .hero-console .off,.hero-console .cta{display:none}
+  .console.hero-console .loaded-pak{top:-21%}
+  .hero-console .title-screen{visibility:visible; opacity:1}
+  .hero-console .ts-start{animation:tsblink 1s steps(1) infinite}
+  .hero-console .led{background:#91ff6d; box-shadow:0 0 7px #a0ff5b}
+  .hero-console:hover .title-screen img{transform:scale(1.04)}
+  .hero-console .title-screen img{transition:transform .5s cubic-bezier(.2,.7,.3,1)}
+  @keyframes herofloat{50%{translate:0 -6px}}
+  .hero-caption{margin-top:34px; max-width:46ch; text-align:center; color:var(--muted); font-size:13.5px; line-height:1.5}
+  .hero-caption b{display:block; margin-bottom:4px; color:var(--accent); font:500 10px/1.4 'IBM Plex Mono',monospace; letter-spacing:.16em}
+  /* A recessed coin acceptor: a brass token, a horizontal throat, quiet metal. */
+  .coinbtn{position:relative; display:inline-flex; align-items:center; gap:12px; padding:7px 20px 7px 9px; min-height:62px;
+    cursor:pointer; color:#eee4d5; text-align:left; border:1px solid #75654b80; border-radius:9px;
+    background:linear-gradient(115deg,#363139,#25212d 68%);
+    box-shadow:inset 0 1px 0 #dacead16,inset 0 -1px 0 #080610,0 2px 0 #110d19,0 5px 12px #09061033;
+    transition:border-color .2s,box-shadow .2s,translate .15s}
+  .coinbtn:hover{border-color:#ad9064; box-shadow:inset 0 1px 0 #e7ce9b2b,inset 0 -1px 0 #080610,0 2px 0 #110d19,0 5px 15px #09061044}
+  .coinbtn:active{translate:0 1px}
+  .coinbtn:focus-visible{outline:2px solid #dfbd7b; outline-offset:4px}
+  .coinbtn .slot{position:relative; flex:none; width:43px; height:46px; border-radius:5px;
+    background:linear-gradient(145deg,#15131cb3,#1c1820); box-shadow:inset 0 1px 3px #0006,0 1px 0 #dcc2991f}
+  .coinbtn .slot::before{content:""; position:absolute; left:5px; right:5px; top:33px; height:5px; z-index:2;
+    border-radius:50%; background:#08060d; border-top:1px solid #040206; box-shadow:0 1px 0 #b5a08661,inset 0 -1px 1px #ffffff08}
+  .coinbtn .slot::after{content:""; position:absolute; left:10px; right:10px; bottom:4px; height:1px; background:#99857038}
+  .coin-window{position:absolute; inset:0 0 12px; overflow:hidden; perspective:120px}
+  .coinbtn .cn{position:absolute; left:50%; top:2px; width:29px; height:29px; margin-left:-14.5px; border-radius:50%;
+    display:grid; place-items:center; border:1px solid #e4c67e; color:#85632d;
+    background:linear-gradient(135deg,#f5dfaa 5%,#dfbf74 32%,#c49747 66%,#e3c783);
+    box-shadow:inset 0 0 0 2px #a77d42,inset 0 0 0 3px #f3da9a,1px 1px 0 #896135,2px 2px 1px #08060d80;
+    font:italic 800 17px/1 Arial,sans-serif; text-shadow:0 1px 0 #ffe8ae; transform:rotate(-14deg); transition:transform .25s cubic-bezier(.2,.8,.3,1)}
+  .coinbtn:hover:not(.drop) .cn{transform:translateY(-2px) rotate(0deg)}
+  .coin-copy{display:block; padding-right:3px}
+  .coin-copy strong{display:block; font-size:14px; font-weight:500; line-height:1.45; letter-spacing:-.01em}
+  .coin-copy small{display:flex; align-items:center; gap:6px; margin-top:3px; color:#a69b8f; font:400 9px/1.4 'IBM Plex Mono',monospace; letter-spacing:.075em}
+  .coin-lamp{width:4px; height:4px; flex:none; border-radius:50%; background:#c4a66b; box-shadow:0 0 5px #d8b36c26; transition:background .15s,box-shadow .15s}
+  .coinbtn:hover .coin-lamp{background:#ebcc8a; box-shadow:0 0 6px #e4bd7166}
+  .coinbtn.drop .cn{animation:coindrop .48s cubic-bezier(.4,0,.65,1) both}
+  .coinbtn.drop .coin-lamp{background:#b7dc9a; box-shadow:0 0 7px #b7dc9a99}
+  @keyframes coindrop{0%{opacity:1;transform:translateY(-2px) rotateY(0) rotate(-14deg)}
+    38%{opacity:1;transform:translateY(1px) rotateY(68deg) rotate(0)}
+    65%{opacity:1;transform:translateY(12px) rotateY(78deg)}
+    100%{opacity:0;transform:translateY(36px) rotateY(78deg)}}
+
+  /* Filters: type on the left, model stickers after it, all on one sticky strip. */
+  .deck{position:sticky; top:var(--top); z-index:40; background:#0f0c17e6; border-bottom:1px solid #ffffff10;
+    backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px)}
+  .deck .wrap{display:flex; align-items:center; gap:16px; padding-top:10px; padding-bottom:10px}
+  .sw{position:relative; flex:none; display:grid; grid-template-columns:repeat(3,1fr); padding:3px; background:#ffffff0a; border:1px solid #ffffff14; border-radius:10px}
+  .sw .knob{position:absolute; top:3px; bottom:3px; left:3px; width:calc((100% - 6px)/3); border-radius:7px;
+    background:#f1ecfb; box-shadow:0 2px 6px #0006; transform:translateX(calc(var(--k,0)*100%)); transition:transform .22s cubic-bezier(.2,.8,.3,1)}
+  .sw button{position:relative; z-index:1; min-height:34px; padding:8px 16px; border:0; border-radius:7px; background:transparent; color:var(--muted);
+    cursor:pointer; font:500 12px/1 'IBM Plex Sans',sans-serif; transition:color .2s}
+  .sw button.on{color:#1d1530}
+  .sw button:hover:not(.on){color:var(--text)}
+  .deck .chips{display:flex; gap:8px; align-items:center; min-width:0; overflow-x:auto; padding:3px 2px; scrollbar-width:none}
+  .deck .chips::-webkit-scrollbar{display:none}
+  .deck .chips::before{content:"HECHO CON"; flex:none; margin-right:2px; color:var(--faint); font:500 9px/1 'IBM Plex Mono',monospace; letter-spacing:.14em}
+  .chip{position:relative; flex:none; cursor:pointer; white-space:nowrap; padding:7px 10px; min-height:32px; border:1px solid #ffffff1c;
+    border-radius:7px; font:500 10px/1 'IBM Plex Mono',monospace; letter-spacing:.025em; opacity:.82;
+    box-shadow:inset 0 1px 0 #fff5; transition:opacity .15s,box-shadow .15s,translate .15s}
+  .chip b{margin-left:7px; font-weight:500; opacity:.7; font-size:10px}
+  .chip:hover{opacity:1; translate:0 -1px}
+  .chip.on{opacity:1; box-shadow:0 0 0 2px var(--night),0 0 0 4px var(--accent); translate:0 -1px}
+  .chip.m-f51{background:linear-gradient(110deg,#2c2141,#28464e 42%,#544063); color:#f4eeff}
+  .chip.m-fable{background:linear-gradient(110deg,#e8dfff,#d8eff5 37%,#eef3d7 72%,#fce1ec); color:#453855}
+  .chip.m-o55{background:linear-gradient(115deg,#0e3a2b,#1b5540 40%,#2a7356 66%,#c49a3a); color:#fff0a6; border-color:#c49a3a6b}
+  .chip.m-o48{background:linear-gradient(140deg,#f4e2b6,#d8b572); color:#5c441d}
+  .chip.m-o47{background:linear-gradient(140deg,#f1f2f8,#c5cad5); color:#484452}
+  .chip.m-o46{background:linear-gradient(140deg,#eed3ba,#c6987b); color:#5e3f2d}
+  #hits{flex:none; margin-left:auto; color:var(--faint); font:400 11px/1 'IBM Plex Mono',monospace; white-space:nowrap}
+
+  main.room{padding-bottom:40px}
+  section{padding-top:52px; scroll-margin-top:140px}
+  .sec-head{display:flex; align-items:center; gap:14px; margin-bottom:6px}
+  .section-number{color:var(--accent); font:500 10px/1 'IBM Plex Mono',monospace; letter-spacing:.12em}
+  .sec-head h2{font:700 clamp(18px,2.2vw,24px)/1.25 'Unbounded',sans-serif; letter-spacing:-.035em; color:#fff}
+  .sec-head .count{color:var(--faint); font:400 11px/1.4 'IBM Plex Mono',monospace}
+  .sec-head .rail{flex:1; height:1px; background:linear-gradient(90deg,#ffffff1c,transparent)}
+  .shelf-controls{display:flex; gap:6px}
+  .shelf-controls button{width:36px; height:36px; cursor:pointer; border-radius:50%; border:1px solid #ffffff1f; color:var(--text); background:#ffffff08; font:16px/1 Arial,sans-serif; transition:background .15s}
+  .shelf-controls button:hover{background:#ffffff18}
+  .shelf-controls button:disabled{opacity:.25; cursor:default}
+  .shelf{display:grid; grid-auto-flow:column; grid-auto-columns:236px; gap:30px; overflow-x:auto; overflow-y:hidden; padding:26px 12px 22px; margin:0 -12px;
+    scroll-snap-type:x proximity; scroll-padding-inline:12px; scrollbar-width:thin; scrollbar-color:#4a3f66 transparent}
+  .shelf>*{scroll-snap-align:start}
+  .cartgrid{display:grid; gap:46px 34px; grid-template-columns:repeat(auto-fill,minmax(222px,1fr)); padding:28px 4px 0}
+  .slot3d{position:relative; perspective:1100px; cursor:pointer; opacity:0; transform:translateY(14px)}
+  .slot3d.in{opacity:1; transform:none; transition:opacity .4s ease calc(var(--i,0)*25ms),transform .4s ease calc(var(--i,0)*25ms)}
+  .slot3d.pop{animation:pop .35s ease calc(var(--j,0)*18ms) both}
+  @keyframes pop{from{opacity:0;transform:translateY(9px)}}
+  .slot3d:focus-visible{outline:2px solid #c7a0f2; outline-offset:8px; border-radius:8px}
+  .cart{--edge:#8b8594; --dz:9px; position:relative; width:100%; aspect-ratio:1.55; transform-style:preserve-3d;
+    transform:rotateX(6deg); transition:transform .24s cubic-bezier(.2,.8,.3,1); will-change:transform}
+  .slot3d:hover .cart,.slot3d:focus-visible .cart{transform:translateY(-8px) rotateX(3deg) rotateY(-4deg)}
+  .slot3d:active .cart{transform:translateY(-3px) scale(.98); transition-duration:.1s}
+  .cart .f{position:absolute; inset:0}
+  .cart .fr,.cart .bk{border-radius:7px 7px 10px 10px; background:var(--g);
+    clip-path:polygon(4% 0,96% 0,96% 8%,100% 8%,100% 95%,97% 100%,3% 100%,0 95%,0 8%,4% 8%);
+    box-shadow:inset 0 2px 1px #ffffff80,inset 2px 0 2px #ffffff30,inset -2px -3px 1px #0003,0 5px 7px #05020936}
+  .cart .fr{transform:translateZ(var(--dz)); backface-visibility:hidden}
+  .cart .bk{transform:rotateY(180deg) translateZ(var(--dz)); backface-visibility:hidden}
+  .cart .lf,.cart .rt{top:8%; bottom:3px; width:calc(var(--dz)*2); background:linear-gradient(90deg,#0003,transparent 35%),var(--edge); border-radius:3px}
+  .cart .lf{left:calc(var(--dz)*-1);right:auto;transform:rotateY(90deg)}
+  .cart .rt{right:calc(var(--dz)*-1);left:auto;transform:rotateY(90deg)}
+  .cart .tp{left:4%;right:4%;top:calc(var(--dz)*-1);bottom:auto;height:calc(var(--dz)*2);background:var(--edge);border-radius:3px;transform:rotateX(90deg)}
+  .cart .bt{left:3px;right:3px;bottom:calc(var(--dz)*-1);top:auto;height:calc(var(--dz)*2);background:#24212a;border-radius:3px;transform:rotateX(90deg)}
+  .cart .bt .pins{position:absolute;left:15%;right:15%;top:24%;bottom:24%;border-radius:2px;background:repeating-linear-gradient(90deg,#dbb759 0 4px,#775b2b 4px 6px,#24212a 6px 9px)}
+  .fr::before{content:""; position:absolute; left:3.2%; right:3.2%; top:21%; bottom:9%; border-left:3px double #0003; border-right:3px double #0003; border-radius:2px}
+  .fr::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(220px circle at var(--gx,50%) var(--gy,-30%),#ffffff66,transparent 58%);opacity:0;transition:opacity .25s}
+  .slot3d:hover .fr::after,.slot3d:focus-visible .fr::after{opacity:.7}
+  .fr .band{position:absolute; top:4%; left:5.5%; right:5.5%; height:13%; display:flex; align-items:center; justify-content:space-between; padding:0 7px;
+    border-radius:3px; color:#0006; text-shadow:0 1px 0 #ffffff6b; font:700 7px/1 Arial,sans-serif; letter-spacing:.1em;
+    background:linear-gradient(#00000009,#ffffff19); box-shadow:inset 0 1px 1px #0002,0 1px 0 #ffffff36}
+  .fr .band .arw{width:0;height:0;border:3px solid transparent;border-top-color:currentColor;margin-top:3px}
+  .fr .band span{font-style:italic; letter-spacing:.055em}
+  .fr .well{position:absolute; left:8.5%;right:8.5%;top:21%;bottom:10%;border-radius:5px;padding:3px;
+    background:#2118254d;box-shadow:inset 0 2px 3px #0005,0 1px 0 #ffffff5c}
+  .sticker{position:relative;width:100%;height:100%;border-radius:3px;overflow:hidden;background:#16121d;box-shadow:0 0 0 1px #ffffff3b}
+  .sticker .art{position:absolute;inset:0;background:#24202c}
+  .sticker .art img{width:100%;height:100%;object-fit:cover}
+  .sticker .art::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 32%,#0c07106b 58%,#0c0710ed 100%)}
+  .sticker .noart{height:100%;display:grid;place-items:center;font-size:30px}
+  .sticker .strip{position:absolute; left:7px;right:7px;bottom:18px;display:flex;align-items:flex-end;min-height:20px}
+  .sticker .strip span{font:700 10px/1.16 'Unbounded',sans-serif;letter-spacing:-.035em;color:#fff;
+    text-shadow:0 1px 3px #000;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .sticker .foot{position:absolute;bottom:0;left:0;right:0;height:15px;display:flex;align-items:center;justify-content:space-between;padding:0 5px;background:#110d18df;border-top:1px solid #ffffff24}
+  .sticker .foot .no{font:500 6px/1 'IBM Plex Mono',monospace;letter-spacing:.08em;color:#c1b3cc}
+  .sticker .foot .mchip{font-size:6px;padding:1px 3px;border-radius:2px}
+  .sticker .badge{top:5px;left:5px;padding:3px 5px;font-size:6px;line-height:1;border-radius:2px;letter-spacing:.05em;box-shadow:0 1px 2px #0005}
+  .playhint{position:absolute; left:50%; top:42%; z-index:3; translate:-50% -50%; padding:6px 11px 6px 9px; border-radius:999px;
+    background:#fff; color:#2a1f3d; font:600 10px/1 'IBM Plex Mono',monospace; letter-spacing:.08em; white-space:nowrap;
+    box-shadow:0 4px 14px #0008; opacity:0; scale:.85; transition:opacity .18s,scale .18s; pointer-events:none}
+  .slot3d:hover .playhint,.slot3d:focus-visible .playhint{opacity:1; scale:1}
+  .rowitem .playhint,.loaded-pak .playhint{display:none}
+  .slot3d.played .cart-title::after{content:"✓ JUGADO"; flex:none; align-self:center; padding:3px 5px; border:1px solid #7f6c96; border-radius:4px;
+    color:#bfb0d2; font:500 8px/1 'IBM Plex Mono',monospace; letter-spacing:.08em}
+  .cart-caption{position:relative; margin-top:20px; padding:12px 1px 0; min-width:0}
+  .cart-caption::before{content:"";position:absolute;left:-6px;right:-6px;top:-9px;height:4px;border-radius:3px;background:linear-gradient(90deg,#ffffff08,#ffffff21 50%,#ffffff08);box-shadow:0 10px 16px -4px #0009}
+  .cart-title{display:flex;align-items:baseline;gap:8px;font-size:15.5px;line-height:1.35;font-weight:600;color:var(--text)}
+  .cart-title span{flex:1; min-width:0;overflow-wrap:anywhere}
+  .cart-title b{font:400 11px/1 Arial,sans-serif;color:var(--faint);transition:translate .2s,color .2s}
+  .slot3d:hover .cart-title b{translate:3px 0;color:var(--gold)}
+  .cart-caption p{margin-top:5px;font-size:13px;line-height:1.5;color:var(--muted);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:3em}
+  .bk .ridges{position:absolute;top:8%;left:8%;right:8%;height:26%;background:repeating-linear-gradient(180deg,#0003 0 2px,transparent 2px 6px)}
+  .bk .plate{position:absolute;top:42%;left:0;right:0;text-align:center;font:500 6px/1.6 'IBM Plex Mono',monospace;letter-spacing:.15em;color:#0006;text-shadow:0 1px 0 #ffffff47}
+  .bk .screw{position:absolute;bottom:6%;left:50%;margin-left:-4px;width:8px;height:8px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#ffffffa6,#0007);box-shadow:inset 0 0 0 1px #0005}
+  .bk .screw::after{content:"";position:absolute;left:2px;right:2px;top:50%;height:1px;background:#0009;transform:rotate(45deg)}
+  .tier-astra{--edge:#355d73;--g:linear-gradient(125deg,#154352,#39748a 27%,#24506d 58%,#192d4d 87%)}
+  .tier-astra .band,.tier-astra .plate{color:#e1e9d1ad;text-shadow:0 1px 0 #0006}
+  .chip.m-astra,.mchip.astra{background:linear-gradient(115deg,#174455,#2e6780 48%,#213556);color:#ffe48a;border:1px solid #75a6b16b}
+  .tier-fable{--edge:#b1a4c7;--g:linear-gradient(120deg,#f0e3fa,#daecf6 26%,#dcecdc 52%,#f1e6cf 74%,#edd5e9)}
+  .tier-f51{--edge:#463c58;--g:linear-gradient(115deg,#3d314e,#37515b 24%,#46665d 44%,#65516f 68%,#41374d 89%)}
+  .tier-o55{--edge:#0f3d2d;--g:linear-gradient(125deg,#0f3d2d,#1d6247 28%,#2f8660 50%,#1b5540 70%,#b88f35 92%)}
+  .tier-o55 .band,.tier-o55 .plate{color:#fff0c8b0;text-shadow:0 1px 0 #0006}
+  .tier-o55 .well{box-shadow:inset 0 2px 3px #0008,0 1px 0 #ffffff38}
+  .tier-o55 .fr,.tier-o55 .bk{background-size:180% 180%}
+  .slot3d:hover .tier-o55 .fr{animation:pearl 5s linear infinite}
+  .tier-o48{--edge:#a58146;--g:linear-gradient(145deg,#f1dcaa,#dfc18b 26%,#c7a264 65%,#ab834b)}
+  .tier-o47{--edge:#9394a4;--g:linear-gradient(145deg,#eff0f5,#d8dae4 26%,#b4b7c6 68%,#9296a7)}
+  .tier-o46{--edge:#966749;--g:linear-gradient(145deg,#e6bfa2,#cf9c7c 27%,#b38061 68%,#925f43)}
+  .tier-f51 .band,.tier-f51 .plate{color:#e3d7eead;text-shadow:0 1px 0 #0006}
+  .tier-f51 .well{box-shadow:inset 0 2px 3px #0008,0 1px 0 #ffffff38}
+  .tier-fable .fr,.tier-fable .bk,.tier-f51 .fr,.tier-f51 .bk{background-size:180% 180%}
+  .slot3d:hover .tier-fable .fr,.slot3d:hover .tier-f51 .fr{animation:pearl 5s linear infinite}
+  @keyframes pearl{to{background-position:180% 180%}}
+
+
+  /* ============ ficha: el cartucho de cerca + la consola ============ */
+  .dex{position:fixed; inset:0; z-index:60; display:flex; align-items:center; justify-content:center; padding:18px}
+  .dex[hidden]{display:none}
+  .dex-back{position:absolute; inset:0; background:rgba(8,6,14,.7); backdrop-filter:blur(6px)}
+  @media (hover:none), (max-width:760px){
+    .dex-back{backdrop-filter:none; background:rgba(8,6,14,.88)}
+  }
+  .dex-card{
+    position:relative; width:min(960px,100%); max-height:min(94vh,720px);
+    display:grid; grid-template-columns:minmax(300px,1fr) minmax(0,1.05fr);
+    background:var(--panel); border:1px solid var(--edge-d); border-radius:20px; overflow:hidden;
+    box-shadow:0 40px 90px -30px #000;
+  }
+  .dex-x{position:absolute; top:12px; right:12px; z-index:6; width:34px; height:34px; border-radius:50%;
+    border:1px solid #ffffff1f; background:#ffffff0d; color:var(--muted); font-size:15px; cursor:pointer}
+  .dex-x:hover{color:var(--text); border-color:#ffffff45}
+  .dex-stage{position:relative; overflow:hidden; min-height:570px; touch-action:none;
+    background:radial-gradient(120% 80% at 50% -10%, #51416A 0%, #2A2338 55%, #181522 100%)}
+  .dex-stage::before{ /* suelo de rejilla en perspectiva */
+    content:""; position:absolute; left:-24%; right:-24%; bottom:70px; height:56%;
+    background:
+      repeating-linear-gradient(90deg, rgba(184,147,224,.13) 0 1px, transparent 1px 48px),
+      repeating-linear-gradient(180deg, rgba(184,147,224,.10) 0 1px, transparent 1px 36px);
+    transform:perspective(430px) rotateX(58deg); transform-origin:50% 100%;
+    -webkit-mask-image:linear-gradient(180deg, transparent, #000 60%);
+            mask-image:linear-gradient(180deg, transparent, #000 60%);
+  }
+  .dex-stage::after{ /* foco cenital sobre el cartucho */
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background:radial-gradient(46% 60% at 50% 34%, rgba(242,240,228,.10), transparent 70%);
+  }
+  /* la estantería-carrusel: los cartuchos en fila, el del centro manda */
+  .dexcount{position:absolute; left:16px; top:16px; z-index:4;
+    font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:.22em; color:#9b93ae}
+  .dex.solo .dexcount,.dex.zooming .dexcount{visibility:hidden}
+  .dex-info{transition:opacity .12s}
+  .dex-info.swap{opacity:.35}
+  .cartwell{position:absolute; left:0; right:0; top:38px; bottom:302px; z-index:2;
+    overflow:hidden; cursor:grab; perspective:1100px}
+  .cartwell:active{cursor:grabbing}
+  .dexrow{position:absolute; inset:0; transform-style:preserve-3d}
+  .rowitem{position:absolute; left:50%; top:50%; width:180px;
+    transform-style:preserve-3d; will-change:transform}
+  .rowitem .lift{transform-style:preserve-3d}
+  .rowitem .cart{--dz:14px}
+  /* penumbra de los vecinos: overlay compositado (solo opacidad, nada de filter).
+     A z=40 queda por delante de las caras estáticas y no las interseca (WebKit parte
+     los planos que se cruzan y en iOS lo pinta mal) */
+  .rowitem .dim{position:absolute; inset:-2px; z-index:5; border-radius:12px;
+    background:#0b0e13; opacity:0; pointer-events:none;
+    transform:translateZ(40px); will-change:opacity}
+  .rowitem.center .cart{animation:spin 16s linear infinite}
+  .rowitem:not(.center) .cart{animation:none; transform:rotateX(6deg)}
+  /* fuera del centro, los acabados animados descansan (nácar y foil repintan) */
+  .rowitem:not(.center) .fr, .rowitem:not(.center) .bk,
+  .rowitem:not(.center) .mchip.fable, .rowitem:not(.center) .mchip.f51, .rowitem:not(.center) .mchip.o55{animation:none}
+  @keyframes spin{from{transform:rotateX(6deg) rotateY(0)}to{transform:rotateX(6deg) rotateY(360deg)}}
+  /* táctil: el central no gira (WebKit iOS descompone el preserve-3d cuando el padre
+     lleva una animación de transform: las caras laterales se pintan sueltas) y los
+     acabados animados descansan también en el centro — menos raster por frame */
+  @media (hover:none){
+    .rowitem.center .cart{animation:none; transform:rotateX(6deg)}
+    .rowitem .fr, .rowitem .bk, .rowitem .mchip.fable, .rowitem .mchip.f51, .rowitem .mchip.o55{animation:none}
+  }
+  .rowitem::after{ /* sombra en el suelo de la sala; crece cuando bajas el cartucho */
+    content:""; position:absolute; left:10%; right:10%; bottom:-30px; height:14px; border-radius:50%;
+    background:radial-gradient(ellipse, rgba(0,0,0,.65), transparent 68%);
+    transform:scale(calc(1 + var(--k,0)*.4)); opacity:calc(1 - var(--k,0)*.55); transition:opacity .3s}
+  .dex-nav{position:absolute; top:calc(38px + (100% - 340px)/2); z-index:4; width:38px; height:38px; margin-top:-19px; border-radius:50%;
+    border:1px solid #7d6c99; background:#2a2239cc; color:#e8defa; font:17px/1 Arial,sans-serif; cursor:pointer; transition:background .15s,opacity .2s}
+  .dex-nav:hover{background:#4a3c63}
+  .dex-nav:disabled{opacity:.2; cursor:default}
+  .dex-nav.prev{left:12px} .dex-nav.next{right:12px}
+  .dex.solo .dex-nav,.dex.inserting .dex-nav{display:none}
+  .drag-hint{position:absolute; left:130px; right:16px; top:16px; z-index:2; text-align:right; pointer-events:none;
+    font-family:'IBM Plex Mono',monospace; font-size:9.5px; letter-spacing:.16em; color:#a39aae;
+    transition:opacity .25s}
+  .dex.ready .drag-hint, .dex.inserting .drag-hint{opacity:0}
+  .drag-hint .h-mini{display:none}
+  /* AGB-style handheld: every part shares the same responsive coordinate system. */
+  .console{position:absolute; left:0; right:0; bottom:46px; margin:auto; width:min(92%,440px); aspect-ratio:1.82; z-index:3;
+    display:block; padding:0; border:0; background:transparent; color:#cbc7ed; cursor:pointer;
+    -webkit-appearance:none; appearance:none; container-type:inline-size;
+    transform-origin:var(--ox,50%) var(--oy,50%); transition:transform .68s cubic-bezier(.4,0,.16,1); will-change:transform}
+  .console:focus-visible{outline:3px solid #c0b7ff; outline-offset:12px; border-radius:32%}
+  .console > span{display:block}
+  .console .cbody{position:absolute; inset:0; z-index:2; border-radius:28% 28% 36% 36% / 35% 35% 60% 60%;
+    background:radial-gradient(ellipse at 45% 0%,#a59ddf 0%,transparent 55%),linear-gradient(165deg,#8a80c7 4%,#7163b3 38%,#5c4b9b 70%,#433577);
+    border:1px solid #b0a5e0;
+    box-shadow:inset 0 2px 1px #c4baee,inset 3px 0 4px #b4a5e067,inset -3px -7px 1px #3d306c,inset 0 -11px 7px #655695,
+      0 2px 0 #211b3d,0 7px 0 #3c315f,0 10px 0 #201a38,0 28px 28px -12px #000a}
+  .console .cbody::before{content:""; position:absolute; inset:7px 5px 10px; border:1px solid #c0afe32b; border-bottom-color:#24194766; border-radius:inherit; pointer-events:none}
+  .console .shoulder{position:absolute; top:-1.6%; width:23%; height:14%; z-index:0; border-radius:55% 25% 8% 8%;
+    background:linear-gradient(#f4f3ed,#b6b8c8 38%,#67677c); border:1px solid #dbdbe3; box-shadow:0 -2px 0 #68657b,0 4px 5px #171421}
+  .console .shoulder.left{left:4%; transform:rotate(-5deg)}
+  .console .shoulder.right{right:4%; transform:rotate(5deg); border-radius:25% 55% 8% 8%}
+  .console .cslot{position:absolute; left:34%; right:34%; top:-2.5%; height:5%; z-index:0; border-radius:5px 5px 0 0;
+    background:linear-gradient(#171420,#524675); border:1px solid #9c8dc3; box-shadow:0 -2px 3px #0006}
+  .console .cslot i{position:absolute; inset:2px 4px 4px; border-radius:2px; background:#101018;
+    box-shadow:inset 0 2px 3px #000; transition:box-shadow .2s}
+  .console .loaded-pak{position:absolute; width:28.8%; left:35.6%; top:calc(-2.5% - 3px); z-index:1; pointer-events:none}
+  .console .loaded-pak .cart{animation:none !important; transform:none !important; transition:none !important}
+  .console .loaded-pak .cart .fr{transform:none}
+  .console .loaded-pak .cart .f:not(.fr){display:none}
+  .console .bezel{position:absolute; left:22%; right:22%; top:8%; height:78%; border-radius:9% 9% 20% 20% / 10% 10% 15% 15%;
+    background:linear-gradient(145deg,#34323e,#14141d 50%,#25232e); border:1px solid #191421;
+    box-shadow:0 1px 0 #b3a2d9,inset 0 2px 2px #777181,inset 0 -3px 2px #05040e,0 0 0 3px #584880}
+  .console .screen{position:absolute; left:9%; right:9%; top:10%; aspect-ratio:3/2; overflow:hidden; border-radius:2px;
+    background:linear-gradient(135deg,#737d70,#515c52 65%,#5a655b); box-shadow:0 0 0 3px #0b0b12,inset 0 0 12px #0008}
+  .console .screen::after{content:""; position:absolute; inset:0; z-index:7; pointer-events:none;
+    background:linear-gradient(125deg,#ffffff17 0%,#ffffff05 35%,transparent 35.5%,transparent 70%,#ffffff09)}
+  .console .off{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8%;
+    font:500 1.8cqw/1.6 'IBM Plex Mono',monospace; letter-spacing:.18em; color:#24332b; text-align:center; transition:opacity .15s}
+  .console .off svg{width:15%; height:auto; fill:none; stroke:currentColor; stroke-width:1.5}
+  .console .cbrand{position:absolute; left:8%; right:8%; bottom:5%; display:flex; align-items:center; justify-content:center; gap:4%; color:#c7c4cf}
+  .console .cbrand img{width:47%; height:auto; opacity:.85; filter:brightness(0) invert(.82)}
+  .console .cbrand i{font:italic 800 1.7cqw/1 Arial,sans-serif; letter-spacing:.03em}
+  .console .led{position:absolute; right:14.6%; top:17%; width:1.8%; aspect-ratio:1; border-radius:50%;
+    background:#294431; border:1px solid #3b3353; box-shadow:inset 0 1px 2px #000,0 1px 0 #beadd06b; transition:background .1s,box-shadow .1s}
+  .console .led-l{position:absolute; right:7%; top:17.7%; font:700 1.2cqw/1 Arial,sans-serif; letter-spacing:.06em; color:#c5bade}
+  .console .dpad{position:absolute; left:5.2%; top:32%; width:14.5%; aspect-ratio:1; border-radius:50%;
+    background:linear-gradient(145deg,#463766,#9482c2); box-shadow:0 1px 0 #b6a3d1,inset 1px 2px 4px #39234a}
+  .console .dpad::before{content:""; position:absolute; inset:8% 5% 3%; border-radius:2px;
+    clip-path:polygon(34% 0,66% 0,66% 34%,100% 34%,100% 66%,66% 66%,66% 100%,34% 100%,34% 66%,0 66%,0 34%,34% 34%);
+    background:linear-gradient(#767581,#37343e 45%,#29262f 90%); filter:drop-shadow(0 2px 0 #111)}
+  .console .dpad i{position:absolute; width:24%; aspect-ratio:1; top:38%; left:38%; border-radius:50%; background:linear-gradient(#29262e,#4b4652); box-shadow:inset 0 1px 2px #17131c}
+  .console .dpad b{position:absolute; width:12%; height:12%; background:#25212d; clip-path:polygon(50% 0,100% 100%,0 100%); box-shadow:0 1px 0 #999}
+  .console .dpad b:nth-of-type(1){left:44%; top:15%}
+  .console .dpad b:nth-of-type(2){right:14%; top:44%; transform:rotate(90deg)}
+  .console .dpad b:nth-of-type(3){left:44%; bottom:11%; transform:rotate(180deg)}
+  .console .dpad b:nth-of-type(4){left:14%; top:44%; transform:rotate(-90deg)}
+  .console .ab{position:absolute; right:3.9%; top:33%; width:16.5%; height:24%; transform:rotate(-24deg);
+    border-radius:40%; background:linear-gradient(145deg,#4c3e76,#9180b9); box-shadow:inset 0 2px 3px #342747,0 1px 0 #ad99ce}
+  .console .ab i{position:absolute; width:43%; aspect-ratio:1; top:20%; display:flex; align-items:center; justify-content:center;
+    border-radius:50%; color:#c6c1d1; font:700 3.1cqw/1 Arial,sans-serif; font-style:normal; text-shadow:0 -1px 0 #1b1724;
+    background:radial-gradient(circle at 35% 20%,#85838e,#56515f 55%,#39323f); border:1px solid #292230;
+    box-shadow:inset 0 1px 1px #b2a8bb,0 3px 0 #2b2332,0 4px 3px #211728; transform:rotate(24deg)}
+  .console .ab i:first-child{left:4%} .console .ab i:last-child{right:4%}
+  .console .pills{position:absolute; left:8.2%; top:68%; width:11%; display:flex; flex-direction:column; gap:1.8cqw}
+  .console .pills i{position:relative; display:block; width:49%; height:1.8cqw; border-radius:50%; transform:rotate(-20deg);
+    background:linear-gradient(#aba5b7,#524b60); border:1px solid #463552; box-shadow:0 2px 0 #34243e,0 0 0 2px #675183}
+  .console .pills i::after{content:attr(data-label); position:absolute; left:125%; top:2%; font:700 1.15cqw/1 Arial,sans-serif; color:#c1b2d4; transform:rotate(20deg)}
+  .console .grille{position:absolute; right:8%; top:65%; width:11%; height:21%; display:flex; gap:12%; transform:rotate(-17deg)}
+  .console .grille i{width:11%; height:88%; border-radius:5px; background:#282035; box-shadow:1px 0 0 #aa8cc66e,inset 1px 1px 2px #171322}
+  .console .grille i:nth-child(1),.console .grille i:nth-child(5){height:56%; margin-top:13%}
+  .console .cta{position:absolute; left:-10%; right:-10%; top:calc(100% + 26px); text-align:center;
+    font:500 10px/1.4 'IBM Plex Mono',monospace; letter-spacing:.16em; color:#aca4c7; transition:opacity .2s,color .2s}
+  .console .cta b{display:inline-block; font-weight:500; color:#c3b2ff; animation:dockarw 1.5s ease-in-out infinite}
+  @keyframes dockarw{50%{transform:translateY(3px)}}
+  .console:hover .cta{color:#e7dfff}
+  .console:hover .cslot i,.console:focus-visible .cslot i,.dex.ready .console .cslot i{box-shadow:inset 0 1px 1px #d9c3ff,0 -3px 14px #c3a2ffb3}
+  .dex.ready .console .cta{color:#eee0ff}
+  .dex.ready .console .cta b{animation-duration:.5s}
+  .dex.docking .cartwell,.dex.inserting .cartwell{overflow:visible}
+  .dex.docking .rowitem:not(.center){opacity:.25; transition:opacity .2s}
+  .dex.nudge .rowitem.center .lift{animation:nudgedip 1.5s cubic-bezier(.45,0,.35,1)}
+  @keyframes nudgedip{0%,100%{transform:translateY(0)}42%,58%{transform:translateY(var(--nudge,24px))}}
+  .dex.nudge .console .cslot i{animation:nudgeglow 1.5s ease}
+  @keyframes nudgeglow{42%,70%{box-shadow:0 -2px 16px #c3a2ff}}
+  .dex.inserting .rowitem::after{opacity:0}
+  .dex.inserting .rowitem:not(.center){opacity:0 !important; transition:opacity .2s}
+  .dex.inserting .console .cta,.dex.inserting .drag-hint{opacity:0}
+  .dex.seated .cartwell{visibility:hidden}
+  .dex.seated .console{animation:thunk .22s ease-out}
+  @keyframes thunk{30%{translate:0 3px}65%{translate:0 -1px}}
+  .console .dpad.pl::before,.console .dpad.pr::before{translate:0 1px; filter:none}
+  .console .ab i.pressed,.console .pills i.pressed{translate:0 2px; box-shadow:inset 0 1px 1px #b2a8bb,0 1px 0 #2b2332}
+  .console:hover .dpad,.console:hover .ab i:last-child,.console:hover .pills i:first-child{cursor:pointer}
+  .dex.poweron .console .led{background:#91ff6d; box-shadow:0 0 7px #a0ff5b,0 0 1px #eeffd1 inset}
+  .dex.poweron .console .off{opacity:0}
+  .dex.zooming .console{transform:translate(var(--zx,0px),var(--zy,0px)) scale(var(--zs,2))}
+  /* Keep the same 3:2 LCD throughout the zoom: no second, differently sized screen. */
+  .gbboot{position:absolute; inset:0; background:#fff; visibility:hidden; opacity:0; container-type:inline-size; overflow:hidden}
+  .dex.poweron .gbboot{visibility:visible; opacity:1; transition:opacity .12s}
+  .gbboot::after{content:""; position:absolute; inset:0; z-index:4; pointer-events:none; opacity:.17;
+    background:repeating-linear-gradient(0deg,#22213b18 0 .5px,transparent .5px 2px)}
+  .gba{position:absolute; inset:0; color:#1900db}
+  .gba-wordmark{position:absolute; left:10%; top:37%; width:80%; display:flex; align-items:flex-end; justify-content:center; gap:0}
+  .boot-letter{display:block; position:relative; flex:var(--letter-width) 1 0; aspect-ratio:var(--letter-width)/42; opacity:0;
+    transform-origin:50% 70%; color:#f000ef; will-change:transform,opacity}
+  .boot-letter svg{display:block; width:100%; height:100%; overflow:visible; fill:currentColor}
+  .dex.booting .boot-letter{animation:gba-letter-in .94s cubic-bezier(.16,.55,.34,1) calc(.08s + var(--i)*.07s) both,
+    gba-letter-shine .44s linear calc(1.9s + var(--i)*.045s) forwards}
+  @keyframes gba-letter-in{
+    0%{opacity:0; color:#ff00ee; transform:translate(var(--fly-x),var(--fly-y)) rotate(-35deg) scale(5)}
+    10%{opacity:.65; color:#ff00ee}
+    27%{opacity:1; color:#ff1648; transform:translate(-22%, -75%) rotate(-22deg) scale(2.4)}
+    44%{color:#ffd900}
+    58%{color:#73f400; transform:translate(-16%,-30%) rotate(9deg) scale(1.35)}
+    75%{color:#00d5c7; transform:translate(-5%,12%) rotate(-5deg) scale(.97)}
+    90%{color:#006aff}
+    100%{opacity:1; color:#1900db; transform:translate(0,0) rotate(0) scale(1)}
+  }
+  @keyframes gba-letter-shine{0%,100%{color:#1900db}25%{color:#a200ff}48%{color:#ff8cff}60%{color:#ffd4ff}80%{color:#9800ff}}
+  .gba .box{position:absolute; left:0; right:0; top:73%; text-align:center; font:700 5.5cqw/1 Arial,sans-serif; letter-spacing:-.025em; color:#ed00e9; opacity:0}
+  .dex.booting .gba .box{animation:gba-maker-in .22s linear forwards}
+  @keyframes gba-maker-in{from{opacity:0}to{opacity:1}}
+  .gba .box sup{font-size:.46em; vertical-align:super; margin-left:1px}
+  .gbboot .flash{position:absolute; inset:0; z-index:5; background:#fff; opacity:0; pointer-events:none}
+  .dex.booting .gbboot .flash{animation:outflash .28s ease 2.9s forwards}
+  @keyframes outflash{to{opacity:1}}
+  /* After the logo, the game's own title screen waits on the LCD for START. */
+  .title-screen{position:absolute; inset:0; z-index:6; overflow:hidden; background:#0d0a14; visibility:hidden; opacity:0; container-type:inline-size}
+  .dex.titled .title-screen{visibility:visible; opacity:1; transition:opacity .4s}
+  .title-screen img{width:100%; height:100%; object-fit:cover; filter:saturate(1.1)}
+  .title-screen::after{content:""; position:absolute; inset:0; background:linear-gradient(180deg,transparent 35%,#0a0612d9 78%)}
+  .ts-copy{position:absolute; left:0; right:0; bottom:7%; z-index:1; display:flex; flex-direction:column; align-items:center; gap:4cqw; text-align:center}
+  .ts-name{max-width:90%; color:#fff; font:700 6cqw/1.1 'Unbounded',sans-serif; letter-spacing:-.03em; text-shadow:0 .5cqw 1.5cqw #000}
+  .ts-start{color:#ffe28a; font:600 4.2cqw/1 'IBM Plex Mono',monospace; letter-spacing:.2em; text-shadow:0 0 2cqw #ffcf4d99}
+  .dex.titled .ts-start{animation:tsblink 1s steps(1) infinite}
+  @keyframes tsblink{50%{opacity:.15}}
+  .logo-defs{position:absolute; width:0; height:0; overflow:hidden; pointer-events:none}
+  .launch-status{position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%)}
+
+  .dex-info{padding:30px 30px 26px; background:linear-gradient(160deg,#221c33,#171324); color:var(--text); display:flex; flex-direction:column; gap:12px; overflow:auto}
+  .dex-info h3{font-family:'Unbounded',sans-serif; font-weight:700; font-size:clamp(19px,2.6vw,26px);
+    line-height:1.1; padding-right:34px}
+  .dexmeta{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+  .dexmeta .mchip{font-size:11px}
+  .dexmeta .badge{position:static}
+  .dex-info .eyebrow{color:var(--faint)}
+  .dex-info h3{color:#fff}
+  .dex-info .tagline2{color:var(--muted); font-size:15px; line-height:1.65}
+  .dex-shot{border-radius:12px; overflow:hidden; border:1px solid var(--edge-d);
+    box-shadow:0 14px 30px -18px #000}
+  .dex-shot img{width:100%; aspect-ratio:16/10; object-fit:cover}
+  .dex-actions{margin-top:auto; display:flex; gap:12px 14px; align-items:center; flex-wrap:wrap; padding-top:6px}
+  .dex-play{display:inline-flex; align-items:center; justify-content:center; gap:10px; flex:1 1 100%; min-height:50px; padding:12px 20px;
+    border:0; border-radius:12px; cursor:pointer; color:#fff; font:600 15px/1 'IBM Plex Sans',sans-serif;
+    background:linear-gradient(180deg,#7f62e6,#5d42c2); box-shadow:inset 0 1px 0 #ffffff40,0 3px 0 #3f2a91,0 8px 18px -8px #5d42c2;
+    transition:translate .1s,box-shadow .1s,filter .15s}
+  .dex-play:hover{filter:brightness(1.08)}
+  .dex-play:active{translate:0 2px; box-shadow:inset 0 1px 0 #ffffff40,0 1px 0 #3f2a91}
+  .dex-play .kbd{padding:3px 6px; border:1px solid #ffffff55; border-radius:4px; font:500 10px/1 'IBM Plex Mono',monospace; opacity:.8}
+  .dex-play[data-state="busy"]{filter:saturate(.4); cursor:progress}
+  .dex-play[data-state="title"]{background:linear-gradient(180deg,#f0c75e,#d59b2a); color:#3a2604; box-shadow:inset 0 1px 0 #fff6,0 3px 0 #8a5f14,0 0 0 4px #f0c75e44;
+    animation:startpulse 1.2s ease-in-out infinite}
+  @media (hover:none){ .dex-play .kbd{display:none} }
+  @keyframes startpulse{50%{box-shadow:inset 0 1px 0 #fff6,0 3px 0 #8a5f14,0 0 0 9px #f0c75e00}}
+  /* la instrucción de manual: la acción vive en la consola, aquí solo se explica */
+  .howto{flex:1; min-width:170px; font-size:12.5px; color:var(--muted); line-height:1.45;
+    padding:2px 0 2px 12px; border-left:3px solid var(--coin)}
+  .howto b{display:block; font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:500;
+    letter-spacing:.18em; text-transform:uppercase; color:var(--gold); margin-bottom:2px}
+  @media (max-width:760px){
+    .dex{padding:10px}
+    /* la ficha no es un scroller que envuelva la escena 3D (iOS pinta mal el preserve-3d
+       dentro de overflow:auto): el escenario queda fijo y solo la info scrollea */
+    .dex-card{grid-template-columns:1fr; grid-template-rows:minmax(420px,auto) minmax(0,1fr);
+      max-height:94vh; overflow:hidden}
+    .dex-stage{min-height:420px}
+    .cartwell{top:54px; bottom:236px}
+    .rowitem{width:128px}
+    .dexcount{left:50%; top:14px; transform:translateX(-50%); white-space:nowrap}
+    .drag-hint{left:0; right:0; bottom:auto; top:34px; padding:0 54px; text-align:center}
+    .drag-hint .h-full{display:none}
+    .drag-hint .h-mini{display:inline}
+    .console{width:min(90%,350px); bottom:40px}
+    .console .cta{font-size:9px; letter-spacing:.09em; top:calc(100% + 22px)}
+    .dex-info{padding:20px 20px 22px}
+    .dex-actions{order:1; margin-top:0}
+    .dex-shot{order:2}
+    .dex-nav{top:calc(54px + (100% - 290px)/2); width:34px; height:34px; margin-top:-17px}
+  }
+
+  .badge{
+    position:absolute; top:10px; left:10px; z-index:2;
+    font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:500; letter-spacing:.1em;
+    padding:4px 9px; border-radius:999px; color:#fff;
+  }
+  .badge.nuevo{background:var(--play)}
+  .badge.hoy{background:var(--coin); color:#3A2604}
+  .badge.wip{background:var(--bezel); color:var(--phosphor)}
+  .repo{
+    position:relative; z-index:3;
+    font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--muted);
+    padding:3px 8px; border:1px solid #ffffff1f; border-radius:8px;
+  }
+  .repo:hover{color:var(--text); border-color:#ffffff45}
+
+  /* chip de modelo: la pegatina del cartucho (quién lo construyó conmigo) */
+  .mchip{
+    font-family:'IBM Plex Mono',monospace; font-size:10px; font-weight:500; letter-spacing:.08em;
+    padding:4px 8px; border-radius:6px; white-space:nowrap; line-height:1;
+  }
+  .mchip.fable{
+    background:linear-gradient(110deg,#F2C4FF,#9AD9FF,#A7F3C0,#FFE28A,#F2C4FF);
+    background-size:280% 100%; color:#3A2140; border:1px solid rgba(58,33,64,.28);
+    animation:foil 7s linear infinite;
+  }
+  .mchip.f51{
+    background:linear-gradient(110deg,#3A2A5A,#1E4A5E,#2E5A44,#5A3E6E,#3A2A5A);
+    background-size:280% 100%; color:#F4EEFF; border:1px solid rgba(58,33,64,.55);
+    animation:foil 7s linear infinite;
+  }
+  @keyframes foil{to{background-position:280% 50%}}
+  .room .mchip,footer .mchip{animation:none}
+  .slot3d:hover .mchip.f51,.slot3d:hover .mchip.fable{animation:foil 7s linear infinite}
+  .mchip.o55{
+    background:linear-gradient(110deg,#0E3A2B,#1B5540,#2A7356,#C49A3A,#0E3A2B);
+    background-size:280% 100%; color:#FFF0A6; border:1px solid rgba(196,154,58,.6);
+    animation:foil 7s linear infinite;
+  }
+  .slot3d:hover .mchip.o55{animation:foil 7s linear infinite}
+  .mchip.o48{background:rgba(217,154,43,.16); color:#8A5F14; border:1px solid rgba(138,95,20,.4)}
+  .mchip.o47{background:rgba(91,100,112,.11); color:#5B6470; border:1px solid rgba(91,100,112,.38)}
+  .mchip.o46{background:rgba(160,98,54,.12); color:#7A4B2A; border:1px solid rgba(122,75,42,.38)}
+  .crt .mchip.o55{background:rgba(42,115,86,.25); color:#FFF0A6; border-color:rgba(196,154,58,.5); animation:none}
+  .crt .mchip.o48{background:rgba(233,172,59,.14); color:#E9AC3B; border-color:rgba(233,172,59,.4)}
+  .crt .mchip.o47{background:rgba(185,194,206,.12); color:#B9C2CE; border-color:rgba(185,194,206,.35)}
+  .crt .mchip.o46{background:rgba(214,154,110,.12); color:#D69A6E; border-color:rgba(214,154,110,.4)}
+
+  .grid{display:grid; gap:16px; grid-template-columns:repeat(auto-fill,minmax(248px,1fr))}
+
+  /* ============ la sala de máquinas: un monitor CRT encendido por juego ============ */
+  .tgrid{display:grid; gap:34px 22px; grid-template-columns:repeat(auto-fill,minmax(248px,1fr)); padding-top:14px}
+  .crt{position:relative; perspective:700px}
+  .crt::after{ /* sombra en el suelo de la sala */
+    content:""; position:absolute; left:15%; right:15%; bottom:-16px; height:12px; border-radius:50%;
+    background:radial-gradient(ellipse, rgba(0,0,0,.55), transparent 70%)}
+  .crt-body{position:relative; padding:11px 11px 0; border-radius:13px 13px 10px 10px;
+    background:linear-gradient(172deg,#3A404B,#262B33 55%,#1D2126);
+    border:1px solid #14171B;
+    box-shadow:inset 0 1px 0 rgba(242,240,228,.09), inset 0 -2px 0 rgba(0,0,0,.35),
+      0 16px 30px -20px rgba(0,0,0,.85);
+    transition:transform .18s ease-out; will-change:transform}
+  .crt-body::after{ /* la peana */
+    content:""; position:absolute; left:50%; bottom:-9px; transform:translateX(-50%);
+    width:44%; height:9px; border-radius:0 0 9px 9px;
+    background:linear-gradient(180deg,#262B33,#171A1F);
+    border:1px solid #14171B; border-top:0}
+  .crt .scr{position:relative; height:156px; border-radius:9px; overflow:hidden;
+    background:radial-gradient(115% 90% at 50% 42%, #2C351F 0%, #222A18 58%, #161C0F 100%);
+    box-shadow:inset 0 0 34px rgba(0,0,0,.78), 0 0 0 2px #101318, 0 0 16px rgba(147,162,75,.07);
+    transition:box-shadow .25s}
+  .crt:hover .scr, .crt:focus-within .scr{
+    box-shadow:inset 0 0 30px rgba(0,0,0,.72), 0 0 0 2px #101318, 0 0 26px rgba(147,162,75,.22)}
+  .crt .shot{ /* el TUI del juego, teñido de fósforo; se renderiza al "ejecutar" */
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover; opacity:0; z-index:1;
+    filter:grayscale(1) sepia(.9) hue-rotate(44deg) saturate(1.5) brightness(.85) contrast(1.08);
+    transition:opacity .4s}
+  .crt.ran .shot{opacity:.9}
+  .crt .tty{position:relative; z-index:2; margin:0; padding:11px 12px; height:100%; overflow:hidden;
+    font-family:'IBM Plex Mono',monospace; font-size:11.5px; line-height:1.65;
+    color:#9DA97F; white-space:pre-wrap; word-break:break-word; transition:opacity .35s}
+  .crt.ran .tty{opacity:0}
+  .crt .tty .pr{color:var(--screen)}
+  .crt .tty .cmd{color:var(--screen-dim); font-weight:500}
+  .crt .tty .tl{color:#D6DFB2}
+  .crt .cur{display:inline-block; width:.62em; height:1.05em; vertical-align:-.15em;
+    background:var(--screen); animation:ttyblink 1.1s steps(1) infinite}
+  @keyframes ttyblink{50%{opacity:0}}
+  .crt .glass{ /* cristal: scanlines, viñeta y reflejo que sigue al ratón */
+    position:absolute; inset:0; z-index:3; pointer-events:none; border-radius:9px;
+    background:
+      radial-gradient(190px 130px at var(--gx,72%) var(--gy,10%), rgba(242,240,228,.10), transparent 60%),
+      linear-gradient(115deg, rgba(255,255,255,.05) 0%, transparent 24%),
+      repeating-linear-gradient(180deg, rgba(0,0,0,.15) 0 1px, transparent 1px 3px);
+    box-shadow:inset 0 0 40px rgba(0,0,0,.5)}
+  .crt .cover{position:absolute; inset:0; z-index:4; border-radius:14px}
+  .crt .chin{position:relative; display:flex; align-items:center; gap:8px; padding:9px 3px 10px}
+  .crt .brand{font-family:'IBM Plex Mono',monospace; font-size:8.5px; letter-spacing:.2em; color:#7A828E}
+  .crt .chin .mchip{margin-left:auto; font-size:9px}
+  .crt .chin .led{width:7px; height:7px; border-radius:50%; flex:none;
+    background:#E4574A; box-shadow:0 0 8px rgba(228,87,74,.7); transition:background .2s, box-shadow .2s}
+  .crt:hover .chin .led, .crt:focus-within .chin .led{
+    background:#7AC74F; box-shadow:0 0 9px rgba(122,199,79,.9)}
+  .crt.in .scr{animation:crton .55s ease-out} /* se enciende al entrar en escena */
+  @keyframes crton{0%{transform:scaleY(.04); filter:brightness(5)}
+    55%{transform:scaleY(1.04); filter:brightness(1.6)} 100%{transform:scaleY(1); filter:brightness(1)}}
+
+  .term-caption{margin-top:21px; padding:0 3px}
+  .term-caption strong{display:block; font-size:15.5px; line-height:1.4; font-weight:600; color:var(--text)}
+  .term-caption .how{display:block; margin-top:8px; color:#9fb27a; font:500 10px/1.4 'IBM Plex Mono',monospace; letter-spacing:.06em}
+  .sec-note{color:var(--muted); font-size:14px; max-width:62ch}
+  .term-caption p{color:var(--muted); font-size:13px; line-height:1.5; margin-top:4px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
+  .empty{display:none; margin-top:40px; padding:60px 20px; text-align:center; color:var(--muted); border:1px dashed #ffffff1c; border-radius:18px}
+  .empty p:first-child{font:700 18px/1.4 'Unbounded',sans-serif; color:var(--text); letter-spacing:-.03em}
+  .empty .mono{margin-top:6px; font-size:13px}
+  .empty button{margin-top:18px; padding:11px 18px; border:1px solid #ffffff24; border-radius:10px; background:#ffffff0d; color:var(--text); font:inherit; font-weight:600; cursor:pointer}
+  .empty button:hover{background:#ffffff1a}
+
+  footer{margin-top:60px; border-top:1px solid #ffffff10; background:#0b0912}
+  footer .legend{max-width:1240px; margin:0 auto; padding:30px 28px 0; display:flex; gap:8px; flex-wrap:wrap; align-items:center; color:var(--muted); font-size:13px}
+  footer .wrap{padding-top:18px; padding-bottom:40px; display:flex; gap:18px; flex-wrap:wrap; align-items:baseline; justify-content:space-between; color:var(--faint); font-size:13.5px}
+  footer a{color:var(--muted); border-bottom:1px dashed var(--faint)}
+  footer a:hover{color:var(--text); border-color:var(--accent)}
+  .mchip.o48{background:rgba(233,172,59,.14); color:#E9AC3B; border:1px solid rgba(233,172,59,.4)}
+  .mchip.o47{background:rgba(185,194,206,.12); color:#B9C2CE; border:1px solid rgba(185,194,206,.35)}
+  .mchip.o46{background:rgba(214,154,110,.12); color:#D69A6E; border:1px solid rgba(214,154,110,.4)}
+
+  .hidden{display:none !important}
+
+  /* Pause the catalogue's material effects while the console is open. */
+  body.dexopen .room .cart, body.dexopen .room .slot3d::after,
+  body.dexopen .room .fr, body.dexopen .room .bk,
+  body.dexopen .room .mchip.fable, body.dexopen footer .mchip.fable,
+  body.dexopen .room .mchip.f51, body.dexopen footer .mchip.f51, body.dexopen .room .mchip.o55, body.dexopen footer .mchip.o55,
+  body.dexopen .deck .chip.m-fable, body.dexopen .deck .chip.m-f51{animation-play-state:paused}
+  .slot3d.hidden{display:none !important}
+
+  /* aparición al hacer scroll */
+  .reveal{opacity:0; transform:translateY(14px); transition:opacity .5s, transform .5s}
+  .reveal.in{opacity:1; transform:none}
+
+  @media (max-width:1000px){
+    .hero{grid-template-columns:1fr; gap:10px; padding-top:40px}
+    .hero-stage{order:-1; padding-top:30px}
+    .console.hero-console{width:min(100%,460px)}
+    .hero-stage::after{top:calc(30px + min(100%,460px)/1.82 + 8px)}
+    .hero-copy{text-align:center; display:flex; flex-direction:column; align-items:center}
+    .thesis{max-width:52ch}
+    .hero-actions,.hero-stats,.steps{justify-content:center}
+    .cartgrid{grid-template-columns:repeat(auto-fill,minmax(200px,1fr))}
+    #hits{display:none}
+  }
+  @media (max-width:760px){
+    :root{--top:108px}
+    html{scroll-padding-top:120px}
+    .wrap{padding:0 16px}
+    .topbar .wrap{flex-wrap:wrap; align-content:center; gap:10px 12px}
+    .lcd{order:3; flex:1 1 100%; max-width:none; margin-left:0}
+    .snd{margin-left:auto; min-height:36px}
+    .deck{position:static}
+    .deck .wrap{flex-direction:column; align-items:stretch; gap:10px; padding-top:12px; padding-bottom:12px}
+    .sw{width:100%}
+    .sw button{font-size:12px; padding:8px}
+    .deck .chips{margin:0 -16px; padding:3px 16px}
+    .chip{padding:7px 9px; min-height:30px; font-size:9px}
+    .chip b{font-size:9px; margin-left:4px}
+    .hero{padding-top:18px; padding-bottom:10px}
+    .hero-stage{padding-top:26px}
+    .hero-stage::after{top:calc(26px + min(100%,460px)/1.82 + 6px)}
+    .hero-caption{margin-top:22px; font-size:13px}
+    h1{margin:18px 0 14px; font-size:clamp(30px,9vw,40px)}
+    .thesis{font-size:15px}
+    .hero-actions{margin-top:22px; gap:10px; width:100%}
+    .daily-pick{flex:1 1 100%; justify-content:flex-start}
+    .coinbtn{flex:1 1 100%; padding-left:8px}
+    .hero-stats{margin-top:18px; gap:6px 12px; font-size:11px}
+    .hero-stats span+span{padding-left:12px}
+    .steps{font-size:12px; gap:6px 12px}
+    section{padding-top:38px; scroll-margin-top:120px}
+    .sec-head{gap:9px}
+    .sec-head h2{font-size:17px}
+    .sec-head .count{font-size:10px}
+    .sec-note{font-size:13px}
+    .shelf{grid-auto-columns:180px; gap:22px; padding:22px 16px 22px; margin:0 -16px; scroll-padding-inline:16px}
+    .shelf-controls button{width:32px; height:32px}
+    .cartgrid{grid-template-columns:repeat(2,minmax(0,1fr)); gap:34px 18px; padding:22px 0 0}
+    .cart-title{font-size:14px; gap:3px}
+    .cart-caption{margin-top:16px; padding-top:10px}
+    .cart-caption p{font-size:12px; line-height:1.45; min-height:2.9em}
+    .fr .band{font-size:6px; padding:0 4px}
+    .sticker .strip{bottom:14px; left:5px; right:5px}
+    .sticker .strip span{font-size:7px}
+    .sticker .foot{height:12px; padding:0 3px}
+    .sticker .foot .mchip{font-size:5px; padding:1px 2px}
+    .sticker .foot .no{font-size:5px}
+    .sticker .badge{font-size:5px; padding:2px 3px}
+    .rowitem .sticker .strip span{font-size:8px}
+    .tgrid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:30px 20px}
+    footer{margin-top:40px}
+    footer .legend{justify-content:center; padding:24px 16px 0; font-size:12px}
+    footer .wrap{justify-content:center; text-align:center; padding-top:16px; padding-bottom:28px; gap:10px; font-size:12px}
+  }
+  @media (max-width:359px){
+    .brand img{height:16px}
+    .sec-head .count,.section-number{display:none}
+    .cartgrid{gap:28px 14px}
+    .sticker .foot .no{display:none}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto}
+    .reveal,.slot3d{opacity:1;transform:none;transition:none}
+    .crt-body,.crt .shot,.crt .tty,.cart,.sw .knob{transition:none}
+    .console.hero-console{animation:none}
+    .cart,.slot3d.pop,.tier-fable .fr,.tier-fable .bk,.tier-f51 .fr,.tier-f51 .bk,.tier-o55 .fr,.tier-o55 .bk,.mchip,.chip,.coinbtn .cn{animation:none !important}
+    .console .cta b,.crt.in .scr,.crt .cur,.dex-play{animation:none}
+    .coinbtn,.coinbtn .cn,.coin-lamp{transition:none}
+    .coinbtn:hover:not(.drop) .cn{transform:rotate(-14deg)}
+  }
+
+</style>
+</head>
+<body>
+<a class="skip-link" href="#collection">Ir a los juegos</a>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#" aria-label="Gavilanbe Arcade, inicio"><img src="../assets/gavilanbe.svg" width="352" height="46" alt=""><span aria-hidden="true">ARCADE</span></a>
+    <div class="lcd" role="search">
+      <label class="sr-only" for="search">Buscar en la colección</label>
+      <input id="search" type="search" placeholder="Busca un juego, un género, un modelo…" autocomplete="off" aria-describedby="hits">
+      <kbd class="search-key" aria-hidden="true">/</kbd>
+      <button class="search-clear" id="search-clear" type="button" aria-label="Borrar búsqueda" hidden>×</button>
+    </div>
+    <button class="snd" id="snd" type="button" aria-pressed="true" title="Sonido de la consola"><i class="led" aria-hidden="true"></i>SONIDO</button>
+  </div>
+</header>
+
+<div class="hero-outer">
+  <div class="wrap hero">
+    <div class="hero-copy">
+      <p class="kicker"><i aria-hidden="true"></i>Gratis · en el navegador · sin instalar</p>
+      <h1><span class="sr-only">Gavilanbe Arcade: </span>Mete un cartucho.<br>Pulsa <em>START</em>.</h1>
+      <p class="thesis"><b id="total-b">67</b> juegos hechos a mano: pixel art, mundos 3D, roguelikes de terminal y homebrew de Game Boy.</p>
+      <div class="hero-actions">
+        <button class="daily-pick" id="daily-pick" type="button">
+          <span class="pb" aria-hidden="true">▶</span>
+          <span><small>JUGAR AL CARTUCHO DEL DÍA</small><strong id="daily-title"></strong></span>
+        </button>
+        <button class="coinbtn" id="coin" type="button" aria-label="Echa una moneda: jugar a un juego al azar">
+          <span class="slot" aria-hidden="true"><span class="coin-window"><i class="cn">G</i></span></span>
+          <span class="coin-copy"><strong>Echa una moneda</strong><small><i class="coin-lamp" aria-hidden="true"></i>JUEGO AL AZAR</small></span>
+        </button>
+      </div>
+      <ol class="steps" aria-label="Cómo se juega"><li>Elige un cartucho</li><li>Mételo en la consola</li><li>Pulsa START</li></ol>
+      <p class="hero-stats" id="hero-stats"></p>
+    </div>
+    <div class="hero-stage" id="hero-stage">
+      <p class="hero-caption"><b>HOY EN LA CONSOLA</b><span id="daily-tag"></span></p>
+    </div>
+  </div>
+</div>
+
+<nav class="deck" aria-label="Filtros">
+  <div class="wrap">
+    <div class="sw" id="sw" role="group" aria-label="Tipo de juego">
+      <span class="knob" aria-hidden="true"></span>
+      <button class="on" data-f="all" type="button" aria-pressed="true">Todos</button>
+      <button data-f="web" type="button" aria-pressed="false">Online</button>
+      <button data-f="terminal" type="button" aria-pressed="false">Terminal</button>
+    </div>
+    <div class="chips" id="chips" role="group" aria-label="Modelo que creó el juego">
+      <button class="chip m-astra" data-m="astra" type="button" title="Juegos construidos con OpenAI Astra">✦ ASTRA<b></b></button>
+      <button class="chip m-f51" data-m="fable-5.1" type="button" title="Juegos construidos con Claude Fable 5.1">✦ FABLE 5.1<b></b></button>
+      <button class="chip m-fable" data-m="fable" type="button" title="Juegos construidos con Claude Fable 5">✦ FABLE 5<b></b></button>
+      <button class="chip m-o55" data-m="opus-5.5" type="button" title="Juegos construidos con Claude Opus 5.5">✦ OPUS 5.5<b></b></button>
+      <button class="chip m-o48" data-m="opus-4.8" type="button" title="Juegos construidos con Claude Opus 4.8">OPUS 4.8<b></b></button>
+      <button class="chip m-o47" data-m="opus-4.7" type="button" title="Juegos construidos con Claude Opus 4.7">OPUS 4.7<b></b></button>
+      <button class="chip m-o46" data-m="opus-4.6" type="button" title="Juegos construidos con Claude Opus 4.6">OPUS 4.6<b></b></button>
+    </div>
+    <span id="hits" role="status" aria-live="polite"></span>
+  </div>
+</nav>
+
+<main class="wrap room" id="collection" tabindex="-1">
+  <noscript><p style="padding:32px;color:#eee">Activa JavaScript para explorar los cartuchos y arrancar la consola.</p></noscript>
+  <section id="sec-feat">
+    <div class="sec-head"><span class="section-number" aria-hidden="true">01</span><h2>Para empezar</h2><span class="rail"></span><div class="shelf-controls"><button id="shelf-prev" type="button" aria-label="Ver destacados anteriores" aria-controls="shelf">←</button><button id="shelf-next" type="button" aria-label="Ver más destacados" aria-controls="shelf">→</button></div></div>
+    <p class="sec-note">Los favoritos de la casa y lo último en llegar.</p>
+    <div class="shelf" id="shelf"></div>
+  </section>
+
+  <section id="sec-web">
+    <div class="sec-head"><span class="section-number" aria-hidden="true">02</span><h2>Todos los cartuchos</h2><span class="rail"></span><span class="count" id="count-web"></span></div>
+    <p class="sec-note">Toca uno para abrir la consola. Se juegan en el navegador, también en el móvil.</p>
+    <div class="cartgrid" id="grid-web"></div>
+  </section>
+
+  <section id="sec-term">
+    <div class="sec-head"><span class="section-number" aria-hidden="true">03</span><h2>La sala de máquinas</h2><span class="rail"></span><span class="count" id="count-term"></span></div>
+    <p class="sec-note">Juegos para la línea de comandos: pasa por encima para ejecutarlos y ábrelos para ver cómo instalarlos.</p>
+    <div class="tgrid" id="grid-term"></div>
+  </section>
+
+  <div class="empty" id="empty">
+    <p>Nada por aquí con <b id="empty-q"></b>.</p>
+    <p class="mono">prueba con «poke», «terminal», «3d»…</p>
+    <button type="button" id="empty-clear">Ver toda la colección</button>
+  </div>
+</main>
+
+<footer>
+  <div class="legend">
+    <span>Cada juego lleva la pegatina del modelo que lo construyó conmigo:</span>
+    <span class="mchip astra">✦ ASTRA</span>
+    <span class="mchip f51">✦ FABLE 5.1</span>
+    <span class="mchip fable">✦ FABLE 5</span>
+    <span class="mchip o55">✦ OPUS 5.5</span>
+    <span class="mchip o48">OPUS 4.8</span>
+    <span class="mchip o47">OPUS 4.7</span>
+    <span class="mchip o46">OPUS 4.6</span>
+  </div>
+  <div class="wrap">
+    <span>Hecho a mano, un rectángulo cada vez.</span>
+    <span class="mono" id="foot-count"></span>
+    <a href="https://github.com/gavilanbe" target="_blank" rel="noopener">@gavilanbe</a>
+  </div>
+</footer>
+
+<div class="dex" id="dex" role="dialog" aria-modal="true" aria-label="Ficha del cartucho" hidden>
+  <div class="dex-back" id="dex-back"></div>
+  <div class="dex-card">
+    <button class="dex-x" id="dex-x" type="button" aria-label="Cerrar ficha">✕</button>
+    <div class="dex-stage" id="dex-stage">
+      <span class="dexcount" id="dex-count"></span>
+      <div class="cartwell" id="dex-well"><div class="dexrow" id="dex-row"></div></div>
+      <button class="dex-nav prev" id="dex-prev" type="button" aria-label="Cartucho anterior">‹</button>
+      <button class="dex-nav next" id="dex-next" type="button" aria-label="Cartucho siguiente">›</button>
+      <p class="drag-hint"><span class="h-full">◂ ▸ HOJEAR · ▼ ARRASTRA A LA RANURA</span><span class="h-mini">◂ ▸ DESLIZA · ▼ A LA RANURA</span></p>
+      <svg class="logo-defs" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs><path id="gba-glyph-G" d="M25.8 19.55H44.61L40.82 37.58Q37.5 39.74 32.67 41.23Q27.84 42.72 22.82 42.72Q15.02 42.72 10.87 39.19Q5.19 34.37 5.19 25.23Q5.19 19.09 7.63 13.47Q10.55 6.71 15.94 2.98Q21.33 -0.75 28.61 -0.75Q35.89 -0.75 40.29 2.64Q44.69 6.02 46.13 12.5L38.07 13.42Q37.01 9.86 34.65 8.06Q32.28 6.25 28.7 6.25Q24.51 6.25 21.01 8.43Q17.52 10.61 15.54 15.17Q13.56 19.72 13.56 25.11Q13.56 30.42 15.97 32.95Q18.38 35.49 23.02 35.49Q25.8 35.49 28.73 34.7Q31.65 33.92 33.77 32.83L35.06 26.58H24.34Z"/><path id="gba-glyph-A" d="M29.93 32.71H13.27L8.23 42H-0.66L23.11 -0.03H32.71L39.53 42H31.34ZM28.87 25.72 26.43 8.8 16.28 25.72Z"/><path id="gba-glyph-V" d="M23.42 42H14.19L6.65 -0.03H15.28L20.61 31.77L38.02 -0.03H46.59Z"/><path id="gba-glyph-I" d="M2.04 42 10.84 -0.03H19.47L10.69 42Z"/><path id="gba-glyph-L" d="M2.64 42 11.44 -0.03H20.07L12.76 34.98H34.14L32.68 42Z"/><path id="gba-glyph-N" d="M36.01 42H27.95L16.6 13.76L10.69 42H2.64L11.41 -0.03H19.49L30.88 28.1L36.75 -0.03H44.78Z"/><path id="gba-glyph-B" d="M2.35 42 11.15 -0.03H25.52Q30.19 -0.03 32.05 0.26Q35.15 0.69 37.3 1.98Q39.45 3.27 40.57 5.42Q41.68 7.57 41.68 10.18Q41.68 13.68 39.74 16.24Q37.79 18.81 33.71 20.13Q36.95 21.01 38.77 23.29Q40.6 25.57 40.6 28.44Q40.6 32.22 38.45 35.62Q36.29 39.02 32.51 40.51Q28.73 42 22.16 42ZM16.23 16.94H22.82Q27.26 16.94 29.21 16.31Q31.16 15.68 32.14 14.25Q33.11 12.82 33.11 11.18Q33.11 9.58 32.2 8.54Q31.28 7.51 29.59 7.17Q28.64 7 25.03 7H18.32ZM12.41 35.23H20.76Q26 35.23 27.79 34.56Q29.59 33.89 30.66 32.34Q31.74 30.79 31.74 29.07Q31.74 26.98 30.19 25.62Q28.64 24.25 25.03 24.25H14.71Z"/><path id="gba-glyph-E" d="M2.41 42 11.18 -0.03H42.34L40.88 7H18.38L16.37 16.54H38.13L36.67 23.57H14.91L12.27 34.98H36.72L35.23 42Z"/></defs></svg>
+      <button class="console" id="dex-dock" type="button" aria-label="Meter el cartucho y jugar" aria-describedby="dex-launch-status">
+        <span class="shoulder left" aria-hidden="true"></span><span class="shoulder right" aria-hidden="true"></span>
+        <span class="cslot" aria-hidden="true"><i></i></span>
+        <span class="loaded-pak" aria-hidden="true"></span>
+        <span class="cbody" aria-hidden="true">
+          <span class="bezel">
+            <span class="screen" id="dex-screen">
+              <span class="off"><svg viewBox="0 0 24 28"><path d="M4 3h14l2 2v20H4zM7 3v6h10V3M8 14h8M8 18h8M9 25v-3h6v3"/></svg>INSERT GAME PAK</span>
+              <span class="gbboot"><span class="gba"><span class="gba-wordmark"><span class="boot-letter" style="--i:0;--letter-width:45.67;--fly-x:480%;--fly-y:340%"><svg viewBox="0 0 45.67 44"><use href="#gba-glyph-G"/></svg></span><span class="boot-letter" style="--i:1;--letter-width:42.4;--fly-x:446%;--fly-y:358%"><svg viewBox="0 0 42.4 44"><use href="#gba-glyph-A"/></svg></span><span class="boot-letter" style="--i:2;--letter-width:39.16;--fly-x:412%;--fly-y:376%"><svg viewBox="0 0 39.16 44"><use href="#gba-glyph-V"/></svg></span><span class="boot-letter" style="--i:3;--letter-width:16.31;--fly-x:378%;--fly-y:394%"><svg viewBox="0 0 16.31 44"><use href="#gba-glyph-I"/></svg></span><span class="boot-letter" style="--i:4;--letter-width:35.86;--fly-x:344%;--fly-y:412%"><svg viewBox="0 0 35.86 44"><use href="#gba-glyph-L"/></svg></span><span class="boot-letter" style="--i:5;--letter-width:42.4;--fly-x:310%;--fly-y:430%"><svg viewBox="0 0 42.4 44"><use href="#gba-glyph-A"/></svg></span><span class="boot-letter" style="--i:6;--letter-width:42.4;--fly-x:276%;--fly-y:448%"><svg viewBox="0 0 42.4 44"><use href="#gba-glyph-N"/></svg></span><span class="boot-letter" style="--i:7;--letter-width:42.4;--fly-x:242%;--fly-y:466%"><svg viewBox="0 0 42.4 44"><use href="#gba-glyph-B"/></svg></span><span class="boot-letter" style="--i:8;--letter-width:39.16;--fly-x:208%;--fly-y:484%"><svg viewBox="0 0 39.16 44"><use href="#gba-glyph-E"/></svg></span></span><span class="box">games<sup>™</sup></span></span><i class="flash"></i></span>
+              <span class="title-screen" aria-hidden="true"><img id="ts-img" alt="" decoding="async"><span class="ts-copy"><span class="ts-name" id="ts-name"></span><span class="ts-start">PRESS START</span></span></span>
+            </span>
+            <span class="cbrand"><img src="../assets/gavilanbe.svg" alt="" width="312" height="46"><i>ADVANCE</i></span>
+          </span>
+          <span class="led"></span><span class="led-l">POWER</span>
+          <span class="dpad"><i></i><b></b><b></b><b></b><b></b></span>
+          <span class="ab"><i>B</i><i>A</i></span>
+          <span class="pills"><i data-label="START"></i><i data-label="SELECT"></i></span>
+          <span class="grille"><i></i><i></i><i></i><i></i><i></i></span>
+        </span>
+        <span class="cta"><b>▼</b> INSERTA EL CARTUCHO O TOCA AQUÍ</span>
+      </button>
+      <span class="launch-status" id="dex-launch-status" role="status" aria-live="polite"></span>
+    </div>
+    <div class="dex-info">
+      <p class="eyebrow">Ficha de cartucho</p>
+      <h3 id="dex-title"></h3>
+      <div class="dexmeta" id="dex-meta"></div>
+      <p class="tagline2" id="dex-tag"></p>
+      <div class="dex-shot" id="dex-shot"><img id="dex-img" alt="" decoding="async"></div>
+      <div class="dex-actions">
+        <button class="dex-play" id="dex-play" type="button"><span id="dex-play-label">▶ Jugar</span><span class="kbd" aria-hidden="true">ENTER</span></button>
+        <p class="howto"><b>Cómo jugar</b>Pulsa Jugar o arrastra el cartucho a la ranura. Cuando salga <b style="display:inline;letter-spacing:.08em">PRESS START</b>, pulsa otra vez y el juego se abre en otra pestaña.</p>
+        <a class="repo" id="dex-repo" target="_blank" rel="noopener">ver código ↗</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="../data.js"></script>
+<script>GAMES.forEach(g=>{if(g.thumb&&!/^(https?:|\.\.\/)/.test(g.thumb))g.thumb="../"+g.thumb});</script>
+<script>
+(() => {
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s||'').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+  const normalize = value => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const firstEmoji = s => { const m = [...s].find(c => /\p{Extended_Pictographic}/u.test(c)); return m || '🎮'; };
+  const stripEmoji = s => s.replace(/^\s*\p{Extended_Pictographic}[️‍]*\s*/u, '');
+
+  const FEATURED = ['westieware','invoca','nagu-gavi','trazo','chromara','isomate','spore-quest','rana-gba','bitxo','sprout-game','nahugavi','gacha-zoo','libreta','makinamon','doodli','chef-game','poke-autobattler','short-hike-demo'];
+  const rk = n => { const i = FEATURED.indexOf(n); return i < 0 ? 999 : i; };
+
+  const webGames  = GAMES.filter(g => g.type === 'web').sort((a,b) => rk(a.name)-rk(b.name) || a.title.localeCompare(b.title));
+  const termGames = GAMES.filter(g => g.type === 'terminal').sort((a,b) => a.title.localeCompare(b.title));
+  const pool = webGames.filter(g => !g.wip && g.play && g.kind === 'juego');
+  const daily = pool[Math.floor(Date.now()/86400000) % pool.length];
+
+  const MCHIP = {
+    'astra': ['astra', '✦ ASTRA', 'Construido con OpenAI Astra'],
+    'fable-5.1':['f51',   '✦ FABLE 5.1', 'Construido con Claude Fable 5.1'],
+    'fable':    ['fable', '✦ FABLE 5',   'Construido con Claude Fable 5'],
+    'opus-5.5': ['o55',   '✦ OPUS 5.5', 'Construido con Claude Opus 5.5'],
+    'opus-4.8': ['o48',   'OPUS 4.8', 'Construido con Claude Opus 4.8'],
+    'opus-4.7': ['o47',   'OPUS 4.7', 'Construido con Claude Opus 4.7'],
+    'opus-4.6': ['o46',   'OPUS 4.6', 'Construido con Claude Opus 4.6'],
+  };
+  const mchip = g => {
+    const [cls, label, title] = MCHIP[g.model] || [];
+    return cls ? `<span class="mchip ${cls}" title="${title}">${label}</span>` : '';
+  };
+  $('#total-b').textContent = GAMES.length;
+  $('#hero-stats').innerHTML = `<span><b>${webGames.length}</b> online</span><span><b>${termGames.length}</b> de terminal</span><span><b>${new Set(GAMES.map(g => g.model)).size}</b> modelos</span>`;
+  $('#foot-count').textContent = `${GAMES.length} juegos · ${new Date().getFullYear()}`;
+  $('#count-web').textContent = `${webGames.length} cartuchos`;
+  $('#count-term').textContent = `${termGames.length} máquinas`;
+  $('#daily-title').textContent = stripEmoji(daily.title);
+  $('#daily-tag').textContent = daily.tagline;
+  $('#daily-pick').setAttribute('aria-label', 'Jugar al juego del día: '+stripEmoji(daily.title));
+
+  /* ---- cartas ---- */
+  const badge = g =>
+    g === daily ? '<span class="badge hoy">HOY</span>' :
+    g.wip ? '<span class="badge wip">WIP</span>' :
+    g.new ? '<span class="badge nuevo">NUEVO</span>' : '';
+
+  /* the collection remembers what you've already played on this device */
+  const played = new Set();
+  try{ JSON.parse(localStorage.getItem('gb-played') || '[]').forEach(n => played.add(n)); }catch(e){}
+  function markPlayed(g){
+    played.add(g.name);
+    try{ localStorage.setItem('gb-played', JSON.stringify([...played])); }catch(e){}
+    document.querySelectorAll('.slot3d[data-name]').forEach(el => { if (el.dataset.name === g.name) el.classList.add('played'); });
+  }
+
+  const TIER = {'astra':'tier-astra','fable-5.1':'tier-f51','fable':'tier-fable','opus-5.5':'tier-o55','opus-4.8':'tier-o48','opus-4.7':'tier-o47','opus-4.6':'tier-o46'};
+  function cartSlot(g, eager, num){
+    const el = document.createElement('div');
+    el.className = 'slot3d reveal' + (played.has(g.name) ? ' played' : '');
+    el.dataset.search = normalize(g.name+' '+g.title+' '+g.tagline+' '+g.model);
+    el.dataset.type = 'web';
+    el.dataset.model = g.model;
+    el.dataset.name = g.name;
+    el.tabIndex = 0;
+    el.setAttribute('role','button');
+    el.setAttribute('aria-label', `Ver el cartucho de ${stripEmoji(g.title)}`);
+    el.style.setProperty('--i', num ? (num - 1) % 12 : 0);
+    const art = g.thumb
+      ? `<img src="${esc(g.thumb)}" alt="" width="640" height="400" decoding="async" ${eager ? '' : 'loading="lazy"'}>`
+      : `<div class="noart">${firstEmoji(g.title)}</div>`;
+    const no = `AGB-${String(webGames.indexOf(g)+1).padStart(3,'0')}`;
+    el.innerHTML = `
+      <div class="cart ${TIER[g.model]||''}">
+        <i class="f bk"><span class="ridges"></span><span class="plate">GAVILANBE™<br>GAME PAK<br>HECHO A MANO</span><span class="screw"></span></i>
+        <i class="f lf"></i><i class="f rt"></i><i class="f tp"></i>
+        <i class="f bt"><span class="pins"></span></i>
+        <div class="f fr">
+          <span class="band"><span>GAVILANBE ADVANCE</span><b class="arw"></b></span>
+          <div class="well"><div class="sticker">
+            <div class="art">${art}</div>
+            <span class="strip"><span>${esc(stripEmoji(g.title))}</span></span>
+            <span class="foot"><span class="no">${no}</span>${mchip(g)}</span>
+            ${badge(g)}
+            <span class="playhint" aria-hidden="true">▶ JUGAR</span>
+          </div></div>
+        </div>
+      </div>
+      <div class="cart-caption" aria-hidden="true"><div class="cart-title"><span>${esc(stripEmoji(g.title))}</span><b>▶</b></div><p>${esc(g.tagline || '')}</p></div>`;
+    return el;
+  }
+
+  /* la sala de máquinas: cada juego de terminal es un CRT; al pasar por encima, se ejecuta */
+  const CANHOVER = matchMedia('(hover:hover) and (pointer:fine)').matches
+    && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const wrapLines = (s, w, max) => {
+    const words = String(s || '').trim().split(/\s+/), lines = [];
+    let cur = '';
+    for (const word of words){
+      if (cur && (cur + ' ' + word).length > w){
+        lines.push(cur);
+        if (lines.length === max){ lines[max-1] += '…'; return lines; }
+        cur = word;
+      } else cur = cur ? cur + ' ' + word : word;
+    }
+    if (cur) lines.push(cur);
+    return lines;
+  };
+  const crtTimers = new WeakMap();
+  function crtRun(el){
+    if (el.dataset.run) return;
+    el.dataset.run = '1';
+    const out = el.querySelector('.out');
+    const lines = JSON.parse(el.dataset.out || '[]');
+    let i = 0; out.textContent = '';
+    const ts = [];
+    const put = () => {
+      if (i < lines.length){ out.textContent += lines[i++] + '\n'; ts.push(setTimeout(put, 85 + Math.random()*70)); }
+      else ts.push(setTimeout(() => el.classList.add('ran'), 300)); /* ...y el TUI se renderiza */
+    };
+    ts.push(setTimeout(put, 130));
+    crtTimers.set(el, ts);
+  }
+  function crtStop(el){
+    (crtTimers.get(el) || []).forEach(clearTimeout);
+    crtTimers.delete(el);
+    el.classList.remove('ran');
+    el.querySelector('.out').textContent = '';
+    delete el.dataset.run;
+  }
+  function termCard(g){
+    const el = document.createElement('article');
+    el.className = 'crt reveal';
+    el.dataset.search = normalize(g.name+' '+g.title+' '+g.tagline+' '+g.model);
+    el.dataset.type = 'terminal';
+    el.dataset.model = g.model;
+    el.dataset.out = JSON.stringify(wrapLines(stripEmoji(g.tagline || g.title), 34, 3));
+    const shot = g.thumb ? `<img class="shot" src="${esc(g.thumb)}" alt="" loading="lazy">` : '';
+    el.innerHTML = `
+      <div class="crt-body">
+        <div class="scr">${shot}<pre class="tty"><span class="pr">$ </span><span class="cmd">./${esc(g.name)}</span>
+<span class="tl">${firstEmoji(g.title)} ${esc(stripEmoji(g.title))}</span>
+<span class="out"></span><span class="cur" aria-hidden="true"></span></pre><i class="glass" aria-hidden="true"></i></div>
+        <div class="chin">
+          <span class="brand">GAVILANBE™ TTY</span>
+          ${mchip(g)}
+          <i class="led" aria-hidden="true"></i>
+        </div>
+      </div>
+      <div class="term-caption" aria-hidden="true"><strong>${esc(stripEmoji(g.title))}</strong><p>${esc(g.tagline || '')}</p><span class="how">>_ SE JUEGA EN TU TERMINAL · VER CÓDIGO ↗</span></div>
+      <a class="cover" href="${esc(g.repo)}" target="_blank" rel="noopener"
+        aria-label="Ver el código de ${esc(stripEmoji(g.title))} en GitHub"></a>`;
+    if (CANHOVER){
+      el.addEventListener('mouseenter', () => crtRun(el));
+      el.addEventListener('mouseleave', () => crtStop(el));
+      el.addEventListener('focusin', () => crtRun(el));
+      el.addEventListener('focusout', () => crtStop(el));
+    } else { /* sin hover: la máquina ya está ejecutada, con su salida y el TUI tenue */
+      el.querySelector('.out').textContent = JSON.parse(el.dataset.out).join('\n') + '\n';
+      el.querySelector('.shot')?.style.setProperty('opacity', '.28');
+    }
+    return el;
+  }
+
+  const shelf = $('#shelf'), gw = $('#grid-web'), gt = $('#grid-term');
+  const featured = [daily, ...webGames.filter(g => FEATURED.includes(g.name) && g !== daily)];
+  featured.forEach((g,i) => shelf.appendChild(cartSlot(g, i < 5)));
+  webGames.forEach((g,i) => gw.appendChild(cartSlot(g, false, i+1)));
+  termGames.forEach(g => gt.appendChild(termCard(g)));
+
+  /* ---- tilt 3D: cartuchos y monitores siguen al ratón ---- */
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (!reduce && matchMedia('(pointer:fine)').matches){
+    const MAXT = 7;
+    document.addEventListener('pointermove', e => {
+      const s = e.target.closest('.slot3d');
+      if (s && !s.closest('.cartwell')){
+        const c = s.querySelector('.cart'); if (!c) return;
+        const r = s.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+        c.style.animation = 'none';
+        c.style.transform = `translateY(-8px) scale(1.025) rotateX(${((.5-y)*2*MAXT+4).toFixed(2)}deg) rotateY(${((x-.5)*2*MAXT).toFixed(2)}deg)`;
+        const b = c.querySelector('.fr');
+        b.style.setProperty('--gx', (x*100).toFixed(1)+'%');
+        b.style.setProperty('--gy', (y*100).toFixed(1)+'%');
+        return;
+      }
+      const k = e.target.closest('.crt');
+      if (k){ /* un monitor pesa: se inclina poco, pero el reflejo del cristal baila */
+        const b = k.querySelector('.crt-body'), r = k.getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+        b.style.transform = `translateY(-4px) rotateX(${((.5-y)*7).toFixed(2)}deg) rotateY(${((x-.5)*7).toFixed(2)}deg)`;
+        const gl = k.querySelector('.glass');
+        gl.style.setProperty('--gx', (x*100).toFixed(1)+'%');
+        gl.style.setProperty('--gy', (y*100).toFixed(1)+'%');
+      }
+    }, {passive:true});
+    document.addEventListener('pointerout', e => {
+      const s = e.target.closest('.slot3d');
+      if (s && !s.closest('.cartwell') && !(e.relatedTarget && s.contains(e.relatedTarget))){
+        const c = s.querySelector('.cart'); if (!c) return;
+        c.style.transform = ''; c.style.animation = '';
+        return;
+      }
+      const k = e.target.closest('.crt');
+      if (k && !(e.relatedTarget && k.contains(e.relatedTarget))){
+        const b = k.querySelector('.crt-body');
+        if (b) b.style.transform = '';
+      }
+    }, {passive:true});
+  }
+
+  /* ---- la ficha: estantería-carrusel, escaparate e inserción en la consola ---- */
+  const dex = $('#dex'), dexRow = $('#dex-row'), dexWell = $('#dex-well'),
+        dexDock = $('#dex-dock'), dexStage = $('#dex-stage'),
+        dexInfo = document.querySelector('.dex-info');
+  let dexGame = null, dexTimers = [], dexReturnFocus = null;
+  const modalBackground = [...document.querySelectorAll('.topbar,.hero-outer,.deck,main,footer,.skip-link')];
+  let deck = [], items = [], posX = 0, target = 0, animId = 0, lastTick = 0, infoTimer = 0;
+  let inserting = false, dragging = false, dragMode = null, dy = 0, insertGap = 120;
+  let downX = 0, downY = 0, lastX = 0, lastT = 0, vel = 0, wheelAt = 0, dragStart = 0;
+  const MOBQ = matchMedia('(max-width:760px)');
+  const geom = () => MOBQ.matches ? {gap:178, z:120, rot:27} : {gap:252, z:150, rot:30};
+  function clearDexTimers(){
+    dexTimers.forEach(clearTimeout); dexTimers = [];
+    cancelAnimationFrame(renderReq); renderReq = 0;
+    if (sfx.voices) { for (const voice of sfx.voices) { try{ voice.stop(); }catch(e){} } sfx.voices.clear(); }
+  }
+
+  /* la caja por la que se hojea: los cartuchos visibles con el filtro/búsqueda actual */
+  function dexPool(g){
+    const vis = [...gw.querySelectorAll('.slot3d:not(.hidden)')]
+      .map(el => webGames.find(x => x.name === el.dataset.name)).filter(Boolean);
+    return vis.some(x => x.name === g.name) ? vis : [g];
+  }
+  /* la fila es perezosa: cada cartucho se construye la primera vez que asoma.
+     Abrir la ficha ya no fabrica 32 cartuchos (ni dispara 32 imágenes) de golpe. */
+  function buildRow(){
+    dexRow.replaceChildren();
+    items = deck.map(() => null);
+  }
+  function ensureItem(i){
+    if (items[i]) return items[i];
+    const el = document.createElement('div');
+    el.className = 'rowitem';
+    el.style.display = 'none'; /* nace oculto: render() lo coloca y lo enseña cuando asome */
+    const lift = document.createElement('div');
+    lift.className = 'lift';
+    lift.appendChild(cartSlot(deck[i], Math.abs(i - target) < 3).querySelector('.cart'));
+    const dim = document.createElement('div');
+    dim.className = 'dim';
+    el.appendChild(lift); el.appendChild(dim);
+    dexRow.appendChild(el);
+    items[i] = el;
+    return el;
+  }
+  function render(){
+    /* la ventana justa: más allá de ±2 el pozo ya los recorta, tenerlos vivos solo cuesta capas.
+       Nada de opacity fraccionaria en .rowitem: aplana el preserve-3d (spec) y iOS lo pinta roto */
+    const G = geom(), R = MOBQ.matches ? 2 : 2.4;
+    const lo = Math.max(0, Math.floor(posX - R)), hi = Math.min(deck.length - 1, Math.ceil(posX + R));
+    for (let i = 0; i < items.length; i++){
+      if (items[i] && (i < lo || i > hi)) items[i].style.display = 'none';
+    }
+    for (let i = lo; i <= hi; i++){
+      const el = ensureItem(i);
+      const o = i - posX, a = Math.abs(o);
+      el.style.display = '';
+      el.style.transform = `translate(-50%,-50%) translateX(${(o*G.gap).toFixed(1)}px)`
+        + ` translateZ(${(-a*G.z).toFixed(1)}px)`
+        + ` rotateY(${(Math.max(-1, Math.min(1, -o))*G.rot).toFixed(1)}deg)`;
+      /* penumbra por overlay compositado: nada de filter por frame */
+      el.lastChild.style.opacity = (Math.min(a, 1.6)*.30).toFixed(2);
+      el.style.zIndex = 40 - Math.round(a*4);
+      el.classList.toggle('center', a < .5);
+    }
+  }
+  let renderReq = 0;
+  function scheduleRender(){ /* coalesce: el arrastre tactil dispara pointermove a >60Hz */
+    if (!renderReq) renderReq = requestAnimationFrame(() => { renderReq = 0; render(); });
+  }
+  let animTs = 0, posV = 0; /* velocidad del muelle, en cartuchos/segundo */
+  function animate(){ /* muelle amortiguado de verdad: hereda impulso, llega firme */
+    cancelAnimationFrame(animId);
+    animTs = 0;
+    const W0 = 20, Z = 0.9; /* llegada en ~0.25s con un pelo de vida */
+    const step = (ts) => {
+      if (!animTs){ animTs = ts; animId = requestAnimationFrame(step); return; }
+      const dt = Math.min(0.033, (ts - animTs) / 1000) || 0.016; animTs = ts;
+      const d = posX - target;
+      posV += (-W0*W0*d - 2*Z*W0*posV) * dt;
+      posX += posV * dt;
+      if (Math.abs(posX - target) < .002 && Math.abs(posV) < .02){
+        posX = target; posV = 0; render();
+        const idle = window.requestIdleCallback || (f => setTimeout(f, 120));
+        idle(() => { for (let j = Math.max(0, target-4); j <= Math.min(deck.length-1, target+4); j++) ensureItem(j); });
+        return;
+      }
+      const idx = Math.round(Math.max(0, Math.min(deck.length - 1, posX)));
+      if (idx !== lastTick){ lastTick = idx; sfx('tick'); }
+      render();
+      animId = requestAnimationFrame(step);
+    };
+    animId = requestAnimationFrame(step);
+  }
+  /* one button, four moments: play → (inserting) → skip the intro → START */
+  const dexPlay = $('#dex-play'), dexPlayLabel = $('#dex-play-label');
+  const PLAY_LABEL = {idle:'▶ Jugar', busy:'Insertando…', skip:'Saltar intro ⏭', title:'▶ START · abrir el juego'};
+  function setPlayState(state){
+    dexPlay.dataset.state = state;
+    dexPlayLabel.textContent = PLAY_LABEL[state];
+    dexDock.setAttribute('aria-label', state === 'title' ? 'Pulsar START y abrir el juego' : state === 'skip' ? 'Saltar la intro' : 'Meter el cartucho y jugar');
+  }
+  function paintNav(){
+    $('#dex-prev').disabled = target <= 0;
+    $('#dex-next').disabled = target >= deck.length - 1;
+  }
+  function setInfo(g, instant){
+    dexGame = g;
+    paintNav();
+    const di = deck.findIndex(x => x.name === g.name);
+    $('#dex-count').textContent = di < 0 ? '' :
+      `CARTUCHO ${String(di+1).padStart(2,'0')} / ${String(deck.length).padStart(2,'0')}`;
+    clearTimeout(infoTimer);
+    const fill = () => {
+      $('#dex-title').textContent = stripEmoji(g.title);
+      $('#dex-tag').textContent = g.tagline || '';
+      const img = $('#dex-img');
+      if (g.thumb){ img.src = g.thumb; img.alt = 'Pantalla de '+stripEmoji(g.title); $('#dex-shot').style.display = ''; }
+      else $('#dex-shot').style.display = 'none';
+      $('#dex-meta').innerHTML = mchip(g)
+        + `<span class="repo" style="cursor:default">${g.kind && g.kind!=='juego' ? esc(g.kind) : 'juego'} · web</span>`
+        + (g.wip ? '<span class="badge wip">WIP</span>' : (g.new ? '<span class="badge nuevo">NUEVO</span>' : ''));
+      $('#dex-repo').href = g.repo;
+      dexInfo.classList.remove('swap');
+    };
+    if (instant || reduce){ fill(); return; }
+    dexInfo.classList.add('swap');
+    infoTimer = setTimeout(fill, 90);
+  }
+  function settle(i){ /* fija el objetivo y deja que el muelle lo traiga al centro */
+    if (inserting) return;
+    i = Math.max(0, Math.min(deck.length - 1, i));
+    for (let j = Math.max(0, i-2); j <= Math.min(deck.length-1, i+2); j++) ensureItem(j);
+    if (i !== target){
+      target = i;
+      dex.classList.remove('nudge','ready'); clearTimeout(nudgeTimer);
+      setInfo(deck[i]);
+    }
+    if (reduce){ posX = target; lastTick = target; render(); return; }
+    animate();
+  }
+  function openDex(g, autoplay){
+    if (dex.hidden) dexReturnFocus = document.activeElement;
+    clearDexTimers(); clearTimeout(nudgeTimer); cancelAnimationFrame(animId);
+    dex.classList.remove('inserting','booting','poweron','ready','nudge','docking','seated','zooming','titled');
+    setPlayState('idle');
+    dexDock.removeAttribute('aria-busy');
+    loadedPak.replaceChildren();
+    launchStatus.textContent = '';
+    inserting = false; dragging = false; dragMode = null; dy = 0;
+    deck = dexPool(g);
+    target = Math.max(0, deck.findIndex(x => x.name === g.name));
+    posX = target; lastTick = target; posV = 0;
+    dex.classList.toggle('solo', deck.length < 2);
+    buildRow();
+    for (let j = Math.max(0, target-3); j <= Math.min(deck.length-1, target+3); j++) ensureItem(j);
+    render();
+    setInfo(g, true);
+    dex.hidden = false;
+    modalBackground.forEach(el => { el.inert = true; });
+    document.body.style.overflow = 'hidden';
+    document.body.classList.add('dexopen');
+    dexDock.focus({preventScroll:true});
+    if (autoplay) dexTimers.push(setTimeout(insertCart, 650));
+    else if (!knowsInsert()) dexTimers.push(setTimeout(playNudge, 900));
+  }
+  function closeDex(){
+    clearDexTimers(); clearTimeout(nudgeTimer); clearTimeout(infoTimer);
+    cancelAnimationFrame(animId);
+    dex.hidden = true;
+    dexDock.style.transition = 'none'; dexDock.style.transform = ''; void dexDock.offsetWidth; dexDock.style.transition = '';
+    dex.classList.remove('inserting','booting','poweron','ready','nudge','docking','seated','zooming','titled');
+    setPlayState('idle');
+    dexDock.removeAttribute('aria-busy');
+    loadedPak.replaceChildren();
+    launchStatus.textContent = '';
+    dexInfo.classList.remove('swap');
+    document.body.style.overflow = '';
+    document.body.classList.remove('dexopen');
+    dexGame = null; inserting = false; dragging = false; dragMode = null; posV = 0;
+    modalBackground.forEach(el => { el.inert = false; });
+    if (dexReturnFocus?.isConnected) dexReturnFocus.focus({preventScroll:true});
+    dexReturnFocus = null;
+  }
+
+  /* la reverencia: el cartucho central baja hasta rozar la ranura, por si no queda claro dónde va */
+  const knowsInsert = () => { try{ return !!localStorage.getItem('gb-metido'); }catch(e){ return true; } };
+  let nudgeTimer = null;
+  function playNudge(){
+    if (reduce || inserting || dex.hidden) return;
+    const c = deck.length ? ensureItem(target).querySelector('.cart') : null; if (!c) return;
+    const cr = c.getBoundingClientRect(), slot = dexDock.querySelector('.cslot').getBoundingClientRect();
+    dexStage.style.setProperty('--nudge', Math.max(0, Math.min(32, (slot.top - cr.bottom) * .65)).toFixed(0) + 'px');
+    dex.classList.remove('nudge'); void dexStage.offsetWidth;
+    dex.classList.add('nudge');
+    clearTimeout(nudgeTimer);
+    nudgeTimer = setTimeout(() => dex.classList.remove('nudge'), 1550);
+  }
+  const cartAngle = c => { /* ángulo del giro automático, para alinear sin salto */
+    const t = getComputedStyle(c).transform;
+    if (!t || t === 'none') return 0;
+    const m = new DOMMatrix(t);
+    return Math.atan2(m.m31, m.m11) * 180 / Math.PI;
+  };
+
+  /* un gesto, dos ejes: ◂▸ desliza la estantería, ▼ baja el cartucho a la ranura */
+  dexWell.addEventListener('pointerdown', e => {
+    if (inserting) return;
+    dex.classList.remove('nudge'); clearTimeout(nudgeTimer);
+    cancelAnimationFrame(animId); posV = 0;
+    dragging = true; dragMode = null; dragStart = posX;
+    downX = lastX = e.clientX; downY = e.clientY;
+    lastT = performance.now(); vel = 0; dy = 0;
+    try{ dexWell.setPointerCapture(e.pointerId); }catch(err){}
+  });
+  dexWell.addEventListener('pointermove', e => {
+    if (!dragging || inserting) return;
+    const dx = e.clientX - downX, dv = e.clientY - downY;
+    if (!dragMode){
+      if (Math.abs(dx) > 9 && Math.abs(dx) > Math.abs(dv)) dragMode = 'scroll';
+      else if (dv > 12 && dv > Math.abs(dx)){
+        dragMode = 'insert';
+        const c = deck.length ? ensureItem(target).querySelector('.cart') : null;
+        if (!c){ dragMode = 'scroll'; }
+        else {
+          const cr = c.getBoundingClientRect(), slot = dexDock.querySelector('.cslot').getBoundingClientRect();
+          insertGap = Math.max(30, slot.top - cr.bottom + 28);
+          dex.classList.add('docking');
+        }
+      }
+      else return;
+    }
+    if (dragMode === 'scroll'){
+      const G = geom(), max = deck.length - 1;
+      let p = dragStart - dx / (G.gap * 0.82);
+      if (p < 0) p *= .32;
+      else if (p > max) p = max + (p - max) * .32;
+      posX = p;
+      const now = performance.now();
+      vel = (e.clientX - lastX) / Math.max(1, now - lastT);
+      lastX = e.clientX; lastT = now;
+      const idx = Math.max(0, Math.min(max, Math.round(posX)));
+      if (idx !== lastTick){ lastTick = idx; sfx('tick'); }
+      if (idx !== target){ target = idx; setInfo(deck[idx]); }
+      scheduleRender();
+    } else {
+      const it = deck.length ? ensureItem(target) : null; if (!it) return;
+      dy = Math.max(0, (e.clientY - downY) * .92);
+      it.querySelector('.lift').style.transform = `translateY(${Math.min(dy, insertGap + 30).toFixed(1)}px)`;
+      it.style.setProperty('--k', Math.min(dy / insertGap, 1).toFixed(3));
+      dex.classList.toggle('ready', dy > insertGap * .45);
+      if (dy >= insertGap){ dragging = false; insertCart(); }
+    }
+  });
+  ['pointerup','pointercancel'].forEach(ev => dexWell.addEventListener(ev, e => {
+    if (!dragging) return;
+    dragging = false;
+    dex.classList.remove('docking');
+    if (inserting) return;
+    if (dragMode === 'scroll'){
+      const v0 = Math.max(-14, Math.min(14, -vel * 1000 / geom().gap));
+      posV = v0; /* items/s: el muelle arranca con el impulso del dedo */
+      settle(Math.round(posX + v0 * 0.22));
+    } else if (dragMode === 'insert'){
+      dex.classList.remove('ready');
+      const it = items[target];
+      if (it){
+        it.style.setProperty('--k', 0);
+        if (dy > 0){ /* no llegó: vuelve con un muelle */
+          const lift = it.querySelector('.lift');
+          lift.style.transition = 'transform .4s cubic-bezier(.2,.9,.3,1.25)';
+          lift.style.transform = 'translateY(0)';
+          setTimeout(() => { lift.style.transition = ''; }, 420);
+        }
+      }
+    } else if (ev === 'pointerup'){
+      /* toque: en un vecino viaja hasta él; en el central, señala la ranura.
+         El índice sale de la geometría de la fila, fiable aunque el muelle siga en marcha */
+      const G = geom(), wr = dexWell.getBoundingClientRect();
+      const rel = (e.clientX - (wr.left + wr.width / 2)) / (G.gap * .85);
+      const i = Math.max(0, Math.min(deck.length - 1, Math.round(posX + rel)));
+      if (i !== target) settle(i);
+      else playNudge();
+    }
+    dragMode = null; dy = 0;
+  }));
+  dexStage.addEventListener('wheel', e => {
+    if (dex.hidden || inserting) return;
+    e.preventDefault();
+    const d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+    const now = performance.now();
+    if (Math.abs(d) < 10 || now - wheelAt < 240) return;
+    wheelAt = now;
+    settle(target + (d > 0 ? 1 : -1));
+  }, {passive:false});
+
+  const dexScreen = $('#dex-screen');
+  const launchStatus = $('#dex-launch-status');
+  const loadedPak = dexDock.querySelector('.loaded-pak');
+  const launchTimers = Object.freeze({align:340, seat:900, power:1080, zoom:1200, boot:1920, launch:5200});
+  function aimConsole(){
+    const st = dexStage.getBoundingClientRect(), cs = dexDock.getBoundingClientRect(), sc = dexScreen.getBoundingClientRect();
+    const ox = sc.left + sc.width/2 - cs.left, oy = sc.top + sc.height/2 - cs.top;
+    dexDock.style.setProperty('--ox', ox.toFixed(1)+'px');
+    dexDock.style.setProperty('--oy', oy.toFixed(1)+'px');
+    dexDock.style.setProperty('--zx', ((st.left + st.width/2) - (sc.left + sc.width/2)).toFixed(1)+'px');
+    dexDock.style.setProperty('--zy', ((st.top + st.height/2) - (sc.top + sc.height/2)).toFixed(1)+'px');
+    dexDock.style.setProperty('--zs', Math.min(st.width*.9/sc.width, st.height*.82/sc.height).toFixed(3));
+  }
+  function cartridgeTarget(c){
+    const it = c.closest('.rowitem');
+    const slot = dexDock.querySelector('.cslot').getBoundingClientRect();
+    const wr = dexWell.getBoundingClientRect();
+    const width = it.offsetWidth, height = c.offsetHeight;
+    const scale = Math.min(1, slot.width*.9/width);
+    // Use layout dimensions, never the bounding box of a spinning 3D face.
+    const restTop = wr.top + wr.height/2 - height/2;
+    const scaleInset = height*(1-scale)/2;
+    const entry = slot.top - 16 - height*scale - restTop - scaleInset;
+    const seated = slot.top - 3 - restTop - scaleInset;
+    return {scale, entry, seated};
+  }
+  function insertCart(){
+    if (!dexGame || inserting) return;
+    const url = dexGame.play;
+    if (!url) return;
+    if (reduce){ startGame(dexGame); return; }
+    inserting = true; dragging = false;
+    setPlayState('busy');
+    sfx('click'); // Unlock Web Audio inside the initiating pointer/keyboard gesture.
+    try{ localStorage.setItem('gb-metido','1'); }catch(e){}
+    clearTimeout(nudgeTimer);
+    dex.classList.remove('nudge');
+    dex.classList.add('inserting','docking','ready');
+    dexDock.setAttribute('aria-busy','true');
+    launchStatus.textContent = 'Insertando el cartucho';
+    cancelAnimationFrame(animId); cancelAnimationFrame(renderReq); renderReq = 0;
+    posX = target; lastTick = target; render();
+    aimConsole();
+    const it = items[target], c = it?.querySelector('.cart'), lift = it?.querySelector('.lift');
+    if (!c || !lift){ closeDex(); return; }
+    const r = cartAngle(c);
+    c.style.animation = 'none'; c.style.transition = 'none';
+    c.style.transform = `rotateX(6deg) rotateY(${r.toFixed(2)}deg)`;
+    lift.style.transition = 'none';
+    void c.offsetWidth;
+    const dock = cartridgeTarget(c);
+    c.style.transition = `transform ${launchTimers.align}ms cubic-bezier(.22,.8,.3,1)`;
+    c.style.transform = `rotateX(0deg) rotateY(0deg) scale(${dock.scale})`;
+    lift.style.transition = `transform ${launchTimers.align}ms cubic-bezier(.22,.8,.3,1)`;
+    // Approach the slot without pulling a dragged cartridge back upward.
+    const currentY = new DOMMatrix(getComputedStyle(lift).transform).m42 || 0;
+    lift.style.transform = `translateY(${Math.max(dock.entry,currentY).toFixed(2)}px)`;
+    const later = (time, fn) => dexTimers.push(setTimeout(fn,time));
+    later(launchTimers.align, () => {
+      lift.style.transition = `transform ${launchTimers.seat-launchTimers.align}ms cubic-bezier(.5,.02,.72,.65)`;
+      lift.style.transform = `translateY(${dock.seated.toFixed(2)}px)`;
+      sfx('slide');
+    });
+    later(launchTimers.seat, () => {
+      // Transfer the seated pak to the shell so it follows the camera zoom.
+      const seatedCart = c.cloneNode(true);
+      seatedCart.removeAttribute('style');
+      loadedPak.replaceChildren(seatedCart);
+      dex.classList.remove('ready','docking');
+      dex.classList.add('seated');
+      sfx('thunk');
+    });
+    later(launchTimers.power, () => {
+      dex.classList.add('poweron');
+      launchStatus.textContent = 'Encendiendo la consola';
+      sfx('power');
+    });
+    later(launchTimers.zoom, () => dex.classList.add('zooming'));
+    later(launchTimers.boot, () => {
+      dex.classList.add('booting');
+      setPlayState('skip');
+      launchStatus.textContent = 'Gavilanbe. Arrancando el juego';
+      sfx('boot');
+    });
+    later(launchTimers.launch, showTitle);
+  }
+  /* the game's title screen: the tab opens on a fresh press, so pop-up blockers never eat it */
+  function showTitle(){
+    if (!inserting || dex.classList.contains('titled')) return;
+    clearDexTimers();
+    dex.classList.add('seated','poweron','zooming','booting','titled');
+    dex.classList.remove('ready','docking');
+    $('#ts-img').src = dexGame.thumb || '';
+    $('#ts-name').textContent = stripEmoji(dexGame.title);
+    setPlayState('title');
+    launchStatus.textContent = `${stripEmoji(dexGame.title)} listo. Pulsa START para abrirlo`;
+    sfx('start');
+  }
+  function startGame(g){
+    const gameWindow = window.open(g.play,'_blank');
+    if (gameWindow) gameWindow.opener = null;
+    else location.assign(g.play);
+    markPlayed(g);
+    closeDex();
+  }
+  function pressPlay(){
+    if (!dexGame) return;
+    if (dex.classList.contains('titled')){ sfx('click'); startGame(dexGame); }
+    else if (dex.classList.contains('booting')) showTitle();
+    else if (!inserting) insertCart();
+  }
+  document.addEventListener('click', e => {
+    const s = e.target.closest('.slot3d');
+    if (s && !s.closest('.cartwell')){
+      const g = GAMES.find(x => x.name === s.dataset.name);
+      if (g){ openDex(g); return; }
+    }
+  });
+  /* the handheld's own buttons work: the cross browses, A and START play */
+  const tap = el => { el.classList.add('pressed'); setTimeout(() => el.classList.remove('pressed'), 140); };
+  dexDock.addEventListener('click', e => {
+    const pad = e.target.closest?.('.dpad');
+    if (pad && !inserting){
+      const r = pad.getBoundingClientRect(), dir = e.clientX < r.left + r.width/2 ? -1 : 1;
+      pad.classList.add(dir < 0 ? 'pl' : 'pr'); setTimeout(() => pad.classList.remove('pl','pr'), 140);
+      settle(target + dir); return;
+    }
+    const key = e.target.closest?.('.ab i,.pills i');
+    if (key) tap(key);
+    pressPlay();
+  });
+  dexPlay.addEventListener('click', pressPlay);
+  $('#dex-prev').addEventListener('click', () => settle(target - 1));
+  $('#dex-next').addEventListener('click', () => settle(target + 1));
+  $('#dex-x').addEventListener('click', closeDex);
+  $('#dex-back').addEventListener('click', closeDex);
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && !dex.hidden){ e.preventDefault(); closeDex(); return; }
+    if (e.key === 'Tab' && !dex.hidden){
+      const focusable = [...dex.querySelectorAll('button:not([disabled]),a[href],[tabindex="0"]')];
+      const first = focusable[0], last = focusable[focusable.length-1];
+      const current = document.activeElement;
+      if (e.shiftKey && (current === first || !dex.contains(current))){ e.preventDefault(); last?.focus(); }
+      else if (!e.shiftKey && (current === last || !dex.contains(current))){ e.preventDefault(); first?.focus(); }
+      return;
+    }
+    if (!dex.hidden && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')){
+      e.preventDefault();
+      settle(target + (e.key === 'ArrowRight' ? 1 : -1));
+      return;
+    }
+    if ((e.key === 'Enter' || e.key === ' ') && document.activeElement?.matches?.('.slot3d[role="button"]')){
+      e.preventDefault();
+      const g = GAMES.find(x => x.name === document.activeElement.dataset.name);
+      if (g) openDex(g);
+    }
+  });
+
+  /* ---- el escaparate: la misma consola, encendida con el cartucho del día ---- */
+  const heroConsole = dexDock.cloneNode(true);
+  heroConsole.removeAttribute('id'); heroConsole.removeAttribute('aria-describedby');
+  heroConsole.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+  heroConsole.querySelectorAll('.gbboot,.cta,.off').forEach(el => el.remove());
+  heroConsole.classList.add('hero-console');
+  heroConsole.setAttribute('aria-label', `Jugar a ${stripEmoji(daily.title)}, el cartucho del día`);
+  heroConsole.querySelector('.loaded-pak').replaceChildren(cartSlot(daily, true).querySelector('.cart'));
+  heroConsole.querySelector('.title-screen img').src = daily.thumb;
+  heroConsole.querySelector('.ts-name').textContent = stripEmoji(daily.title);
+  $('#hero-stage').prepend(heroConsole);
+  heroConsole.addEventListener('click', () => { sfx('click'); openDex(daily, true); });
+
+  /* ---- chiptune de la consola ---- */
+  let muted = false;
+  try{ muted = localStorage.getItem('gb-mute') === '1'; }catch(e){}
+  const sndBtn = $('#snd');
+  const paintSnd = () => { sndBtn.classList.toggle('on', !muted); sndBtn.setAttribute('aria-pressed', String(!muted)); };
+  paintSnd();
+  sndBtn.addEventListener('click', () => { muted = !muted; try{ localStorage.setItem('gb-mute', muted ? '1' : '0'); }catch(e){} paintSnd(); if (!muted) sfx('click'); });
+  function sfx(kind, delay = 0){
+    if (muted) return;
+    try{
+      const a = sfx.ctx || (sfx.ctx = new (window.AudioContext || window.webkitAudioContext)());
+      if (a.state === 'suspended') a.resume();
+      const t0 = a.currentTime + delay;
+      const voices = sfx.voices || (sfx.voices = new Set());
+      const track = source => { voices.add(source); source.addEventListener('ended', () => voices.delete(source), {once:true}); return source; };
+      const note = (f, t, dur, vol = .05, type = 'square', ramp = true) => {
+        const o = track(a.createOscillator()), g = a.createGain();
+        o.type = type; o.frequency.value = f;
+        g.gain.setValueAtTime(vol, t);
+        g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+        o.connect(g); g.connect(a.destination);
+        o.start(t); o.stop(t + dur + .02);
+        return o;
+      };
+      const noise = (t, dur, vol, hp) => {
+        const n = a.sampleRate * dur | 0, buf = a.createBuffer(1, n, a.sampleRate), d = buf.getChannelData(0);
+        for (let i = 0; i < n; i++) d[i] = Math.random()*2-1;
+        const src = track(a.createBufferSource()), g = a.createGain(), f = a.createBiquadFilter();
+        src.buffer = buf; f.type = hp ? 'highpass' : 'lowpass'; f.frequency.value = hp || 300;
+        g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+        src.connect(f); f.connect(g); g.connect(a.destination); src.start(t);
+      };
+      if (kind === 'clack'){ note(150, t0, .06, .06); note(85, t0 + .05, .09, .07); }
+      /* el "clac" de hojear la caja de cartuchos */
+      if (kind === 'tick'){ note(1250, t0, .03, .028); note(720, t0 + .025, .04, .03); }
+      /* el clic de un interruptor de plástico */
+      if (kind === 'click'){ note(900, t0, .025, .04); note(560, t0 + .03, .04, .035); noise(t0, .03, .05, 2500); }
+      /* el golpe seco del cartucho encajando */
+      if (kind === 'thunk'){ note(70, t0, .14, .12, 'sine'); noise(t0, .08, .12, 0); }
+      /* la consola enciende: un barrido cortito hacia arriba */
+      if (kind === 'power'){ const o = note(220, t0, .18, .035, 'triangle'); o.frequency.exponentialRampToValueAtTime(880, t0 + .16); }
+      if (kind === 'slide'){ noise(t0,.18,.028,1800); note(120,t0,.1,.018,'triangle'); }
+      // A rising, overlapping bell phrase follows the letters; the final chime
+      // lands as the wordmark becomes blue, before the magenta light sweep.
+      if (kind === 'boot'){
+        const bell = (f,t,dur,vol) => {
+          note(f,t,dur,vol,'sine'); note(f*2,t,dur*.5,vol*.26,'sine');
+          note(f*3,t,dur*.25,vol*.07,'sine');
+        };
+        [523.25,659.25,783.99,1046.5,1318.5,1568,2093,2637].forEach((f,i) => {
+          bell(f,t0+.07+i*.085,.38,.026);
+        });
+        bell(2093,t0+1.6,1.15,.06);
+        bell(1046.5,t0+1.6,.8,.018);
+        note(3136,t0+1.62,.55,.012,'sine');
+      }
+      if (kind === 'start'){ note(1568, t0, .08, .03); note(2093, t0 + .09, .22, .03); }
+      if (kind === 'coin'){ note(880, t0, .12, .045); note(1320, t0 + .06, .16, .045); }
+    }catch(e){}
+  }
+
+  /* ---- aparición al hacer scroll ---- */
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches && 'IntersectionObserver' in window){
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    }), {rootMargin:'0px 0px -6% 0px'});
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  } else {
+    document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+  }
+
+  /* ---- filtro + búsqueda ---- */
+  let filter = 'all', fmodel = null, q = '';
+  const hits = $('#hits'), empty = $('#empty');
+  /* cada pegatina dice cuántos cartuchos lleva */
+  document.querySelectorAll('.chip[data-m]').forEach(c => {
+    c.querySelector('b').textContent = GAMES.filter(g => g.model === c.dataset.m).length;
+    c.setAttribute('aria-pressed','false');
+  });
+  function apply(animate){
+    let shown = 0, j = 0;
+    const test = el => (filter === 'all' || el.dataset.type === filter)
+      && (!fmodel || el.dataset.model === fmodel)
+      && (!q || q.split(/\s+/).every(term => el.dataset.search.includes(term)));
+    [gw, gt].forEach(grid => {
+      let vis = 0;
+      grid.querySelectorAll('[data-search]').forEach(el => {
+        const ok = test(el);
+        el.classList.toggle('hidden', !ok);
+        el.classList.add('in');
+        if (ok){
+          vis++;
+          if (animate && !reduce && el.classList.contains('slot3d') && j < 24){
+            el.classList.remove('pop'); void el.offsetWidth;
+            el.style.setProperty('--j', j++); el.classList.add('pop');
+          }
+        }
+      });
+      shown += vis;
+      grid.closest('section').classList.toggle('hidden', vis === 0);
+      $(grid === gw ? '#count-web' : '#count-term').textContent = `${vis} ${grid === gw ? 'cartuchos' : 'máquinas'}`;
+    });
+    $('#sec-feat').classList.toggle('hidden', !!q || !!fmodel || filter === 'terminal');
+    hits.textContent = `${shown} ${shown === 1 ? 'juego encontrado' : 'juegos encontrados'}`;
+    $('#search-clear').hidden = !q;
+    $('.search-key').hidden = !!q;
+    empty.style.display = shown === 0 ? 'block' : 'none';
+    $('#empty-q').textContent = q ? `«${search.value.trim()}»` : 'ese filtro';
+  }
+  const sw = $('#sw');
+  sw.querySelectorAll('button').forEach((c, i) => c.addEventListener('click', () => {
+    if (c.classList.contains('on')) return;
+    sw.querySelectorAll('button').forEach(x => { x.classList.remove('on'); x.setAttribute('aria-pressed','false'); });
+    c.classList.add('on'); c.setAttribute('aria-pressed','true'); sw.style.setProperty('--k', i); filter = c.dataset.f; sfx('click'); apply(true);
+  }));
+  document.querySelectorAll('.chip[data-m]').forEach(c => c.addEventListener('click', () => {
+    const wasOn = c.classList.contains('on');
+    document.querySelectorAll('.chip[data-m]').forEach(x => { x.classList.remove('on'); x.setAttribute('aria-pressed','false'); });
+    if (!wasOn){ c.classList.add('on'); c.setAttribute('aria-pressed','true'); }
+    fmodel = wasOn ? null : c.dataset.m; sfx('click'); apply(true);
+  }));
+  const search = $('#search');
+  search.addEventListener('input', () => { q = normalize(search.value.trim()); apply(); });
+  $('#search-clear').addEventListener('click', () => { search.value = ''; q = ''; apply(); search.focus(); });
+  $('#empty-clear').addEventListener('click', () => {
+    search.value=''; q=''; fmodel=null; filter='all';
+    sw.style.setProperty('--k',0);
+    sw.querySelectorAll('button').forEach(x => { const on = x.dataset.f === 'all'; x.classList.toggle('on',on); x.setAttribute('aria-pressed',String(on)); });
+    document.querySelectorAll('.chip[data-m]').forEach(x => { x.classList.remove('on'); x.setAttribute('aria-pressed','false'); });
+    apply(); search.focus();
+  });
+  document.addEventListener('keydown', e => {
+    if (!dex.hidden || e.defaultPrevented) return;
+    const editing = document.activeElement?.matches('input,textarea,[contenteditable="true"]');
+    if (e.key === '/' && !editing){ e.preventDefault(); search.focus(); }
+    if (e.key === 'Escape' && document.activeElement === search){ search.value=''; q=''; apply(); search.blur(); }
+  });
+
+  $('#daily-pick').addEventListener('click', () => openDex(daily, true));
+  const shelfPrev = $('#shelf-prev'), shelfNext = $('#shelf-next');
+  function updateShelfControls(){
+    shelfPrev.disabled = shelf.scrollLeft <= 2;
+    shelfNext.disabled = shelf.scrollLeft + shelf.clientWidth >= shelf.scrollWidth - 2;
+  }
+  for (const [button, direction] of [[shelfPrev,-1],[shelfNext,1]]){
+    button.addEventListener('click', () => shelf.scrollBy({left:direction*shelf.clientWidth*.8,behavior:reduce?'auto':'smooth'}));
+  }
+  shelf.addEventListener('scroll',updateShelfControls,{passive:true});
+  if ('ResizeObserver' in window) new ResizeObserver(updateShelfControls).observe(shelf);
+  else window.addEventListener('resize',updateShelfControls,{passive:true});
+  updateShelfControls();
+  apply();
+
+  /* ---- la moneda ---- */
+  const coinBtn = $('#coin');
+  coinBtn.addEventListener('click', () => {
+    if (coinBtn.disabled) return;
+    coinBtn.disabled = true;
+    coinBtn.classList.remove('drop'); void coinBtn.offsetWidth; coinBtn.classList.add('drop');
+    sfx('coin', .38);
+    const g = pool[Math.floor(Math.random()*pool.length)];
+    setTimeout(() => { coinBtn.disabled = false; openDex(g, true); coinBtn.classList.remove('drop'); }, 520);
+  });
+})();
+</script>
+</body>
+</html>
