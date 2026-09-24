@@ -1,154 +1,137 @@
+// Regresiones de gavilanbe POCKET (jsdom; la parte 3D se prueba en el navegador).
 const {JSDOM, VirtualConsole} = require('jsdom');
 const css = require('css-tree');
 const fs = require('node:fs');
+const path = require('node:path');
 const assert = require('node:assert/strict');
-const root=require('node:path').join(__dirname,'..');
-const html=fs.readFileSync(root+'/index.html','utf8');
-const data=fs.readFileSync(root+'/data.js','utf8');
-const source=[...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g)].map(m=>m[1]).find(s=>s.includes('function insertCart'));
-const cssErrors=[];
-css.parse(html.match(/<style>([\s\S]*?)<\/style>/)[1], {onParseError:e=>cssErrors.push(e.message)});
-assert.deepEqual(cssErrors,[]);
+const root = path.join(__dirname, '..');
+const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
+const data = fs.readFileSync(path.join(root, 'data.js'), 'utf8');
+const ui = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]).join('\n');
 
-function createFixture({mobile=false,reduce=false,width=468}={}){
-  const errors=[];
-  const vc=new VirtualConsole(); vc.on('jsdomError',e=>{if(!e.message.includes('Could not parse CSS'))errors.push(e)});
-  const dom=new JSDOM(html,{url:'http://127.0.0.1:4173',runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:vc});
-  const w=dom.window,d=w.document;
-  w.matchMedia=q=>({matches:q.includes('reduced-motion')?reduce:q.includes('760px')?mobile:false,addEventListener(){},removeEventListener(){}});
-  w.localStorage.setItem('gb-metido','1'); w.localStorage.setItem('gb-mute','1');
-  let now=0,seq=0;
-  const timers=new Map();
-  w.setTimeout=(fn,ms=0)=>{timers.set(++seq,{at:now+ms,fn});return seq};
-  w.clearTimeout=id=>timers.delete(id);
-  w.requestAnimationFrame=()=>++seq; w.cancelAnimationFrame=()=>{};
-  w.DOMMatrix=class{constructor(s){this.m42=Number(s?.match(/translateY\(([-\d.]+)px\)/)?.[1]||0);this.m31=0;this.m11=1;}};
-  const realComputed=w.getComputedStyle.bind(w);
-  w.getComputedStyle=el=>{const style=realComputed(el);return new Proxy(style,{get(obj,p){if(p==='transform')return el.style.transform||'none';return Reflect.get(obj,p)}})};
-  const opened=[]; w.open=url=>{const child={opener:w};opened.push({url,child});return child};
-  const hook=`window.__gbaTest={openDex,closeDex,insertCart,settle,cartridgeTarget,launchTimers,getGame:()=>dexGame,getTimers:()=>dexTimers};`;
-  w.eval(data+'\n'+source.replace(/\}\)\(\);\s*$/,hook+'})();'));
-  const test=w.__gbaTest;
-  assert.ok(test,'test hooks attached to the unmodified production functions');
-  const H=mobile?420:570;
-  const cw=mobile?Math.min(width*.9,350):Math.min(width*.92,440);
-  const ch=cw/1.82,ct=H-(mobile?40:46)-ch,cl=(width-cw)/2;
-  const rect=(x,y,width,height)=>({x,y,left:x,top:y,right:x+width,bottom:y+height,width,height});
-  d.querySelector('#dex-stage').getBoundingClientRect=()=>rect(0,0,width,H);
-  d.querySelector('#dex-dock').getBoundingClientRect=()=>rect(cl,ct,cw,ch);
-  d.querySelector('#dex-dock .cslot').getBoundingClientRect=()=>rect(cl+cw*.34,ct-ch*.025,cw*.32,ch*.05);
-  d.querySelector('#dex-well').getBoundingClientRect=()=>rect(0,mobile?54:38,width,H-(mobile?236:302)-(mobile?54:38));
-  d.querySelector('#dex-screen').getBoundingClientRect=()=>rect(cl+cw*.2704,ct+ch*.158,cw*.4592,cw*.4592/1.5);
-  const itemWidth=mobile?128:180;
-  Object.defineProperty(w.HTMLElement.prototype,'offsetWidth',{get(){return this.classList.contains('rowitem')?itemWidth:100}});
-  Object.defineProperty(w.HTMLElement.prototype,'offsetHeight',{get(){return this.classList.contains('cart')?itemWidth/1.55:100}});
-  function tick(ms){const end=now+ms;let count=0;while(true){const candidates=[...timers].filter(([,t])=>t.at<=end).sort((a,b)=>a[1].at-b[1].at);if(!candidates.length)break;const[id,t]=candidates[0];timers.delete(id);now=t.at;t.fn();assert.ok(++count<500,'no timer loop')}now=end;}
-  const first=d.querySelector('.slot3d[data-name]');
-  assert.ok(first,'catalogue rendered'); first.click();
-  const dex=d.querySelector('#dex');assert.equal(dex.hidden,false);
-  const cart=d.querySelector('.rowitem.center .cart');
-  cart.getBoundingClientRect=()=>{const wr=d.querySelector('#dex-well').getBoundingClientRect();return rect((width-itemWidth)/2,wr.top+wr.height/2-itemWidth/1.55/2,itemWidth,itemWidth/1.55)};
-  assert.equal(d.querySelectorAll('.boot-letter').length,9);
-  assert.equal(d.querySelectorAll('#dex-screen .gbboot').length,1);
-  const ids=[...d.querySelectorAll('[id]')].map(e=>e.id);assert.equal(new Set(ids).size,ids.length,'unique ids');
-  for(const use of d.querySelectorAll('.boot-letter use')) assert.ok(d.querySelector(use.getAttribute('href')),'glyph reference resolves');
-  return {dom,w,d,test,tick,dex,opened,errors,slotTop:ct-ch*.025,itemWidth};
+const cssErrors = [];
+css.parse(html.match(/<style>([\s\S]*?)<\/style>/)[1], {onParseError: e => cssErrors.push(e.message)});
+assert.deepEqual(cssErrors, [], 'CSS sin errores');
+JSON.parse(html.match(/<script type="importmap">([\s\S]*?)<\/script>/)[1]);
+
+function fixture({hash = '', storage = {}, width = 1440} = {}) {
+  const errors = [];
+  const vc = new VirtualConsole();
+  vc.on('jsdomError', e => { if (!/Could not parse CSS/.test(e.message)) errors.push(e); });
+  const dom = new JSDOM(html, {url: 'http://127.0.0.1:4173/' + hash, runScripts: 'outside-only', pretendToBeVisual: true, virtualConsole: vc});
+  const w = dom.window, d = w.document;
+  for (const [k, v] of Object.entries(storage)) w.localStorage.setItem('pocket:' + k, JSON.stringify(v));
+  w.matchMedia = q => ({matches: /max-width: 900px/.test(q) ? width <= 900 : false, addEventListener() {}, removeEventListener() {}});
+  w.Element.prototype.scrollIntoView = () => {};
+  const opened = [], copied = [];
+  w.open = (...a) => { opened.push(a); return null; };
+  Object.defineProperty(w.navigator, 'clipboard', {value: {writeText: t => { copied.push(t); return Promise.resolve(); }}});
+  w.eval(data + '\n;window.GAMES = GAMES;\n' + ui);
+  return {dom, w, d, GB: w.GB, errors, opened, copied, GAMES: w.GAMES};
+}
+const key = (w, k, extra = {}) => w.document.dispatchEvent(new w.KeyboardEvent('keydown', {key: k, bubbles: true, cancelable: true, ...extra}));
+
+// la colección
+{
+  const {d, w, GB, errors, GAMES} = fixture();
+  const web = GAMES.filter(g => g.type === 'web'), term = GAMES.filter(g => g.type === 'terminal');
+  assert.equal(d.querySelectorAll('#carts .item').length, web.length, 'un cartucho por juego web');
+  assert.equal(d.querySelectorAll('#disks .ditem').length, term.length, 'un disquete por juego de terminal');
+  assert.equal(new Set(GAMES.map(g => g.name)).size, GAMES.length, 'slugs únicos');
+  const ids = [...d.querySelectorAll('[id]')].map(e => e.id);
+  assert.equal(new Set(ids).size, ids.length, 'ids únicos');
+  for (const g of GAMES) {
+    assert.ok(fs.existsSync(path.join(root, g.thumb.split('?')[0])), `existe ${g.thumb}`);
+    assert.ok(/^https:\/\/github\.com\/gavilanbe\//.test(g.repo), `repo: ${g.name}`);
+    if (g.type === 'web') assert.ok(/^https:\/\//.test(g.play), `enlace de juego: ${g.name}`);
+  }
+  for (const f of ['favicon.svg', 'apple-touch-icon.png', 'og.jpg', 'classic/index.html']) assert.ok(fs.existsSync(path.join(root, f)), `existe ${f}`);
+  assert.equal(d.querySelectorAll('#chips .chip').length, new Set(GAMES.map(g => g.model)).size, 'una edición por modelo');
+  assert.equal(d.querySelector('#h-count').textContent, String(GAMES.length));
+  // arranca con el cartucho del día dentro y su ranura vacía
+  assert.ok(GB.current && GB.current.type === 'web');
+  assert.equal(d.querySelector('#now-title').textContent.includes(GB.current.label), true);
+  assert.ok(d.querySelector(`.item[data-name="${GB.current.name}"]`).classList.contains('out'), 'el cartucho del día está fuera del estuche');
+  assert.equal(d.querySelectorAll('.item.out, .ditem.out').length, 1);
+  assert.ok(d.querySelector('#carts .item').querySelector('.stk-new') || !GAMES.find(g => g.name === d.querySelector('#carts .item').dataset.name).new, 'lo nuevo va primero');
+
+  // búsqueda y filtros
+  const q = d.querySelector('#q');
+  const search = v => { q.value = v; q.dispatchEvent(new w.Event('input', {bubbles: true})); };
+  const vis = () => [...d.querySelectorAll('#carts .item, #disks .ditem')].filter(x => !x.hidden).map(x => x.dataset.name);
+  search('pokemon'); const a = vis(); assert.ok(a.length > 3);
+  search('POKÉMON'); assert.deepEqual(vis(), a, 'sin tildes ni mayúsculas');
+  search('pokemon terminal'); assert.ok(vis().length && vis().every(n => GAMES.find(g => g.name === n).type === 'terminal'), 'varias palabras');
+  d.querySelector('#q-clear').click(); assert.equal(vis().length, GAMES.length);
+  d.querySelector('.seg [data-type="terminal"]').click();
+  assert.equal(d.querySelector('#sec-carts').hidden, true); assert.equal(d.querySelector('#sec-disks').hidden, false);
+  d.querySelector('.seg [data-type="all"]').click();
+  d.querySelector('.chip[data-e="fable"]').click();
+  assert.ok(vis().every(n => GAMES.find(g => g.name === n).model === 'fable')); assert.equal(d.querySelector('.chip[data-e="fable"]').getAttribute('aria-pressed'), 'true');
+  search('no-existe-este-juego'); assert.equal(d.querySelector('#empty').hidden, false);
+  d.querySelector('#empty-reset').click(); assert.equal(vis().length, GAMES.length); assert.equal(GB.state.ed, null);
+  assert.deepEqual(errors, []); w.close();
 }
 
-for(const config of [{width:468},{width:357},{mobile:true,width:300},{mobile:true,width:370},{mobile:true,width:720}]){
-  const f=createFixture(config),{test,d,dex,tick,opened}=f;
-  const game=test.getGame(),cart=d.querySelector('.rowitem.center .cart');
-  const target=test.cartridgeTarget(cart);
-  assert.ok(Number.isFinite(target.seated)&&target.scale>0&&target.scale<=1);
-  const wr=d.querySelector('#dex-well').getBoundingClientRect(),h=f.itemWidth/1.55;
-  const finalTop=wr.top+wr.height/2-h/2+h*(1-target.scale)/2+target.seated;
-  assert.ok(Math.abs(finalTop-(f.slotTop-3))<.001,'cartridge seats exactly at the slot');
-  d.querySelector('#dex-dock').click();
-  assert.equal(dex.classList.contains('inserting'),true);
-  test.settle(1);assert.equal(test.getGame().name,game.name,'cannot switch cartridges during insertion');
-  d.querySelector('#dex-dock').click();
-  tick(899);assert.equal(dex.classList.contains('seated'),false);
-  tick(1);assert.equal(dex.classList.contains('seated'),true);assert.equal(d.querySelectorAll('#dex-dock .loaded-pak .cart').length,1);
-  tick(180);assert.ok(dex.classList.contains('poweron'));
-  tick(120);assert.ok(dex.classList.contains('zooming'));
-  tick(720);assert.ok(dex.classList.contains('booting'));
-  assert.equal(opened.length,0);
-  tick(3280);assert.equal(opened.length,0,'the boot ends on the title screen, not a delayed pop-up');
-  assert.ok(dex.classList.contains('titled'));assert.equal(d.querySelector('#dex-play').dataset.state,'title');
-  assert.equal(d.querySelector('#ts-name').textContent,d.querySelector('#dex-title').textContent);
-  d.querySelector('#dex-dock').click();
-  assert.equal(opened.length,1);assert.equal(opened[0].url,game.play);assert.equal(opened[0].child.opener,null);
-  assert.ok(d.querySelector(`#grid-web .slot3d[data-name="${game.name}"]`).classList.contains('played'),'played cartridges are marked');
-  assert.equal(dex.hidden,true);assert.equal(d.querySelector('#dex-dock .loaded-pak').childElementCount,0);
-  assert.deepEqual(f.errors,[]);f.dom.window.close();
-}
+// meter cartuchos, jugar, disquetes, teclado
 {
-  const f=createFixture(),{d,tick,dex,opened,test}=f,play=d.querySelector('#dex-play');
-  assert.equal(play.dataset.state,'idle');
-  const before=test.getGame().name;d.querySelector('#dex-next').click();assert.notEqual(test.getGame().name,before,'arrow buttons browse');
-  d.querySelector('#dex-prev').click();assert.equal(test.getGame().name,before);
-  const pad=d.querySelector('#dex-dock .dpad');pad.getBoundingClientRect=()=>({left:0,top:0,width:40,height:40,right:40,bottom:40});
-  const padClick=x=>{const e=new f.w.MouseEvent('click',{bubbles:true,clientX:x,clientY:20});pad.dispatchEvent(e)};
-  padClick(35);assert.notEqual(test.getGame().name,before,'the cross browses');assert.equal(dex.classList.contains('inserting'),false);
-  padClick(5);assert.equal(test.getGame().name,before);
-  play.click();assert.ok(dex.classList.contains('inserting'));assert.equal(play.dataset.state,'busy');
-  play.click();tick(1000);assert.equal(dex.classList.contains('titled'),false,'no skipping before the cartridge is seated');
-  tick(920);assert.equal(play.dataset.state,'skip');
-  play.click();assert.ok(dex.classList.contains('titled'),'the intro can be skipped');assert.equal(opened.length,0);
-  tick(6000);assert.equal(opened.length,0,'no timer opens the game on its own');
-  d.dispatchEvent(new f.w.KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));assert.equal(dex.hidden,true);assert.equal(opened.length,0);
-  assert.deepEqual(f.errors,[]);f.dom.window.close();
+  const {d, w, GB, errors, opened, copied, GAMES} = fixture();
+  const g = GAMES.find(x => x.name === 'invoca');
+  d.querySelector('.item[data-name="invoca"] .cart').click();
+  assert.equal(GB.current.name, 'invoca'); assert.equal(w.location.hash, '#/invoca');
+  assert.ok(d.querySelector('.item[data-name="invoca"]').classList.contains('out'), 'sale del estuche');
+  assert.equal(d.querySelectorAll('.item.out').length, 1, 'el anterior vuelve a su ranura');
+  assert.equal(d.querySelector('#play').getAttribute('href'), g.play); assert.equal(d.querySelector('#play').getAttribute('rel'), 'noopener');
+  assert.equal(d.querySelector('#now-cmd').hidden, true);
+  // START desde el teclado abre el juego y lo marca
+  key(w, 'Enter'); assert.equal(opened.length, 1); assert.equal(opened[0][0], g.play); assert.ok(opened[0][2].includes('noopener'));
+  assert.ok(GB.played.has('invoca')); assert.equal(d.querySelector('.item[data-name="invoca"] .stk-done').hidden, false);
+  assert.ok(JSON.parse(w.localStorage.getItem('pocket:played')).includes('invoca'));
+  assert.match(d.querySelector('#prog-t').textContent, /^1 de /);
+  // hojear
+  key(w, 'ArrowRight'); assert.notEqual(GB.current.name, 'invoca'); key(w, 'ArrowLeft'); assert.equal(GB.current.name, 'invoca');
+  d.querySelector('#next').click(); assert.notEqual(GB.current.name, 'invoca'); d.querySelector('#prev').click(); assert.equal(GB.current.name, 'invoca');
+  // disquete
+  const t = GAMES.find(x => x.type === 'terminal');
+  d.querySelector(`.ditem[data-name="${t.name}"] .disk`).click();
+  assert.equal(d.querySelector('#play').hidden, true); assert.equal(d.querySelector('#now-cmd').hidden, false);
+  assert.ok(d.querySelector('#cmd-code').textContent.includes('git clone ' + t.repo));
+  d.querySelector('#cmd-copy').click(); assert.ok(copied[0].startsWith('git clone ' + t.repo));
+  key(w, 'Enter'); assert.equal(opened.length, 1, 'un disquete no abre pestañas');
+  // sorpresa
+  d.querySelector('#surprise').click(); assert.equal(GB.current.type, 'web');
+  key(w, 'r'); assert.equal(GB.current.type, 'web');
+  // atajo de búsqueda
+  key(w, '/'); assert.equal(d.activeElement, d.querySelector('#q')); d.activeElement.blur();
+  // color de la consola
+  d.querySelector('#shells [data-shell="cereza"]').click();
+  assert.equal(JSON.parse(w.localStorage.getItem('pocket:shell')), 'cereza');
+  assert.equal(d.querySelector('#shells [data-shell="cereza"]').getAttribute('aria-pressed'), 'true');
+  // Konami
+  for (const k of ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a']) key(w, k);
+  assert.ok(d.querySelector('.toast'), 'edición dorada');
+  assert.deepEqual(errors, []); w.close();
 }
-for(const cancelAt of [200,700,1100,2200,4900]){
-  const f=createFixture();f.test.insertCart();f.tick(cancelAt);f.d.querySelector('#dex-x').click();f.tick(6000);
-  assert.equal(f.opened.length,0,'dismissal cancels pending launch');assert.equal(f.dex.hidden,true);
-  f.d.querySelector('.slot3d[data-name]').click();assert.equal(f.dex.classList.contains('booting'),false);
-  f.test.insertCart();f.tick(5200);assert.equal(f.opened.length,0);f.d.querySelector('#dex-play').click();assert.equal(f.opened.length,1,'can start another cartridge after cancellation');
-  assert.deepEqual(f.errors,[]);f.dom.window.close();
-}
+
+// móvil: la consola se abre a pantalla completa
 {
-  const f=createFixture({reduce:true});f.test.insertCart();assert.equal(f.opened.length,1);assert.equal(f.dex.hidden,true);assert.equal(f.test.getTimers().length,0);f.dom.window.close();
+  const {d, w, GB, errors} = fixture({width: 390});
+  const player = d.querySelector('#player');
+  assert.equal(player.classList.contains('deck'), false);
+  d.querySelector('.item[data-name="chromara"] .cart').click();
+  assert.ok(player.classList.contains('deck')); assert.ok(d.body.classList.contains('decked'));
+  key(w, 'Escape'); assert.equal(player.classList.contains('deck'), false);
+  assert.equal(GB.current.name, 'chromara');
+  assert.deepEqual(errors, []); w.close();
 }
-for(const config of [{width:468},{mobile:true,width:370}]){
-  const f=createFixture(config),well=f.d.querySelector('#dex-well');
-  const pointer=(type,y)=>{const e=new f.w.Event(type,{bubbles:true});Object.assign(e,{clientX:180,clientY:y,pointerId:1});well.dispatchEvent(e)};
-  pointer('pointerdown',0);pointer('pointermove',15);assert.ok(f.dex.classList.contains('docking'));
-  pointer('pointercancel',15);assert.equal(f.dex.classList.contains('docking'),false);assert.equal(f.dex.classList.contains('inserting'),false);
-  pointer('pointerdown',0);pointer('pointermove',400);assert.ok(f.dex.classList.contains('inserting'),'dragging into slot launches');
-  f.tick(5200);f.d.querySelector('#dex-dock').click();assert.equal(f.opened.length,1);assert.deepEqual(f.errors,[]);f.dom.window.close();
-}
+
+// enlace directo y jugados guardados
 {
-  const f=createFixture(),{d,w,test,tick}=f;
-  test.closeDex();
-  const search=d.querySelector('#search');
-  const query=value=>{search.value=value;search.dispatchEvent(new w.Event('input',{bubbles:true}));};
-  const visible=()=>[...d.querySelectorAll('#grid-web [data-search],#grid-term [data-search]')].filter(el=>!el.classList.contains('hidden'));
-  query('pokemon');const a=visible().map(el=>el.dataset.search);
-  query('POKÉMON');assert.deepEqual(visible().map(el=>el.dataset.search),a);assert.ok(a.length>0,'accent-insensitive search finds games');
-  query('pokemon opus');assert.ok(visible().every(el=>el.dataset.search.includes('pokemon')&&el.dataset.search.includes('opus')));
-  d.querySelector('#search-clear').click();assert.equal(search.value,'');assert.equal(d.querySelector('#search-clear').hidden,true);
-  d.querySelector('[data-f="terminal"]').click();assert.ok(visible().every(el=>el.dataset.type==='terminal'));
-  assert.equal(d.querySelector('[data-f="terminal"]').getAttribute('aria-pressed'),'true');
-  d.querySelector('.chip[data-m="fable"]').click();assert.equal(d.querySelector('.chip[data-m="fable"]').getAttribute('aria-pressed'),'true');
-  query('there-is-no-such-game');assert.equal(visible().length,0);
-  d.querySelector('#empty-clear').click();assert.ok(visible().length>50);assert.equal(d.querySelector('[data-f="all"]').getAttribute('aria-pressed'),'true');
-  assert.equal(d.querySelector('.chip.on'),null);assert.equal(d.querySelector('#sec-feat').classList.contains('hidden'),false);
-  const daily=d.querySelector('#daily-pick');daily.focus();daily.click();assert.equal(d.querySelector('#dex-title').textContent,d.querySelector('#daily-title').textContent);
-  assert.equal(d.querySelector('main').inert,true);
-  d.dispatchEvent(new w.KeyboardEvent('keydown',{key:'/',bubbles:true}));assert.notEqual(d.activeElement,search);
-  d.querySelector('#dex-repo').focus();d.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Tab',bubbles:true,cancelable:true}));assert.equal(d.activeElement,d.querySelector('#dex-x'));
-  d.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Tab',shiftKey:true,bubbles:true,cancelable:true}));assert.equal(d.activeElement,d.querySelector('#dex-repo'));
-  d.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));assert.equal(d.activeElement,daily);assert.equal(d.querySelector('main').inert,false);
-  const shelf=d.querySelector('#shelf');
-  Object.defineProperty(shelf,'clientWidth',{value:400});Object.defineProperty(shelf,'scrollWidth',{value:1000});
-  shelf.scrollBy=({left})=>{shelf.scrollLeft+=left;shelf.dispatchEvent(new w.Event('scroll'));};
-  w.dispatchEvent(new w.Event('resize'));assert.equal(d.querySelector('#shelf-prev').disabled,true);assert.equal(d.querySelector('#shelf-next').disabled,false);
-  d.querySelector('#shelf-next').click();assert.equal(shelf.scrollLeft,320);assert.equal(d.querySelector('#shelf-prev').disabled,false);
-  d.querySelector('#shelf-prev').click();assert.equal(shelf.scrollLeft,0);
-  for(const img of d.querySelectorAll('img[src]')){const url=new URL(img.src);if(url.hostname==='127.0.0.1')assert.ok(fs.existsSync(root+decodeURIComponent(url.pathname)),`asset exists: ${url.pathname}`);}
-  assert.equal(d.querySelectorAll('#grid-web .cart-caption').length,d.querySelectorAll('#grid-web .slot3d').length);
-  const coin=d.querySelector('#coin');coin.click();coin.click();assert.equal(coin.disabled,true);tick(520);assert.equal(coin.disabled,false);assert.equal(f.dex.hidden,false);
-  test.closeDex();tick(6000);assert.equal(f.opened.length,0);
-  assert.deepEqual(f.errors,[]);f.dom.window.close();
+  const {d, w, GB, errors} = fixture({hash: '#/wirefox', storage: {played: ['bitxo', 'no-existe'], shell: 'kiwi'}});
+  assert.equal(GB.current.name, 'wirefox'); assert.ok(d.querySelector('.ditem[data-name="wirefox"]').classList.contains('out'));
+  assert.equal(GB.played.size, 1, 'descarta juegos que ya no existen');
+  assert.equal(d.querySelector('.item[data-name="bitxo"] .stk-done').hidden, false);
+  assert.equal(GB.shell, 'kiwi');
+  assert.deepEqual(errors, []); w.close();
 }
-console.log('PASS: startup and drag gestures, title screen and START, intro skip, console buttons and arrows, played marks, 5 responsive docking sizes, cancellation, replay, reduced motion, accent and multiword search, filters and reset, daily pick, focus trap and restoration, shelf controls, local images, captions, and duplicate coin prevention.');
+console.log('PASS: estuche y cajón, miniaturas, ediciones, cartucho del día, búsqueda, filtros, meter cartuchos, START, jugados, hojear, disquetes, copiar, sorpresa, atajos, color de consola, Konami, móvil y enlaces directos.');

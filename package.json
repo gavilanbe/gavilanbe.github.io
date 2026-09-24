@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "node scripts/build.mjs",
-    "test": "node scripts/check.cjs"
+    "test": "node scripts/check.cjs && node scripts/check-classic.cjs"
   },
   "devDependencies": {
     "css-tree": "3.1.0",
