@@ -47,10 +47,15 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
       if (g.type === 'web') assert.ok(/^https:\/\//.test(g.play), `enlace de juego: ${g.name}`);
     }
     for (const f of ['favicon.svg', 'apple-touch-icon.png', 'og.jpg', 'classic/index.html']) assert.ok(fs.existsSync(path.join(root, f)), `existe ${f}`);
-    assert.equal(d.querySelectorAll('#bento-web .rv').length, web.length, 'una ficha por cartucho');
-    assert.equal(d.querySelectorAll('#bento-term .rv').length, term.length, 'una ficha por disquete');
+    assert.equal(d.querySelectorAll('#cabinet .sp').length, web.length, 'un lomo por cartucho en la estantería');
+    assert.equal(d.querySelectorAll('#drawer .fd').length, term.length, 'un disquete por juego de terminal en el archivador');
+    assert.equal(d.querySelectorAll('#cabinet .divider').length, new Set(web.map(g => g.model)).size, 'un separador por edición');
+    // cada edición está junta, en orden alfabético
+    const spines = [...d.querySelectorAll('#cabinet .sp')].map(el => GB.games.find(g => g.name === el.dataset.name));
+    for (let i = 1; i < spines.length; i++) if (spines[i].model === spines[i - 1].model) assert.ok(spines[i - 1].label.localeCompare(spines[i].label, 'es') <= 0, 'orden alfabético en la balda');
+    assert.equal(new Set(spines.map((g, i) => i && spines[i - 1].model !== g.model ? g.model : null).filter(Boolean)).size, new Set(web.map(g => g.model)).size - 1, 'ediciones contiguas');
     assert.equal(d.querySelectorAll('#stickers .stk').length, GAMES.length, 'una pegatina por juego');
-    assert.equal(d.querySelectorAll('#chips .chip').length, new Set(GAMES.map(g => g.model)).size);
+    assert.equal(d.querySelectorAll('#jumps .jump').length, new Set(GAMES.map(g => g.model)).size);
     assert.equal(GB.lists.cart.length, web.length); assert.equal(GB.lists.disk.length, term.length);
     assert.ok(GB.lists.cart[0].new, 'lo nuevo va primero en la cinta');
     // arranca con un cartucho dentro y enfocado
@@ -58,20 +63,29 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     assert.equal(GB.lists.cart[GB.st.focus], GB.st.inserted);
     assert.ok(d.querySelector('#ptitle').textContent.includes(GB.st.inserted.label.split(' ')[0]));
     assert.equal(d.querySelector('#primary-t').textContent, 'Jugar ahora');
-    assert.ok(d.querySelector('#ticker button'), 'cinta de novedades');
-    // búsqueda y filtros de la revista
+    // búsqueda en el archivo: lo que no coincide se apaga en su sitio
     const q = d.querySelector('#q');
     const search = v => { q.value = v; q.dispatchEvent(new w.Event('input', {bubbles: true})); };
-    const vis = () => [...d.querySelectorAll('.rv')].filter(x => !x.hidden).map(x => x.dataset.name);
-    search('pokemon'); const a = vis(); assert.ok(a.length > 3);
-    search('POKÉMON'); assert.deepEqual(vis(), a, 'sin tildes ni mayúsculas');
-    search('pokemon terminal'); assert.ok(vis().length && vis().every(n => GAMES.find(g => g.name === n).type === 'terminal'), 'varias palabras');
-    d.querySelector('#q-clear').click(); assert.equal(vis().length, GAMES.length);
-    d.querySelector('.seg [data-type="terminal"]').click(); assert.equal(d.querySelector('#sec-web').hidden, true);
+    const lit = () => [...d.querySelectorAll('.sp, .fd')].filter(x => !x.classList.contains('dim')).map(x => x.dataset.name);
+    search('pokemon'); const a = lit(); assert.ok(a.length > 3 && a.length < GAMES.length);
+    assert.ok(d.querySelector('.sp.hit, .fd.hit'), 'resalta lo encontrado');
+    search('POKÉMON'); assert.deepEqual(lit(), a, 'sin tildes ni mayúsculas');
+    search('pokemon terminal'); assert.ok(lit().length && lit().every(n => GAMES.find(g => g.name === n).type === 'terminal'), 'varias palabras');
+    d.querySelector('#q-clear').click(); assert.equal(lit().length, GAMES.length);
+    d.querySelector('.seg [data-type="terminal"]').click(); assert.equal(d.querySelector('#cabinet').hidden, true); assert.equal(d.querySelector('#filebox').hidden, false);
     d.querySelector('.seg [data-type="all"]').click();
-    d.querySelector('.chip[data-e="fable"]').click(); assert.ok(vis().every(n => GAMES.find(g => g.name === n).model === 'fable'));
     search('no-existe-este-juego'); assert.equal(d.querySelector('#empty').hidden, false);
-    d.querySelector('#empty-reset').click(); assert.equal(vis().length, GAMES.length);
+    d.querySelector('#empty-reset').click(); assert.equal(lit().length, GAMES.length);
+    // inspeccionar: la pieza sale y se puede devolver
+    const insp = d.querySelector('#insp');
+    d.querySelector('.sp[data-name="chromara"]').click();
+    assert.equal(insp.hidden, false); assert.ok(d.querySelector('#i-title').textContent.includes('CHROMARA'));
+    assert.ok(d.querySelector('#obj3d .c3'), 'cartucho en 3D'); assert.equal(d.querySelector('#i-play').getAttribute('href'), GAMES.find(g => g.name === 'chromara').play);
+    d.querySelector('#i-next').click(); assert.ok(!d.querySelector('#i-title').textContent.includes('CHROMARA'), 'hojea la balda');
+    d.dispatchEvent(new w.KeyboardEvent('keydown', {key: 'Escape', bubbles: true}));
+    await sleep(400); assert.equal(insp.hidden, true, 'Esc la devuelve');
+    d.querySelector('.fd[data-name="wirefox"]').click(); assert.ok(d.querySelector('#obj3d .d3'), 'disquete en 3D'); assert.equal(d.querySelector('#i-play').hidden, true);
+    d.querySelector('#i-close').click(); await sleep(400);
     assert.deepEqual(errors, []); w.close();
   }
 
@@ -90,7 +104,8 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     d.querySelector('#primary').click();
     assert.deepEqual(went, [g.play], 'START abre el juego');
     assert.ok(GB.played.has(g.name)); assert.ok(d.querySelector(`#stickers .stk.got`), 'pegatina conseguida');
-    assert.equal(d.querySelector(`.rv[data-name="${g.name}"] .rv-done`).hidden, false);
+    assert.equal(d.querySelector(`.sp[data-name="${g.name}"] .ok`).hidden, false, 'marca en el lomo');
+    assert.ok(d.querySelector(`.sp[data-name="${g.name}"]`).classList.contains('out'), 'hueco en la estantería');
     assert.ok(JSON.parse(w.localStorage.getItem('pocket:played')).includes(g.name));
     assert.equal(JSON.parse(w.localStorage.getItem('pocket:last')), g.name, 'recuerda el último cartucho');
     // teclado: flechas y Enter
@@ -109,12 +124,12 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     // sorpresa: vuelve a los cartuchos
     d.querySelector('.modes [data-mode="cart"]').click();
     key(w, 'r'); assert.equal(GB.st.mode, 'cart'); assert.equal(GB.st.inserted.type, 'web');
-    // revista y álbum meten el cartucho
-    const inv = GAMES.find(x => x.name === 'invoca');
-    d.querySelector('.rv[data-name="invoca"] h3 button').click(); await sleep(500);
-    assert.equal(GB.st.inserted.name, inv.name);
+    // del archivo a la consola
+    d.querySelector('.sp[data-name="invoca"]').click(); d.querySelector('#i-insert').click(); await sleep(1100);
+    assert.equal(GB.st.inserted.name, 'invoca'); assert.equal(d.querySelector('#insp').hidden, true);
     const bitxo = [...d.querySelectorAll('#stickers .stk')][GB.games.findIndex(x => x.name === 'bitxo')];
-    bitxo.click(); await sleep(500); assert.equal(GB.st.inserted.name, 'bitxo');
+    bitxo.click(); assert.equal(d.querySelector('#insp').hidden, false, 'la pegatina saca su cartucho');
+    d.querySelector('#i-insert').click(); await sleep(1100); assert.equal(GB.st.inserted.name, 'bitxo');
     // atajos
     key(w, '/'); assert.equal(d.activeElement, d.querySelector('#q')); d.activeElement.blur();
     d.querySelector('#shells [data-shell="cereza"]').click(); assert.equal(JSON.parse(w.localStorage.getItem('pocket:shell')), 'cereza');
@@ -138,5 +153,5 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     assert.equal(d.querySelector('#pstate-t').textContent, 'Cartucho dentro');
     assert.deepEqual(errors, []); w.close();
   }
-  console.log('PASS: colección, miniaturas, revista, búsqueda, filtros, álbum, cinta, meter, START, pegatinas, teclado, disquetes, copiar, sorpresa, atajos, carcasa, Konami, música, enlaces directos y continuar.');
+  console.log('PASS: colección, miniaturas, estantería y archivador, búsqueda, inspección, álbum, cinta, meter, START, pegatinas, teclado, disquetes, copiar, sorpresa, atajos, carcasa, Konami, música, enlaces directos y continuar.');
 })().catch(e => { console.error(e); process.exit(1); });

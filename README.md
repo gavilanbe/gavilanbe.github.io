@@ -41,10 +41,15 @@ resto es HTML, CSS y JavaScript sin build.
   teclea el `git clone`, que se copia con un clic.
 - **Sorpresa** (`R` o **B**): el cartucho gira delante de la pantalla como una
   tragaperras cambiando de etiqueta hasta pararse.
-- **La revista.** Debajo, el catálogo es una revista retro: portada con número y
-  fecha, fichas en mosaico (las novedades y destacados a doble tamaño), el cartucho
-  que asoma al pasar el ratón, trama de puntos, «El rincón del PC», búsqueda sin
-  tildes (`/`) y filtros por formato y edición. Una cinta de novedades la cruza.
+- **El archivo.** Debajo, la colección está guardada de verdad: los cartuchos
+  de canto en una **estantería de madera**, ordenados por edición con un separador
+  de latón por plástico y alfabéticamente dentro de cada una; los disquetes en un
+  **archivador** con pestañas de color. Al pasar el ratón el lomo se asoma, los de
+  al lado se inclinan y aparece su etiqueta. Al tocarlo, **sale de la estantería
+  girando** hasta una ficha de inspección en 3D (CSS) con su etiqueta, su trasera,
+  formato y edición: desde ahí se mete en la consola (sube volando), se juega o se
+  hojea la balda. La búsqueda (`/`) apaga en su sitio lo que no coincide y resalta
+  lo que sí; el hueco del cartucho que está en la consola queda vacío.
 - **Álbum de pegatinas.** Cada juego que arrancas te deja su pegatina.
 - Precarga con el logo pixelado que se encoge hasta convertirse en la pantalla de
   la consola, **música chiptune** de menú (opcional), efectos sintetizados,
@@ -52,6 +57,10 @@ resto es HTML, CSS y JavaScript sin build.
   que desbloquea la **edición dorada**.
 - En el móvil la consola va arriba, la cinta en medio y el panel abajo. Sin WebGL
   se muestra la captura en plano. Respeta `prefers-reduced-motion`.
+
+Rendimiento: sin refracción, sin sombras dinámicas ni postprocesado; cada cartucho es
+una sola malla, y el plató solo pinta a 60 fps mientras algo se mueve (en reposo, unas
+10 veces por segundo) y baja la resolución si el equipo va justo.
 
 Tipografía: Bricolage Grotesque, DM Mono, Silkscreen y Caveat. La interfaz vive en
 `index.html` y el plató en [`pocket3d.js`](pocket3d.js).
@@ -85,7 +94,7 @@ La versión anterior (la consola horizontal y la tienda nocturna) sigue en
 ```
 
 2. Deja su captura en `thumbs/mi-juego.jpg` (640×400).
-3. Si es de los buenos, ponlo en la lista `FEATURED` de `index.html`: sale antes en la cinta y a doble tamaño en la revista. Un modelo nuevo funciona solo; para darle nombre de plástico y color de plató añádelo a `EDITIONS` (`index.html`) y su material 3D a `edMat` (`pocket3d.js`).
+3. Si es de los buenos, ponlo en la lista `FEATURED` de `index.html`: sale antes en la cinta de la consola. Un modelo nuevo funciona solo; para darle nombre de plástico y color de plató añádelo a `EDITIONS` (`index.html`) y su material 3D a `edMat` (`pocket3d.js`).
 4. Quita el `"new": true` de la hornada anterior.
 
 El cartucho **TRAZO** es de edición `astra` (plástico fosforito) y se publica en [gavilanbe.github.io/trazo/](https://gavilanbe.github.io/trazo/). Su código vive en [gavilanbe/trazo](https://github.com/gavilanbe/trazo).
