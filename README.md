@@ -16,36 +16,45 @@ resto es HTML, CSS y JavaScript sin build.
 
 ## Cómo funciona
 
-- **La consola.** Una portátil original, *gavilanbe POCKET*, en 3D con luces y
-  reflejos reales. Sigue al ratón, se gira arrastrando (por detrás lleva su
-  pegatina) y sus botones funcionan: **A/START** juega, **B** mete un cartucho
-  sorpresa, la **cruceta** cambia de cartucho y **SELECT** cambia el color de la
-  carcasa (crema, carbón, cereza, kiwi o uva; se recuerda).
-- **Los cartuchos.** Cada modelo es una **edición de plástico**: gris clásico
-  (Opus 4.6), negro (Opus 4.7), oro (Opus 4.8), uva atómica translúcida
-  (Fable 5), hielo (Fable 5.1), fosforito (Astra) y holográfico (Opus 5.5).
-  En los translúcidos se ve la placa por dentro. La etiqueta se genera con la
-  captura del juego.
-- **Meterlo.** En el estuche, al tocar un cartucho sale volando de su ranura
-  (que queda vacía: «en la consola»), baja por la ranura con un *clac*, se
-  enciende el LED, arranca el logo pixelado y aparece la pantalla de título con
-  PRESS START. El fondo toma el color del plástico. A veces hay **error de
-  lectura** y toca **soplar el cartucho**.
-- **Los disquetes.** Los juegos de terminal van en disquetes con la etiqueta
-  escrita a mano, en un cajón. La consola «no lee disquetes» y enseña en su
-  pantalla el `git clone`; el panel lo copia.
-- **Sorpresa** (o `R`): el cartucho gira como una tragaperras cambiando de
-  etiqueta hasta que se para en uno.
-- Cartuchos destacados flotando junto a la consola (tócalos para meterlos),
-  **cartucho del día** al entrar, pegatinas **NUEVO**, **WIP** y **✓ jugado**, barra
-  de colección jugada, sonidos chiptune sintetizados, búsqueda sin tildes (`/`),
-  filtros por formato y edición, enlaces directos (`#/invoca`), teclado
-  (`←` `→`, `Enter`) y un código antiguo que desbloquea la **edición dorada**.
-- En el móvil la colección va primero debajo de la consola y, al elegir un
-  cartucho, la consola se abre a pantalla completa. Sin WebGL, se muestra la
-  captura en plano. Respeta `prefers-reduced-motion`.
+- **El plató.** Toda la portada es un estudio fotográfico 3D infinito (three.js):
+  sombras suaves reales, niebla, brillo (bloom) en pantallas y LEDs, y el color del
+  estudio cambia con el plástico del cartucho que miras.
+- **La cinta expositora.** Todos los cartuchos en 3D sobre una peana. Se gira
+  arrastrando, con `←` `→`, con las flechas o con la cruceta de la consola; el
+  enfocado se levanta bajo un foco. **Trasera** le da la vuelta: sinopsis y código
+  de barras. Donde estaba el cartucho que está en la consola queda su contorno.
+- **La consola.** *gavilanbe POCKET*: botones que se hunden (también cuando pulsas
+  el teclado o un **mando real**), interruptor de encendido, rueda de volumen,
+  pegatina detrás (arrástrala para girarla) y seis carcasas (**SELECT** o `S`).
+  **A/START** juega, **B** es sorpresa.
+- **Meter un cartucho.** Sale volando de la cinta, gira, baja por la ranura con
+  un *clac*, la consola rebota, saltan chispas, sube el interruptor, se enciende
+  el LED y arranca el logo pixelado hasta la pantalla de título. El anterior
+  vuelve solo a su hueco. A veces hay **error de lectura**: sopla con el botón… o
+  **soplando de verdad al micrófono**.
+- **START.** La cámara **se mete dentro de la pantalla**, destello y el juego se
+  abre en esta pestaña. Al volver atrás, la cámara sale y la consola te recibe con
+  «¡HAS VUELTO! +1 PEGATINA». (↗ lo abre en otra pestaña.)
+- **Los disquetes.** Los juegos de terminal van en disquetes escritos a mano. La
+  cámara viaja por la cinta hasta un **ordenador retro** en su escritorio: el
+  disquete entra en la disquetera (*ka-chunk* y ruido de cabezal) y el monitor
+  teclea el `git clone`, que se copia con un clic.
+- **Sorpresa** (`R` o **B**): el cartucho gira delante de la pantalla como una
+  tragaperras cambiando de etiqueta hasta pararse.
+- **La revista.** Debajo, el catálogo es una revista retro: portada con número y
+  fecha, fichas en mosaico (las novedades y destacados a doble tamaño), el cartucho
+  que asoma al pasar el ratón, trama de puntos, «El rincón del PC», búsqueda sin
+  tildes (`/`) y filtros por formato y edición. Una cinta de novedades la cruza.
+- **Álbum de pegatinas.** Cada juego que arrancas te deja su pegatina.
+- Precarga con el logo pixelado que se encoge hasta convertirse en la pantalla de
+  la consola, **música chiptune** de menú (opcional), efectos sintetizados,
+  «continuar donde lo dejaste», enlaces directos (`#/invoca`) y un código antiguo
+  que desbloquea la **edición dorada**.
+- En el móvil la consola va arriba, la cinta en medio y el panel abajo. Sin WebGL
+  se muestra la captura en plano. Respeta `prefers-reduced-motion`.
 
-Tipografía: Bricolage Grotesque, DM Mono y Caveat.
+Tipografía: Bricolage Grotesque, DM Mono, Silkscreen y Caveat. La interfaz vive en
+`index.html` y el plató en [`pocket3d.js`](pocket3d.js).
 
 La versión anterior (la consola horizontal y la tienda nocturna) sigue en
 [`/classic/`](https://gavilanbe.github.io/classic/) y en la etiqueta git `arcade-v1`.
@@ -76,7 +85,7 @@ La versión anterior (la consola horizontal y la tienda nocturna) sigue en
 ```
 
 2. Deja su captura en `thumbs/mi-juego.jpg` (640×400).
-3. Si es de los buenos, ponlo en la lista `FEATURED` de `index.html`: sale primero en el estuche y puede flotar junto a la consola. Un modelo nuevo funciona solo; para darle nombre de plástico y color añádelo a `EDITIONS` (y su material 3D en `editionMat`).
+3. Si es de los buenos, ponlo en la lista `FEATURED` de `index.html`: sale antes en la cinta y a doble tamaño en la revista. Un modelo nuevo funciona solo; para darle nombre de plástico y color de plató añádelo a `EDITIONS` (`index.html`) y su material 3D a `edMat` (`pocket3d.js`).
 4. Quita el `"new": true` de la hornada anterior.
 
 El cartucho **TRAZO** es de edición `astra` (plástico fosforito) y se publica en [gavilanbe.github.io/trazo/](https://gavilanbe.github.io/trazo/). Su código vive en [gavilanbe/trazo](https://github.com/gavilanbe/trazo).
