@@ -169,6 +169,7 @@
   .chip.on{opacity:1; box-shadow:0 0 0 2px var(--night),0 0 0 4px var(--accent); translate:0 -1px}
   .chip.m-f51{background:linear-gradient(110deg,#2c2141,#28464e 42%,#544063); color:#f4eeff}
   .chip.m-fable{background:linear-gradient(110deg,#e8dfff,#d8eff5 37%,#eef3d7 72%,#fce1ec); color:#453855}
+  .chip.m-o55{background:linear-gradient(115deg,#0e3a2b,#1b5540 40%,#2a7356 66%,#c49a3a); color:#fff0a6; border-color:#c49a3a6b}
   .chip.m-o48{background:linear-gradient(140deg,#f4e2b6,#d8b572); color:#5c441d}
   .chip.m-o47{background:linear-gradient(140deg,#f1f2f8,#c5cad5); color:#484452}
   .chip.m-o46{background:linear-gradient(140deg,#eed3ba,#c6987b); color:#5e3f2d}
@@ -255,6 +256,11 @@
   .chip.m-astra,.mchip.astra{background:linear-gradient(115deg,#174455,#2e6780 48%,#213556);color:#ffe48a;border:1px solid #75a6b16b}
   .tier-fable{--edge:#b1a4c7;--g:linear-gradient(120deg,#f0e3fa,#daecf6 26%,#dcecdc 52%,#f1e6cf 74%,#edd5e9)}
   .tier-f51{--edge:#463c58;--g:linear-gradient(115deg,#3d314e,#37515b 24%,#46665d 44%,#65516f 68%,#41374d 89%)}
+  .tier-o55{--edge:#0f3d2d;--g:linear-gradient(125deg,#0f3d2d,#1d6247 28%,#2f8660 50%,#1b5540 70%,#b88f35 92%)}
+  .tier-o55 .band,.tier-o55 .plate{color:#fff0c8b0;text-shadow:0 1px 0 #0006}
+  .tier-o55 .well{box-shadow:inset 0 2px 3px #0008,0 1px 0 #ffffff38}
+  .tier-o55 .fr,.tier-o55 .bk{background-size:180% 180%}
+  .slot3d:hover .tier-o55 .fr{animation:pearl 5s linear infinite}
   .tier-o48{--edge:#a58146;--g:linear-gradient(145deg,#f1dcaa,#dfc18b 26%,#c7a264 65%,#ab834b)}
   .tier-o47{--edge:#9394a4;--g:linear-gradient(145deg,#eff0f5,#d8dae4 26%,#b4b7c6 68%,#9296a7)}
   .tier-o46{--edge:#966749;--g:linear-gradient(145deg,#e6bfa2,#cf9c7c 27%,#b38061 68%,#925f43)}
@@ -320,14 +326,14 @@
   .rowitem:not(.center) .cart{animation:none; transform:rotateX(6deg)}
   /* fuera del centro, los acabados animados descansan (nácar y foil repintan) */
   .rowitem:not(.center) .fr, .rowitem:not(.center) .bk,
-  .rowitem:not(.center) .mchip.fable, .rowitem:not(.center) .mchip.f51{animation:none}
+  .rowitem:not(.center) .mchip.fable, .rowitem:not(.center) .mchip.f51, .rowitem:not(.center) .mchip.o55{animation:none}
   @keyframes spin{from{transform:rotateX(6deg) rotateY(0)}to{transform:rotateX(6deg) rotateY(360deg)}}
   /* táctil: el central no gira (WebKit iOS descompone el preserve-3d cuando el padre
      lleva una animación de transform: las caras laterales se pintan sueltas) y los
      acabados animados descansan también en el centro — menos raster por frame */
   @media (hover:none){
     .rowitem.center .cart{animation:none; transform:rotateX(6deg)}
-    .rowitem .fr, .rowitem .bk, .rowitem .mchip.fable, .rowitem .mchip.f51{animation:none}
+    .rowitem .fr, .rowitem .bk, .rowitem .mchip.fable, .rowitem .mchip.f51, .rowitem .mchip.o55{animation:none}
   }
   .rowitem::after{ /* sombra en el suelo de la sala; crece cuando bajas el cartucho */
     content:""; position:absolute; left:10%; right:10%; bottom:-30px; height:14px; border-radius:50%;
@@ -563,9 +569,16 @@
   @keyframes foil{to{background-position:280% 50%}}
   .room .mchip,footer .mchip{animation:none}
   .slot3d:hover .mchip.f51,.slot3d:hover .mchip.fable{animation:foil 7s linear infinite}
+  .mchip.o55{
+    background:linear-gradient(110deg,#0E3A2B,#1B5540,#2A7356,#C49A3A,#0E3A2B);
+    background-size:280% 100%; color:#FFF0A6; border:1px solid rgba(196,154,58,.6);
+    animation:foil 7s linear infinite;
+  }
+  .slot3d:hover .mchip.o55{animation:foil 7s linear infinite}
   .mchip.o48{background:rgba(217,154,43,.16); color:#8A5F14; border:1px solid rgba(138,95,20,.4)}
   .mchip.o47{background:rgba(91,100,112,.11); color:#5B6470; border:1px solid rgba(91,100,112,.38)}
   .mchip.o46{background:rgba(160,98,54,.12); color:#7A4B2A; border:1px solid rgba(122,75,42,.38)}
+  .crt .mchip.o55{background:rgba(42,115,86,.25); color:#FFF0A6; border-color:rgba(196,154,58,.5); animation:none}
   .crt .mchip.o48{background:rgba(233,172,59,.14); color:#E9AC3B; border-color:rgba(233,172,59,.4)}
   .crt .mchip.o47{background:rgba(185,194,206,.12); color:#B9C2CE; border-color:rgba(185,194,206,.35)}
   .crt .mchip.o46{background:rgba(214,154,110,.12); color:#D69A6E; border-color:rgba(214,154,110,.4)}
@@ -655,7 +668,7 @@
   body.dexopen .room .cart, body.dexopen .room .slot3d::after,
   body.dexopen .room .fr, body.dexopen .room .bk,
   body.dexopen .room .mchip.fable, body.dexopen footer .mchip.fable,
-  body.dexopen .room .mchip.f51, body.dexopen footer .mchip.f51,
+  body.dexopen .room .mchip.f51, body.dexopen footer .mchip.f51, body.dexopen .room .mchip.o55, body.dexopen footer .mchip.o55,
   body.dexopen .deck .chip.m-fable, body.dexopen .deck .chip.m-f51{animation-play-state:paused}
   .slot3d.hidden{display:none !important}
 
@@ -735,7 +748,7 @@
     .reveal,.slot3d{opacity:1;transform:none;transition:none}
     .crt-body,.crt .shot,.crt .tty,.cart,.sw .knob{transition:none}
     .console.hero-console{animation:none}
-    .cart,.slot3d.pop,.tier-fable .fr,.tier-fable .bk,.tier-f51 .fr,.tier-f51 .bk,.mchip,.chip,.coinbtn .cn{animation:none !important}
+    .cart,.slot3d.pop,.tier-fable .fr,.tier-fable .bk,.tier-f51 .fr,.tier-f51 .bk,.tier-o55 .fr,.tier-o55 .bk,.mchip,.chip,.coinbtn .cn{animation:none !important}
     .console .cta b,.crt.in .scr,.crt .cur,.dex-play{animation:none}
     .coinbtn,.coinbtn .cn,.coin-lamp{transition:none}
     .coinbtn:hover:not(.drop) .cn{transform:rotate(-14deg)}
@@ -796,6 +809,7 @@
       <button class="chip m-astra" data-m="astra" type="button" title="Juegos construidos con OpenAI Astra">✦ ASTRA<b></b></button>
       <button class="chip m-f51" data-m="fable-5.1" type="button" title="Juegos construidos con Claude Fable 5.1">✦ FABLE 5.1<b></b></button>
       <button class="chip m-fable" data-m="fable" type="button" title="Juegos construidos con Claude Fable 5">✦ FABLE 5<b></b></button>
+      <button class="chip m-o55" data-m="opus-5.5" type="button" title="Juegos construidos con Claude Opus 5.5">✦ OPUS 5.5<b></b></button>
       <button class="chip m-o48" data-m="opus-4.8" type="button" title="Juegos construidos con Claude Opus 4.8">OPUS 4.8<b></b></button>
       <button class="chip m-o47" data-m="opus-4.7" type="button" title="Juegos construidos con Claude Opus 4.7">OPUS 4.7<b></b></button>
       <button class="chip m-o46" data-m="opus-4.6" type="button" title="Juegos construidos con Claude Opus 4.6">OPUS 4.6<b></b></button>
@@ -837,6 +851,7 @@
     <span class="mchip astra">✦ ASTRA</span>
     <span class="mchip f51">✦ FABLE 5.1</span>
     <span class="mchip fable">✦ FABLE 5</span>
+    <span class="mchip o55">✦ OPUS 5.5</span>
     <span class="mchip o48">OPUS 4.8</span>
     <span class="mchip o47">OPUS 4.7</span>
     <span class="mchip o46">OPUS 4.6</span>
@@ -906,7 +921,7 @@
   const firstEmoji = s => { const m = [...s].find(c => /\p{Extended_Pictographic}/u.test(c)); return m || '🎮'; };
   const stripEmoji = s => s.replace(/^\s*\p{Extended_Pictographic}[️‍]*\s*/u, '');
 
-  const FEATURED = ['invoca','nagu-gavi','trazo','chromara','isomate','spore-quest','rana-gba','bitxo','sprout-game','nahugavi','gacha-zoo','libreta','makinamon','doodli','chef-game','poke-autobattler','short-hike-demo'];
+  const FEATURED = ['westieware','invoca','nagu-gavi','trazo','chromara','isomate','spore-quest','rana-gba','bitxo','sprout-game','nahugavi','gacha-zoo','libreta','makinamon','doodli','chef-game','poke-autobattler','short-hike-demo'];
   const rk = n => { const i = FEATURED.indexOf(n); return i < 0 ? 999 : i; };
 
   const webGames  = GAMES.filter(g => g.type === 'web').sort((a,b) => rk(a.name)-rk(b.name) || a.title.localeCompare(b.title));
@@ -918,6 +933,7 @@
     'astra': ['astra', '✦ ASTRA', 'Construido con OpenAI Astra'],
     'fable-5.1':['f51',   '✦ FABLE 5.1', 'Construido con Claude Fable 5.1'],
     'fable':    ['fable', '✦ FABLE 5',   'Construido con Claude Fable 5'],
+    'opus-5.5': ['o55',   '✦ OPUS 5.5', 'Construido con Claude Opus 5.5'],
     'opus-4.8': ['o48',   'OPUS 4.8', 'Construido con Claude Opus 4.8'],
     'opus-4.7': ['o47',   'OPUS 4.7', 'Construido con Claude Opus 4.7'],
     'opus-4.6': ['o46',   'OPUS 4.6', 'Construido con Claude Opus 4.6'],
@@ -950,7 +966,7 @@
     document.querySelectorAll('.slot3d[data-name]').forEach(el => { if (el.dataset.name === g.name) el.classList.add('played'); });
   }
 
-  const TIER = {'astra':'tier-astra','fable-5.1':'tier-f51','fable':'tier-fable','opus-4.8':'tier-o48','opus-4.7':'tier-o47','opus-4.6':'tier-o46'};
+  const TIER = {'astra':'tier-astra','fable-5.1':'tier-f51','fable':'tier-fable','opus-5.5':'tier-o55','opus-4.8':'tier-o48','opus-4.7':'tier-o47','opus-4.6':'tier-o46'};
   function cartSlot(g, eager, num){
     const el = document.createElement('div');
     el.className = 'slot3d reveal' + (played.has(g.name) ? ' played' : '');

@@ -856,6 +856,19 @@ const GAMES = [
     "model": "opus-4.8"
   },
   {
+    "name": "westieware",
+    "title": "🐶 WESTIE WARE ¡Tocados!",
+    "tagline": "WarioWare: Touched! en la peluquería canina Westie BLVRD de Anahí Gavilán: 31 microjuegos de 4 segundos (toca, frota, corta, dibuja, arrastra y gira), 7 jefes, historias, dos pantallas en vertical para el móvil y pixel art hecho a mano.",
+    "type": "web",
+    "play": "https://gavilanbe.github.io/westieware/",
+    "repo": "https://github.com/gavilanbe/westieware",
+    "thumb": "thumbs/westieware.jpg",
+    "wip": false,
+    "new": true,
+    "kind": "juego",
+    "model": "opus-5.5"
+  },
+  {
     "name": "wirefox",
     "title": "🚀 Wirefox",
     "tagline": "Un rail shooter pseudo-3D en ASCII para la terminal — vuela hacia el infinito, esquiva asteroides y derriba jefes.",

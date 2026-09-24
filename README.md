@@ -11,7 +11,7 @@
 Una sola página estática, sin frameworks ni build obligatorio: los juegos viven en
 [`data.js`](data.js) y las miniaturas en [`thumbs/`](thumbs/). Con buscador
 (tecla `/`), filtros por tipo y por **pegatina de modelo** (`✦ Astra` azul petróleo y oro, `✦ Fable 5.1` cromo
-oscuro, `✦ Fable 5` holográfica u `Opus 4.8/4.7/4.6`, el modelo que construyó cada juego), **juego del día**
+oscuro, `✦ Fable 5` holográfica, `✦ Opus 5.5` esmeralda y oro u `Opus 4.8/4.7/4.6`, el modelo que construyó cada juego), **juego del día**
 (rotación diaria determinista) y una ranura para **echar una moneda** que lanza
 un juego al azar.
 
@@ -19,7 +19,7 @@ Cada juego web es un **Game Pak 3D horizontal** (CSS puro), con el rebaje de
 los hombros, los cantos, los contactos dorados y una etiqueta con su captura.
 El título y la descripción también aparecen debajo para explorar la colección
 sin abrir cada ficha. La carcasa delata el modelo: cromo oscuro tornasolado
-para Fable 5.1, nácar para Fable 5 y oro, plata y bronce para Opus. El brillo y
+para Fable 5.1, nácar para Fable 5, esmeralda con filo dorado para Opus 5.5 y oro, plata y bronce para las Opus 4.x. El brillo y
 el tilt responden al ratón; los acabados del catálogo descansan cuando no se
 están tocando.
 
