@@ -84,7 +84,7 @@ function main() {
     x.fillStyle = '#f7f2e7'; rr(x, 0, 0, 400, 400, 16); x.fill();
     x.fillStyle = a; rr(x, 0, 0, 400, 56, [16, 16, 0, 0]); x.fill();
     x.fillStyle = '#fff'; x.textBaseline = 'middle'; x.font = `34px ${BR}`; x.fillText('gavilanbe', 18, 30);
-    x.font = `500 13px ${MO}`; x.textAlign = 'right'; x.fillText(g.ed.name.toUpperCase(), 382, 31); x.textAlign = 'left';
+    x.font = `20px ${BR}`; x.textAlign = 'right'; x.fillText(g.ed.model.toUpperCase(), 382, 31); x.textAlign = 'left';
     cover(x, img, 18, 70, 364, 228);
     x.strokeStyle = '#1c1a22'; x.lineWidth = 3; x.strokeRect(18, 70, 364, 228);
     x.fillStyle = '#1c1a22'; x.textBaseline = 'alphabetic'; const t = g.label.toUpperCase(); fit(x, t, 364, 40, `%px ${BR}`); x.fillText(t, 18, 342);
@@ -398,6 +398,7 @@ function main() {
   const ghostMat = new THREE.LineDashedMaterial({color: '#ffffff', transparent: true, opacity: .8, dashSize: .12, gapSize: .09});
   const ghost = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(cartShape(2.5, CART_H, .12, .4).getPoints(8)), ghostMat); ghost.computeLineDistances(); belt.add(ghost);
   function placeGhost() {
+    ghost.visible = false; return;
     const g = kind === 'cart' ? inSlot && inSlot.userData.game : null, gi = g ? list.indexOf(g) : -1;
     ghost.visible = gi >= 0 && beltHide.has(gi);
     if (!ghost.visible) return;

@@ -37,9 +37,7 @@ resto es HTML, CSS y JavaScript sin build.
   consola (Ⓐ, Ⓑ, START, SELECT), barra de controles, marcador de pegatinas,
   avisos de logro, cursor pixelado, tipografías Pixelify Sans y Silkscreen, y
   animaciones a pasos (`steps()`).
-- **El archivo** (Mundo 2): estantería de madera con los cartuchos de canto por
-  edición y archivador de disquetes. Cada pieza se asoma, sale girando a una
-  pantalla de «objeto» con su ficha y su trasera, y vuela a la consola.
+- **El archivo** (Mundo 2): expositor de tienda con una balda por **modelo** (placa de latón con el modelo delante y su plástico detrás). Los cartuchos están de frente con su etiqueta y captura; se inclinan en 3D hacia el cursor con un brillo que lo sigue, caen uno a uno a su balda al aparecer y salen girando a una pantalla de «objeto» antes de volar a la consola. Los disquetes van en el archivador.
 - **Álbum de pegatinas** (Mundo 3) y **créditos** al final.
 - Rendimiento: sin refracción, sombras dinámicas ni postprocesado; render bajo
   demanda y resolución adaptativa.
