@@ -858,7 +858,7 @@ const GAMES = [
   {
     "name": "westieware",
     "title": "🐶 WESTIE WARE ¡Tocados!",
-    "tagline": "WarioWare: Touched! en la peluquería canina Westie BLVRD de Anahí Gavilán: 31 microjuegos de 4 segundos (toca, frota, corta, dibuja, arrastra y gira), 7 jefes, historias, dos pantallas en vertical para el móvil y pixel art hecho a mano.",
+    "tagline": "WarioWare: Touched! en Westie BLVRD, la peluquería canina de Anahí Gavilán, con su westie Keiko de mascota: 52 microjuegos de 4 segundos (toca, frota, corta, dibuja, arrastra y gira), 7 jefes con Hacienda y «¡Prepara el perro!», historias, dos pantallas en vertical para el móvil y pixel art hecho a mano.",
     "type": "web",
     "play": "https://gavilanbe.github.io/westieware/",
     "repo": "https://github.com/gavilanbe/westieware",
