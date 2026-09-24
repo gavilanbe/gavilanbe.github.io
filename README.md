@@ -16,6 +16,7 @@ resto es HTML, CSS y JavaScript sin build.
 
 ## Cómo funciona
 
+- **El cargador**: sol de rayos giratorio, el logo letra a letra en colores que caen y rebotan, un gavilán pixelado que cruza volando, barra arcoíris por celdas y un cierre en iris hacia la pantalla de la consola.
 - **La consola.** *gavilanbe POCKET* en 3D (three.js): carcasa con biseles y la
   esquina inferior derecha redondeada, costura entre mitades, marco de pantalla
   con volumen, cruceta con flechas en relieve, botones A/B abombados y un frontal
