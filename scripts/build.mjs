@@ -13,7 +13,7 @@ new Script(await readFile(join(root, 'data.js'), 'utf8'), {filename: 'data.js'})
 const output = join(root, 'dist');
 await rm(output, {recursive: true, force: true});
 await mkdir(output, {recursive: true});
-for (const name of ['index.html', 'data.js', 'thumbs', 'assets', 'classic', 'favicon.svg', 'og.jpg', 'apple-touch-icon.png']) {
+for (const name of ['index.html', 'data.js', 'thumbs', 'assets', 'apple-touch-icon.png']) {
   await cp(join(root, name), join(output, name), {recursive: true});
 }
 console.log('Static site validated and packaged in dist/.');
