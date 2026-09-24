@@ -16,54 +16,32 @@ resto es HTML, CSS y JavaScript sin build.
 
 ## Cómo funciona
 
-- **El plató.** Toda la portada es un estudio fotográfico 3D infinito (three.js):
-  sombras suaves reales, niebla, brillo (bloom) en pantallas y LEDs, y el color del
-  estudio cambia con el plástico del cartucho que miras.
-- **La cinta expositora.** Todos los cartuchos en 3D sobre una peana. Se gira
-  arrastrando, con `←` `→`, con las flechas o con la cruceta de la consola; el
-  enfocado se levanta bajo un foco. **Trasera** le da la vuelta: sinopsis y código
-  de barras. Donde estaba el cartucho que está en la consola queda su contorno.
-- **La consola.** *gavilanbe POCKET*: botones que se hunden (también cuando pulsas
-  el teclado o un **mando real**), interruptor de encendido, rueda de volumen,
-  pegatina detrás (arrástrala para girarla) y seis carcasas (**SELECT** o `S`).
-  **A/START** juega, **B** es sorpresa.
-- **Meter un cartucho.** Sale volando de la cinta, gira, baja por la ranura con
-  un *clac*, la consola rebota, saltan chispas, sube el interruptor, se enciende
-  el LED y arranca el logo pixelado hasta la pantalla de título. El anterior
-  vuelve solo a su hueco. A veces hay **error de lectura**: sopla con el botón… o
-  **soplando de verdad al micrófono**.
-- **START.** La cámara **se mete dentro de la pantalla**, destello y el juego se
-  abre en esta pestaña. Al volver atrás, la cámara sale y la consola te recibe con
-  «¡HAS VUELTO! +1 PEGATINA». (↗ lo abre en otra pestaña.)
-- **Los disquetes.** Los juegos de terminal van en disquetes escritos a mano. La
-  cámara viaja por la cinta hasta un **ordenador retro** en su escritorio: el
-  disquete entra en la disquetera (*ka-chunk* y ruido de cabezal) y el monitor
-  teclea el `git clone`, que se copia con un clic.
-- **Sorpresa** (`R` o **B**): el cartucho gira delante de la pantalla como una
-  tragaperras cambiando de etiqueta hasta pararse.
-- **El archivo.** Debajo, la colección está guardada de verdad: los cartuchos
-  de canto en una **estantería de madera**, ordenados por edición con un separador
-  de latón por plástico y alfabéticamente dentro de cada una; los disquetes en un
-  **archivador** con pestañas de color. Al pasar el ratón el lomo se asoma, los de
-  al lado se inclinan y aparece su etiqueta. Al tocarlo, **sale de la estantería
-  girando** hasta una ficha de inspección en 3D (CSS) con su etiqueta, su trasera,
-  formato y edición: desde ahí se mete en la consola (sube volando), se juega o se
-  hojea la balda. La búsqueda (`/`) apaga en su sitio lo que no coincide y resalta
-  lo que sí; el hueco del cartucho que está en la consola queda vacío.
-- **Álbum de pegatinas.** Cada juego que arrancas te deja su pegatina.
-- Precarga con el logo pixelado que se encoge hasta convertirse en la pantalla de
-  la consola, **música chiptune** de menú (opcional), efectos sintetizados,
-  «continuar donde lo dejaste», enlaces directos (`#/invoca`) y un código antiguo
-  que desbloquea la **edición dorada**.
-- En el móvil la consola va arriba, la cinta en medio y el panel abajo. Sin WebGL
-  se muestra la captura en plano. Respeta `prefers-reduced-motion`.
-
-Rendimiento: sin refracción, sin sombras dinámicas ni postprocesado; cada cartucho es
-una sola malla, y el plató solo pinta a 60 fps mientras algo se mueve (en reposo, unas
-10 veces por segundo) y baja la resolución si el equipo va justo.
-
-Tipografía: Bricolage Grotesque, DM Mono, Silkscreen y Caveat. La interfaz vive en
-`index.html` y el plató en [`pocket3d.js`](pocket3d.js).
+- **La consola.** *gavilanbe POCKET* en 3D (three.js): carcasa con biseles y la
+  esquina inferior derecha redondeada, costura entre mitades, marco de pantalla
+  con volumen, cruceta con flechas en relieve, botones A/B abombados y un frontal
+  con **mapa de normales generado** (los huecos de los botones y la rejilla del
+  altavoz reaccionan a la luz al girarla). Seis carcasas (**SELECT** o `S`).
+- **La pantalla es un LCD de 160×100 de verdad**: todo se pinta a resolución nativa
+  y se amplía ×3 sin suavizado con rejilla de matriz de puntos. El arranque:
+  retroiluminación, el gavilán pixelado bajando píxel a píxel, *ding*, un brillo
+  del color de la edición, «POCKET» letra a letra y disolución en bloques hasta la
+  pantalla de título con PRESS START. A veces hay **error de lectura** y toca soplar
+  (con el botón o con el micrófono).
+- **La cinta**: todos los cartuchos en 3D delante de la consola; `←` `→`, arrastrar,
+  la cruceta o un mando real. START mete la cámara en la pantalla y abre el juego;
+  al volver, la consola te recibe. Los disquetes van a un PC retro que teclea el
+  `git clone`.
+- **Interfaz de videojuego**: cajas con borde de píxel escalonado y sombra dura,
+  cuadro de diálogo de RPG que escribe la descripción, botones con glifos de la
+  consola (Ⓐ, Ⓑ, START, SELECT), barra de controles, marcador de pegatinas,
+  avisos de logro, cursor pixelado, tipografías Pixelify Sans y Silkscreen, y
+  animaciones a pasos (`steps()`).
+- **El archivo** (Mundo 2): estantería de madera con los cartuchos de canto por
+  edición y archivador de disquetes. Cada pieza se asoma, sale girando a una
+  pantalla de «objeto» con su ficha y su trasera, y vuela a la consola.
+- **Álbum de pegatinas** (Mundo 3) y **créditos** al final.
+- Rendimiento: sin refracción, sombras dinámicas ni postprocesado; render bajo
+  demanda y resolución adaptativa.
 
 La versión anterior (la consola horizontal y la tienda nocturna) sigue en
 [`/classic/`](https://gavilanbe.github.io/classic/) y en la etiqueta git `arcade-v1`.

@@ -32,9 +32,10 @@ function main() {
   scene.environmentIntensity = .6;
   pmrem.dispose();
   const camera = new THREE.PerspectiveCamera(30, 1, .1, 300);
-  const hemi = new THREE.HemisphereLight('#ffffff', '#b9ab95', .55); scene.add(hemi);
-  const key = new THREE.DirectionalLight('#fff3e2', 1.55); key.position.set(-6, 10, 12); scene.add(key); scene.add(key.target);
-  const rim = new THREE.DirectionalLight('#dfe7ff', .9); rim.position.set(10, 5, -8); scene.add(rim);
+  const hemi = new THREE.HemisphereLight('#ffffff', '#b9ab95', .4); scene.add(hemi);
+  const key = new THREE.DirectionalLight('#fff1dc', 2.1); key.position.set(-7, 9, 11); scene.add(key); scene.add(key.target);
+  const rim = new THREE.DirectionalLight('#d6e2ff', 1.6); rim.position.set(9, 6, -9);
+  const fill = new THREE.DirectionalLight('#cfe0ff', .45); fill.position.set(8, -2, 10); scene.add(fill); scene.add(rim);
 
   const floorMat = new THREE.MeshBasicMaterial({color: studio.clone()});
   const floor = new THREE.Mesh(new THREE.PlaneGeometry(600, 600), floorMat);
@@ -188,101 +189,125 @@ function main() {
   const con = new THREE.Group(); scene.add(con);
   const rig = new THREE.Group(); con.add(rig);
   const conShadow = blob(6.5, 3, .9); scene.add(conShadow);
-  const shellMat = new PM({color: '#dcd6ca', roughness: .42, clearcoat: .45, clearcoatRoughness: .3, sheen: .3, sheenColor: '#ffffff'});
+  const shellMat = new PM({color: '#dcd6ca', roughness: .5, clearcoat: .35, clearcoatRoughness: .45, sheen: .35, sheenRoughness: .6, sheenColor: '#ffffff'});
   const darkMat = new PM({color: '#2b2a31', roughness: .45, clearcoat: .5});
   const holeMat = new SM({color: '#16161a', roughness: .9});
   const add = (mesh, x = 0, y = 0, z = 0, parent = rig) => { mesh.position.set(x, y, z); parent.add(mesh); return mesh; };
-  // carcasa: rectángulo con la esquina inferior derecha muy redondeada y biseles suaves
-  const shellShape = (() => { const s = new THREE.Shape(), w = CW / 2, h = CH / 2, r = .32, R = 1.05; s.moveTo(-w + r, -h); s.lineTo(w - R, -h); s.absarc(w - R, -h + R, R, -Math.PI / 2, 0, false); s.lineTo(w, h - r); s.absarc(w - r, h - r, r, 0, Math.PI / 2, false); s.lineTo(-w + r, h); s.absarc(-w + r, h - r, r, Math.PI / 2, Math.PI, false); s.lineTo(-w, -h + r); s.absarc(-w + r, -h + r, r, Math.PI, Math.PI * 1.5, false); return s; })();
+  const rounded = (w, h, r, R = r) => { const s = new THREE.Shape(), a = w / 2, b = h / 2; s.moveTo(-a + r, -b); s.lineTo(a - R, -b); s.absarc(a - R, -b + R, R, -Math.PI / 2, 0, false); s.lineTo(a, b - r); s.absarc(a - r, b - r, r, 0, Math.PI / 2, false); s.lineTo(-a + r, b); s.absarc(-a + r, b - r, r, Math.PI / 2, Math.PI, false); s.lineTo(-a, -b + r); s.absarc(-a + r, -b + r, r, Math.PI, Math.PI * 1.5, false); return s; };
+  // carcasa: esquina inferior derecha muy redondeada, biseles suaves y costura entre las dos mitades
+  const shellShape = rounded(CW, CH, .34, 1.2);
   const DEPTH = .62, BT = .14;
-  const shellGeo = new THREE.ExtrudeGeometry(shellShape, {depth: DEPTH, bevelEnabled: true, bevelThickness: BT, bevelSize: .12, bevelSegments: 6, curveSegments: 28});
+  const shellGeo = new THREE.ExtrudeGeometry(shellShape, {depth: DEPTH, bevelEnabled: true, bevelThickness: BT, bevelSize: .12, bevelSegments: 8, curveSegments: 32});
   shellGeo.translate(0, 0, -DEPTH / 2);
   const FR = DEPTH / 2 + BT;
   const body = add(new THREE.Mesh(shellGeo, shellMat)); body.userData.action = 'spin';
-  // frontal pintado: relieves, huecos sombreados, marco de pantalla y serigrafía
-  const PPU = 260, FW = Math.round(CW * PPU), FH = Math.round(CH * PPU);
-  const faceTex = canvasTex(FW, FH);
+  const seamGeo = new THREE.ExtrudeGeometry(rounded(CW + .245, CH + .245, .44, 1.32), {depth: .025, bevelEnabled: false, curveSegments: 32}); seamGeo.translate(0, 0, -.13);
+  add(new THREE.Mesh(seamGeo, new SM({color: '#0f0e12', roughness: 1})));
+  // frontal: color + mapa de alturas → normales (los huecos reaccionan a la luz al girarla)
+  const PPU = 240, FW = Math.round(CW * PPU), FH = Math.round(CH * PPU);
+  const faceTex = canvasTex(FW, FH), heightCv = document.createElement('canvas'); heightCv.width = FW; heightCv.height = FH;
   faceTex.repeat.set(1 / CW, 1 / CH); faceTex.offset.set(.5, .5);
   const C = (X, Y) => [(X + CW / 2) * PPU, (CH / 2 - Y) * PPU], U = v => v * PPU;
-  let printColor = '#2a2640', printSoft = 'rgba(42,38,64,.55)';
+  let printColor = '#2a2640', printSoft = 'rgba(42,38,64,.6)', faceBase = '#dcd6ca';
   function capsule(x, cx, cy, len, rad, ang) { x.save(); x.translate(cx, cy); x.rotate(ang); rr(x, -len / 2, -rad, len, rad * 2, rad); x.restore(); }
+  const [dX, dY] = C(-.92, -1.08), [aX, aY] = C(1.12, -.8), [bX, bY] = C(.42, -1.08), abAng = Math.atan2(aY - bY, aX - bX), abLen = Math.hypot(aX - bX, aY - bY);
+  function wells(x, depth) {
+    // depth(v) devuelve el estilo de relleno para cada hueco
+    x.fillStyle = depth(.55); x.beginPath(); x.arc(dX, dY, U(.64), 0, 7); x.fill();
+    x.fillStyle = depth(.55); capsule(x, (aX + bX) / 2, (aY + bY) / 2, abLen + U(.8), U(.39), abAng); x.fill();
+    for (const px of [-.26, .3]) { const [cx, cy] = C(px, -2.03); x.fillStyle = depth(.7); capsule(x, cx, cy, U(.6), U(.12), -.42); x.fill(); }
+    for (let i = 0; i < 6; i++) { const [cx, cy] = C(.74 + i * .15, -2.2 + i * .075); x.fillStyle = depth(1); capsule(x, cx, cy, U(.64 - Math.abs(i - 2.5) * .07), U(.038), -1.07); x.fill(); }
+  }
+  function drawHeight() {
+    const x = heightCv.getContext('2d');
+    x.fillStyle = 'rgb(128,128,128)'; x.fillRect(0, 0, FW, FH);
+    x.filter = `blur(${U(.018)}px)`;
+    wells(x, d => `rgb(${Math.round(128 - 80 * d)},0,0)`.replace(/rgb\((\d+),0,0\)/, (m, v) => `rgb(${v},${v},${v})`));
+    // logotipo grabado muy leve
+    x.fillStyle = 'rgb(118,118,118)'; x.font = `italic 800 ${U(.4)}px ${BR}`; const [gx, gy] = C(-1.45, -.26); x.fillText('gavilanbe', gx, gy);
+    x.filter = 'none';
+    const img = x.getImageData(0, 0, FW, FH), h = img.data, out = new ImageData(FW, FH), o = out.data, S = 2.4;
+    for (let yy = 0; yy < FH; yy++) for (let xx = 0; xx < FW; xx++) {
+      const i = (yy * FW + xx) * 4, l = h[(yy * FW + Math.max(0, xx - 1)) * 4], r = h[(yy * FW + Math.min(FW - 1, xx + 1)) * 4], u = h[(Math.max(0, yy - 1) * FW + xx) * 4], dn = h[(Math.min(FH - 1, yy + 1) * FW + xx) * 4];
+      let nx = (l - r) / 255 * S, ny = (dn - u) / 255 * S, nz = 1; const n = Math.hypot(nx, ny, nz); nx /= n; ny /= n; nz /= n;
+      const grain = ((xx * 73856093 ^ yy * 19349663) & 7) - 3.5;
+      o[i] = (nx * .5 + .5) * 255 + grain * .6; o[i + 1] = (ny * .5 + .5) * 255 + grain * .6; o[i + 2] = nz * 255; o[i + 3] = 255;
+    }
+    const nc = document.createElement('canvas'); nc.width = FW; nc.height = FH; nc.getContext('2d').putImageData(out, 0, 0);
+    const nt = new THREE.CanvasTexture(nc); nt.repeat.copy(faceTex.repeat); nt.offset.copy(faceTex.offset); nt.anisotropy = maxAniso;
+    return nt;
+  }
   function drawFace() {
     const x = faceTex.userData.ctx;
-    x.setTransform(1, 0, 0, 1, 0, 0); x.clearRect(0, 0, FW, FH);
-    // volumen: luz arriba a la izquierda, sombra abajo
-    let g = x.createLinearGradient(0, 0, FW * .6, FH); g.addColorStop(0, 'rgba(255,255,255,.22)'); g.addColorStop(.45, 'rgba(255,255,255,0)'); g.addColorStop(1, 'rgba(0,0,0,.12)');
-    x.fillStyle = g; x.fillRect(0, 0, FW, FH);
-    // marco de la pantalla
-    const [bx, by] = C(-1.45, 2.47), bw = U(2.9), bh = U(2.42);
-    x.save(); x.shadowColor = 'rgba(0,0,0,.35)'; x.shadowBlur = U(.08); x.shadowOffsetY = U(.03);
-    x.fillStyle = '#3a3947'; rr(x, bx, by, bw, bh, [U(.14), U(.14), U(.62), U(.14)]); x.fill(); x.restore();
-    g = x.createLinearGradient(0, by, 0, by + bh); g.addColorStop(0, '#4a4958'); g.addColorStop(1, '#2f2e3a');
-    x.fillStyle = g; rr(x, bx + 4, by + 4, bw - 8, bh - 8, [U(.13), U(.13), U(.6), U(.13)]); x.fill();
-    const [sx0, sy0] = C(-1.14, 1.93); x.fillStyle = '#121218'; rr(x, sx0, sy0, U(2.36), U(1.52), U(.04)); x.fill();
-    x.fillStyle = '#ff5b35'; x.fillRect(bx + U(.16), by + U(.1), U(.62), U(.03)); x.fillStyle = '#c6f432'; x.fillRect(bx + U(.16), by + U(.155), U(.62), U(.03));
-    x.fillStyle = '#ff5b35'; x.fillRect(bx + bw - U(.78), by + U(.1), U(.62), U(.03)); x.fillStyle = '#c6f432'; x.fillRect(bx + bw - U(.78), by + U(.155), U(.62), U(.03));
-    x.fillStyle = '#b6b3c4'; x.font = `500 ${U(.075)}px ${MO}`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('GAVILANBE  COLOR  LCD', bx + bw / 2, by + U(.14));
-    const [lx, ly] = C(-1.3, 1.52); x.fillStyle = '#8f8b9f'; x.font = `500 ${U(.06)}px ${MO}`; x.fillText('POWER', lx, ly + U(.16));
-    x.fillStyle = '#1b1a22'; x.beginPath(); x.arc(lx, ly, U(.07), 0, 7); x.fill();
-    // logotipo
-    const [gx, gy] = C(-1.45, -.22); x.textAlign = 'left'; x.textBaseline = 'alphabetic';
+    x.setTransform(1, 0, 0, 1, 0, 0); x.fillStyle = faceBase; x.fillRect(0, 0, FW, FH);
+    // interior de los huecos: un poco más oscuro, con sombra arriba (la luz viene de arriba a la izquierda)
+    wells(x, d => `rgba(0,0,0,${.05 + .1 * d})`);
+    x.save(); x.globalCompositeOperation = 'source-atop';
+    const g = x.createLinearGradient(0, 0, FW * .4, FH); g.addColorStop(0, 'rgba(255,255,255,.1)'); g.addColorStop(1, 'rgba(0,0,0,.05)'); x.fillStyle = g; x.fillRect(0, 0, FW, FH); x.restore();
+    // serigrafía
+    const [gx, gy] = C(-1.45, -.26); x.textAlign = 'left'; x.textBaseline = 'alphabetic';
     x.fillStyle = printColor; x.font = `italic 800 ${U(.4)}px ${BR}`; x.fillText('gavilanbe', gx, gy);
-    const lw = x.measureText('gavilanbe').width; x.font = `500 ${U(.1)}px ${MO}`; x.fillStyle = printSoft; x.fillText('P O C K E T', gx + lw + U(.14), gy - U(.02));
-    // hueco de la cruceta
-    const [dx, dy] = C(-.92, -1.08);
-    g = x.createRadialGradient(dx - U(.08), dy - U(.08), U(.3), dx, dy, U(.66)); g.addColorStop(0, 'rgba(0,0,0,.2)'); g.addColorStop(.8, 'rgba(0,0,0,.12)'); g.addColorStop(1, 'rgba(0,0,0,0)');
-    x.fillStyle = g; x.beginPath(); x.arc(dx, dy, U(.66), 0, 7); x.fill();
-    x.strokeStyle = 'rgba(255,255,255,.35)'; x.lineWidth = U(.018); x.beginPath(); x.arc(dx, dy, U(.6), .2, 1.9); x.stroke();
-    // hueco de A y B
-    const [ax, ay] = C(1.12, -.8), [bbx, bby] = C(.42, -1.08), ang = Math.atan2(ay - bby, ax - bbx);
-    x.fillStyle = 'rgba(0,0,0,.16)'; capsule(x, (ax + bbx) / 2, (ay + bby) / 2, Math.hypot(ax - bbx, ay - bby) + U(.78), U(.38), ang); x.fill();
-    x.strokeStyle = 'rgba(255,255,255,.3)'; x.lineWidth = U(.016); capsule(x, (ax + bbx) / 2, (ay + bby) / 2 + U(.012), Math.hypot(ax - bbx, ay - bby) + U(.74), U(.36), ang); x.stroke();
-    x.fillStyle = printColor; x.font = `700 ${U(.1)}px ${MO}`; x.textAlign = 'center';
-    x.fillText('A', ax, ay + U(.5)); x.fillText('B', bbx, bby + U(.5));
-    x.fillStyle = printSoft; x.font = `500 ${U(.06)}px ${MO}`; x.fillText('JUGAR', ax, ay + U(.6)); x.fillText('SORPRESA', bbx, bby + U(.6));
-    // select y start
-    for (const [px, lab] of [[-.26, 'SELECT'], [.3, 'START']]) {
-      const [cx, cy] = C(px, -2.03);
-      x.fillStyle = 'rgba(0,0,0,.28)'; capsule(x, cx, cy, U(.62), U(.11), -.42); x.fill();
-      x.save(); x.translate(cx, cy + U(.24)); x.rotate(-.42); x.fillStyle = printSoft; x.font = `500 ${U(.065)}px ${MO}`; x.fillText(lab, 0, 0); x.restore();
-    }
-    // altavoz grabado
-    for (let i = 0; i < 6; i++) {
-      const [cx, cy] = C(.72 + i * .15, -2.2 + i * .07);
-      x.fillStyle = 'rgba(0,0,0,.42)'; capsule(x, cx, cy, U(.62 - Math.abs(i - 2.5) * .06), U(.035), -1.05); x.fill();
-      x.fillStyle = 'rgba(255,255,255,.35)'; capsule(x, cx + U(.02), cy + U(.02), U(.6 - Math.abs(i - 2.5) * .06), U(.012), -1.05); x.fill();
-    }
+    const lw = x.measureText('gavilanbe').width; x.font = `800 ${U(.15)}px ${BR}`; x.fillText('POCKET', gx + lw + U(.1), gy); x.font = `500 ${U(.06)}px ${MO}`; x.fillText('TM', gx + lw + U(.1) + x.measureText('POCKET').width * 2.35, gy - U(.12));
+    x.textAlign = 'center'; x.fillStyle = printColor; x.font = `700 ${U(.1)}px ${MO}`;
+    x.fillText('A', aX + U(.02), aY + U(.49)); x.fillText('B', bX + U(.02), bY + U(.49));
+    for (const [px, lab] of [[-.26, 'SELECT'], [.3, 'START']]) { const [cx, cy] = C(px, -2.03); x.save(); x.translate(cx, cy + U(.25)); x.rotate(-.42); x.fillStyle = printSoft; x.font = `500 ${U(.064)}px ${MO}`; x.fillText(lab, 0, 0); x.restore(); }
+    x.save(); x.translate(...C(1.25, -2.62)); x.fillStyle = printSoft; x.font = `500 ${U(.055)}px ${MO}`; x.fillText('))) PHONES', 0, 0); x.restore();
     faceTex.needsUpdate = true; wake();
   }
-  const face = add(new THREE.Mesh(new THREE.ShapeGeometry(shellShape, 28), new SM({map: faceTex, transparent: true, roughness: .5, depthWrite: false})), 0, 0, FR + .002);
+  const faceMat = new PM({map: faceTex, roughness: .5, clearcoat: .35, clearcoatRoughness: .45, sheen: .35, sheenRoughness: .6, sheenColor: '#ffffff', normalScale: new THREE.Vector2(1, 1)});
+  const face = add(new THREE.Mesh(new THREE.ShapeGeometry(shellShape, 32), faceMat), 0, 0, FR + .001);
   face.raycast = () => {};
+  fonts.then(() => { faceMat.normalMap = drawHeight(); faceMat.needsUpdate = true; wake(); });
+  // marco de la pantalla con volumen propio
+  const bezelShape = rounded(2.92, 2.44, .13, .62);
+  const bezelGeo = new THREE.ExtrudeGeometry(bezelShape, {depth: .02, bevelEnabled: true, bevelThickness: .025, bevelSize: .025, bevelSegments: 4, curveSegments: 24});
+  const bezelMat = new PM({color: '#3a3848', roughness: .38, clearcoat: .6, clearcoatRoughness: .3});
+  add(new THREE.Mesh(bezelGeo, bezelMat), 0, 1.25, FR);
+  const BZ = FR + .046;
+  const bezelTex = canvasTex(700, 590);
+  const drawBezel = () => { const x = bezelTex.userData.ctx, K = 700 / 2.92; x.clearRect(0, 0, 700, 590);
+    x.fillStyle = '#ff5b35'; x.fillRect(.14 * K, .12 * K, .66 * K, .03 * K); x.fillStyle = '#c6f432'; x.fillRect(.14 * K, .175 * K, .66 * K, .03 * K);
+    x.fillStyle = '#ff5b35'; x.fillRect(2.12 * K, .12 * K, .66 * K, .03 * K); x.fillStyle = '#c6f432'; x.fillRect(2.12 * K, .175 * K, .66 * K, .03 * K);
+    x.fillStyle = '#c9c6d6'; x.font = `500 ${.07 * K}px ${MO}`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('PIXEL  COLOR  ·  STEREO  SOUND', 1.46 * K, .165 * K);
+    x.fillStyle = '#9d99ad'; x.font = `500 ${.055 * K}px ${MO}`; x.fillText('BATTERY', .22 * K, 1.16 * K);
+    bezelTex.needsUpdate = true; wake(); };
+  add(new THREE.Mesh(new THREE.PlaneGeometry(2.92, 2.46), new THREE.MeshBasicMaterial({map: bezelTex, transparent: true, depthWrite: false})), 0, 1.25, BZ + .001).raycast = () => {};
   // pantalla, cristal y LED
   const SW = 480, SH = 300;
-  const screenTex = canvasTex(SW, SH); const sx = screenTex.userData.ctx;
-  const screen = add(new THREE.Mesh(new THREE.PlaneGeometry(2.3, 1.44), new THREE.MeshBasicMaterial({map: screenTex, toneMapped: false, color: '#ececec'})), .04, 1.17, FR + .006);
+  const screenTex = canvasTex(SW, SH); const sx = screenTex.userData.ctx; screenTex.generateMipmaps = true; screenTex.minFilter = THREE.LinearMipmapLinearFilter;
+  add(new THREE.Mesh(new THREE.PlaneGeometry(2.42, 1.58), new SM({color: '#15141a', roughness: .8})), .06, 1.32, BZ + .002);
+  const screen = add(new THREE.Mesh(new THREE.PlaneGeometry(2.3, 1.4375), new THREE.MeshBasicMaterial({map: screenTex, toneMapped: false, color: '#f0f0f0'})), .06, 1.32, BZ + .004);
   screen.userData.action = 'screen';
-  const glass = add(new THREE.Mesh(new THREE.PlaneGeometry(2.36, 1.5), new PM({color: '#fff', transparent: true, opacity: .09, roughness: .03, clearcoat: 1, envMapIntensity: 3})), .04, 1.17, FR + .014);
+  const glass = add(new THREE.Mesh(new THREE.PlaneGeometry(2.6, 2.1), new PM({color: '#fff', transparent: true, opacity: .07, roughness: .02, clearcoat: 1, envMapIntensity: 3.5, depthWrite: false})), 0, 1.25, BZ + .01);
   glass.raycast = () => {};
-  const led = add(new THREE.Mesh(new THREE.SphereGeometry(.052, 16, 12), new SM({color: '#3a1512', emissive: '#ff2a1a', emissiveIntensity: 0})), -1.3, 1.52, FR + .02);
+  const led = add(new THREE.Mesh(new THREE.SphereGeometry(.05, 16, 12), new SM({color: '#3a1512', emissive: '#ff2a1a', emissiveIntensity: 0})), -1.2, 1.4, BZ + .01);
   const glowTex = canvasTex(64, 64, x => { const g = x.createRadialGradient(32, 32, 0, 32, 32, 32); g.addColorStop(0, 'rgba(255,90,60,1)'); g.addColorStop(.3, 'rgba(255,60,40,.45)'); g.addColorStop(1, 'rgba(255,60,40,0)'); x.fillStyle = g; x.fillRect(0, 0, 64, 64); });
-  const ledGlow = add(new THREE.Sprite(new THREE.SpriteMaterial({map: glowTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0})), -1.3, 1.52, FR + .05);
-  ledGlow.scale.setScalar(.55);
-  // cruceta
+  const ledGlow = add(new THREE.Sprite(new THREE.SpriteMaterial({map: glowTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, opacity: 0})), -1.2, 1.4, BZ + .05);
+  ledGlow.scale.setScalar(.5);
+  // cruceta con flechas en relieve y hundimiento central
   const hits = [];
-  const dpad = new THREE.Group(); dpad.position.set(-.92, -1.08, FR); rig.add(dpad);
-  const cross = new THREE.Shape(); const CA = .16, CL = .5;
+  const dpad = new THREE.Group(); dpad.position.set(-.92, -1.08, FR - .02); rig.add(dpad);
+  const cross = new THREE.Shape(); const CA = .165, CL = .5;
   [[-CA, CL], [CA, CL], [CA, CA], [CL, CA], [CL, -CA], [CA, -CA], [CA, -CL], [-CA, -CL], [-CA, -CA], [-CL, -CA], [-CL, CA], [-CA, CA]].forEach(([px, py], i) => i ? cross.lineTo(px, py) : cross.moveTo(px, py));
-  add(new THREE.Mesh(new THREE.ExtrudeGeometry(cross, {depth: .08, bevelEnabled: true, bevelThickness: .035, bevelSize: .035, bevelSegments: 3}), darkMat), 0, 0, 0, dpad);
-  const dimple = add(new THREE.Mesh(new THREE.CylinderGeometry(.08, .08, .02, 20), holeMat), 0, 0, .12, dpad); dimple.rotation.x = Math.PI / 2;
-  [['left', -.33, 0], ['right', .33, 0], ['up', 0, .33], ['down', 0, -.33]].forEach(([a, x, y]) => { const h = new THREE.Mesh(new THREE.BoxGeometry(.34, .34, .25), new THREE.MeshBasicMaterial({visible: false})); h.position.set(x, y, .1); h.userData.action = a; dpad.add(h); hits.push(h); });
-  // A y B
-  const redMat = new PM({color: '#cf3159', roughness: .26, clearcoat: 1, clearcoatRoughness: .08, side: THREE.DoubleSide});
-  const domeGeo = new THREE.LatheGeometry([[0, .17], [.12, .165], [.21, .14], [.26, .09], [.275, .02], [.275, 0]].map(([a, b]) => new THREE.Vector2(a, b)), 32); domeGeo.rotateX(Math.PI / 2);
+  const dTex = canvasTex(256, 256, x => {
+    const K = 256 / 1.14, P = v => (v + .57) * K;
+    x.fillStyle = '#2d2c34'; x.fillRect(0, 0, 256, 256);
+    const g = x.createRadialGradient(128, 128, 4, 128, 128, 60); g.addColorStop(0, 'rgba(0,0,0,.45)'); g.addColorStop(1, 'rgba(0,0,0,0)'); x.fillStyle = g; x.fillRect(0, 0, 256, 256);
+    x.fillStyle = '#4a4953';
+    for (const a of [0, 1, 2, 3]) { x.save(); x.translate(128, 128); x.rotate(a * Math.PI / 2); x.beginPath(); x.moveTo(0, -.43 * K); x.lineTo(-.07 * K, -.33 * K); x.lineTo(.07 * K, -.33 * K); x.fill(); x.restore(); }
+    void P;
+  });
+  dTex.repeat.set(1 / 1.14, 1 / 1.14); dTex.offset.set(.5, .5);
+  add(new THREE.Mesh(new THREE.ExtrudeGeometry(cross, {depth: .09, bevelEnabled: true, bevelThickness: .04, bevelSize: .035, bevelSegments: 4}), [new PM({map: dTex, roughness: .5, clearcoat: .5}), darkMat]), 0, 0, 0, dpad);
+  [['left', -.33, 0], ['right', .33, 0], ['up', 0, .33], ['down', 0, -.33]].forEach(([a, x, y]) => { const h = new THREE.Mesh(new THREE.BoxGeometry(.34, .34, .25), new THREE.MeshBasicMaterial({visible: false})); h.position.set(x, y, .12); h.userData.action = a; dpad.add(h); hits.push(h); });
+  // A y B: cúpulas cóncavas brillantes
+  const redMat = new PM({color: '#c4284f', roughness: .22, clearcoat: 1, clearcoatRoughness: .06, sheen: .2, side: THREE.DoubleSide});
+  const domeGeo = new THREE.LatheGeometry([[0, .15], [.1, .158], [.2, .15], [.25, .11], [.275, .05], [.28, 0]].map(([a, b]) => new THREE.Vector2(a, b)), 40); domeGeo.rotateX(Math.PI / 2);
   const btn = {};
-  for (const [x, y, a] of [[1.12, -.8, 'a'], [.42, -1.08, 'b']]) { const g = new THREE.Group(); g.position.set(x, y, FR); rig.add(g); const b = add(new THREE.Mesh(domeGeo, redMat), 0, 0, 0, g); b.userData.action = a; hits.push(b); btn[a] = g; }
-  const pillMat = new PM({color: '#74707c', roughness: .75});
-  const pillGeo = new THREE.CapsuleGeometry(.068, .34, 4, 12);
-  for (const [a, x] of [['select', -.26], ['start', .3]]) { const g = new THREE.Group(); g.position.set(x, -2.03, FR + .02); g.rotation.z = -.42; rig.add(g); const p = add(new THREE.Mesh(pillGeo, pillMat), 0, 0, 0, g); p.rotation.z = Math.PI / 2; p.userData.action = a; hits.push(p); btn[a] = g; }
+  for (const [x, y, a] of [[1.12, -.8, 'a'], [.42, -1.08, 'b']]) { const g = new THREE.Group(); g.position.set(x, y, FR - .03); rig.add(g); const b = add(new THREE.Mesh(domeGeo, redMat), 0, 0, 0, g); b.userData.action = a; hits.push(b); btn[a] = g; }
+  const pillMat = new PM({color: '#7a7682', roughness: .85});
+  const pillGeo = new THREE.CapsuleGeometry(.07, .34, 4, 14);
+  for (const [a, x] of [['select', -.26], ['start', .3]]) { const g = new THREE.Group(); g.position.set(x, -2.03, FR - .005); g.rotation.z = -.42; rig.add(g); const p = add(new THREE.Mesh(pillGeo, pillMat), 0, 0, 0, g); p.rotation.z = Math.PI / 2; p.scale.set(1, 1, .7); p.userData.action = a; hits.push(p); btn[a] = g; }
   btn.left = btn.right = btn.up = btn.down = dpad;
   // arriba, lados y detrás
   add(new THREE.Mesh(new RoundedBoxGeometry(2.8, .2, .5, 2, .06), holeMat), 0, CH / 2 + .02, SLOT_Z);
@@ -415,53 +440,111 @@ function main() {
     sparkGeo.attributes.position.needsUpdate = true;
   }
 
-  // ── pantalla de la consola ─────────────────────
+  // ── pantalla de la consola: LCD nativo de 160×100, ampliado ×3 con rejilla de puntos ──
   let scr = {mode: 'off', t0: 0, g: null};
   const setScr = (mode, g) => { scr = {mode, t0: performance.now(), g: g || scr.g}; wake(); };
+  const NW = 160, NH = 100;
+  const nat = document.createElement('canvas'); nat.width = NW; nat.height = NH; const nx = nat.getContext('2d');
+  const prev = document.createElement('canvas'); prev.width = NW; prev.height = NH; const pvx = prev.getContext('2d');
   const thumbs = new Map();
-  const thumbOf = g => { if (!g) return null; if (!thumbs.has(g.name)) { thumbs.set(g.name, null); loadImg(g.thumb).then(i => { thumbs.set(g.name, i); wake(); }); } return thumbs.get(g.name); };
-  const pix = document.createElement('canvas'); pix.width = 160; pix.height = 100; const px = pix.getContext('2d');
-  function pixText(text, size, color, y) { px.clearRect(0, 0, 160, 100); px.font = `700 ${size}px ${PX}`; px.textAlign = 'center'; px.textBaseline = 'middle'; px.fillStyle = color; px.fillText(text, 80, 50); sx.imageSmoothingEnabled = false; sx.drawImage(pix, 0, y - 150, 480, 300); sx.imageSmoothingEnabled = true; }
-  const lcdPat = (() => { const c = document.createElement('canvas'); c.width = c.height = 3; const x = c.getContext('2d'); x.fillStyle = 'rgba(0,0,0,.07)'; x.fillRect(0, 2, 3, 1); x.fillRect(2, 0, 1, 3); return sx.createPattern(c, 'repeat'); })();
-  function blinkBox(text, y, bg = 'rgba(28,26,34,.85)', fg = '#fff') { sx.font = `400 20px ${PX}`; const w = sx.measureText(text).width + 34; sx.fillStyle = bg; sx.fillRect(SW / 2 - w / 2, y - 20, w, 40); sx.fillStyle = fg; sx.textAlign = 'center'; sx.textBaseline = 'middle'; sx.fillText(text, SW / 2, y + 1); sx.textBaseline = 'alphabetic'; sx.textAlign = 'left'; }
+  function thumbOf(g) {
+    if (!g) return null;
+    if (!thumbs.has(g.name)) {
+      thumbs.set(g.name, null);
+      loadImg(g.thumb).then(img => { if (!img) return; const c = document.createElement('canvas'); c.width = NW; c.height = NH; const x = c.getContext('2d'); x.imageSmoothingQuality = 'high'; const s = Math.max(NW / img.width, NH / img.height); x.drawImage(img, (NW - img.width * s) / 2, (NH - img.height * s) / 2, img.width * s, img.height * s); thumbs.set(g.name, c); wake(); });
+    }
+    return thumbs.get(g.name);
+  }
+  // texto pixelado de verdad: se rasteriza y se umbraliza (sin antialias)
+  const txtCache = new Map();
+  function pxText(text, color, size = 8, bold = false) {
+    const key = text + color + size + bold;
+    if (txtCache.has(key)) return txtCache.get(key);
+    const m = document.createElement('canvas').getContext('2d'); m.font = `${bold ? 700 : 400} ${size}px ${PX}`;
+    const w = Math.ceil(m.measureText(text).width) + 2, h = size + 4;
+    const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d');
+    x.font = m.font; x.textBaseline = 'top'; x.fillStyle = color; x.fillText(text, 1, 1);
+    const d = x.getImageData(0, 0, w, h); for (let i = 3; i < d.data.length; i += 4) d.data[i] = d.data[i] > 110 ? 255 : 0; x.putImageData(d, 0, 0);
+    if (txtCache.size > 200) txtCache.clear();
+    txtCache.set(key, c); return c;
+  }
+  const put = (c, x, y, align = 'left') => nx.drawImage(c, Math.round(align === 'center' ? x - c.width / 2 : align === 'right' ? x - c.width : x), Math.round(y));
+  function fitText(text, color, maxW, bold) { let t = text; let c = pxText(t, color, 8, bold); while (c.width > maxW && t.length > 3) { t = t.slice(0, -2); c = pxText(t + '…', color, 8, bold); } return c; }
+  // el gavilán en pixel art
+  const HAWK = ['......#......', '.....###.....', '#...#####...#', '##.#######.##', '.###########.', '...#######...', '....#...#....', '...##...##...'];
+  function hawk(x0, y0, color, k = 1) { nx.fillStyle = color; HAWK.forEach((row, y) => { for (let x = 0; x < row.length; x++) if (row[x] === '#') nx.fillRect(x0 + x * k, y0 + y * k, k, k); }); }
+  const LCD_ON = '#e8ecd6', INK = '#1b1726';
+  const accentOf = g => (g && GB.EDITIONS[g.model] && GB.EDITIONS[g.model].accent) || '#ff5b35';
+  // orden aleatorio fijo de bloques 4×4 para la disolución
+  const BLOCKS = (() => { const a = []; for (let y = 0; y < NH / 4; y++) for (let x = 0; x < NW / 4; x++) a.push([x * 4, y * 4]); for (let i = a.length - 1; i > 0; i--) { const j = (i * 7919 + 13) % (i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; })();
+  function drawTitle(g, now, x = nx) {
+    const img = thumbOf(g);
+    if (img) x.drawImage(img, 0, 0); else { x.fillStyle = '#9aa08c'; x.fillRect(0, 0, NW, NH); }
+    x.fillStyle = 'rgba(16,12,24,.86)'; x.fillRect(0, 74, NW, 26);
+    x.fillStyle = accentOf(g); x.fillRect(0, 74, NW, 1);
+    const ctx0 = nx; if (x !== nx) return;
+    put(fitText((g ? g.label : '').toUpperCase(), '#fff6e0', 150, true), 80, 77, 'center');
+    if (Math.floor(now / 530) % 3 !== 2) put(pxText('PRESS START', '#c6f432'), 80, 88, 'center');
+    nx.fillStyle = 'rgba(16,12,24,.8)'; const code = pxText(g ? g.code : '', '#fff6e0'); nx.fillRect(2, 2, code.width + 2, 11); put(code, 3, 2);
+    void ctx0;
+  }
   let lastScreenKey = '';
   function drawScreen(now) {
     const t = (now - scr.t0) / 1000, g = scr.g, still = scr.mode === 'off';
-    const key = scr.mode + (g && g.name) + (thumbs.get(g && g.name) ? 1 : 0) + (still ? '' : Math.floor(now / 50));
+    const key = scr.mode + (g && g.name) + (thumbs.get(g && g.name) ? 1 : 0) + (still ? '' : Math.floor(now / 40));
     if (key === lastScreenKey) return; lastScreenKey = key;
-    sx.globalAlpha = 1; sx.textAlign = 'left';
+    nx.imageSmoothingEnabled = false;
     if (scr.mode === 'off') {
-      sx.fillStyle = '#10140f'; sx.fillRect(0, 0, SW, SH);
-      const gr = sx.createLinearGradient(0, 0, SW, SH); gr.addColorStop(0, 'rgba(255,255,255,.06)'); gr.addColorStop(.5, 'rgba(255,255,255,0)'); sx.fillStyle = gr; sx.fillRect(0, 0, SW, SH);
-    } else if (scr.mode === 'power' || scr.mode === 'boot') {
-      const on = scr.mode === 'power' ? Math.min(1, t / .45) : 1;
-      sx.fillStyle = `rgb(${16 + 230 * on},${20 + 222 * on},${15 + 217 * on})`; sx.fillRect(0, 0, SW, SH);
-      if (scr.mode === 'boot') {
-        const y = Math.min(1, t / .9), yy = -60 + (SH / 2 - 10 + 60) * (1 - Math.pow(1 - y, 2));
-        pixText('gavilanbe', 22, '#1c1a22', yy);
-        if (t > .9) { const s = Math.min(1, (t - .9) / .35); sx.save(); sx.globalCompositeOperation = 'source-atop'; sx.fillStyle = 'rgba(255,91,53,.95)'; sx.fillRect(-120 + s * 720, 0, 70, SH); sx.restore(); }
-        if (t > 1.15) { sx.globalAlpha = Math.min(1, (t - 1.15) / .3); sx.fillStyle = '#ff5b35'; sx.font = `400 16px ${PX}`; sx.textAlign = 'center'; sx.fillText('P O C K E T', SW / 2, SH / 2 + 44); const cols = ['#ff5b35', '#c6f432', '#6fd3ff', '#7a55cf']; for (let i = 0; i < 4; i++) { const b = Math.abs(Math.sin(t * 6 + i)) * 9; sx.fillStyle = cols[i]; sx.fillRect(SW / 2 - 42 + i * 24, SH / 2 + 64 - b, 12, 12); } sx.globalAlpha = 1; sx.textAlign = 'left'; }
+      nx.fillStyle = '#2b3128'; nx.fillRect(0, 0, NW, NH);
+    } else if (scr.mode === 'power') {
+      const on = Math.min(1, t / .5), flick = t < .3 && Math.floor(t * 30) % 3 === 0 ? .6 : 1;
+      const c = new THREE.Color('#2b3128').lerp(new THREE.Color(LCD_ON), on * flick);
+      nx.fillStyle = '#' + c.getHexString(); nx.fillRect(0, 0, NW, NH);
+    } else if (scr.mode === 'boot') {
+      nx.fillStyle = LCD_ON; nx.fillRect(0, 0, NW, NH);
+      const land = 16, y = Math.min(land, Math.floor(-40 + t / 1.1 * (land + 40)));
+      const word = pxText('gavilanbe', INK, 16, true);
+      hawk(80 - 13, y, INK, 2); put(word, 80, y + 19, 'center');
+      if (t > 1.1 && t < 1.7) { // brillo que recorre el logo
+        const sx0 = -30 + (t - 1.1) / .6 * 200; nx.save(); nx.globalCompositeOperation = 'source-atop'; nx.fillStyle = accentOf(g); for (let k = 0; k < 6; k++) nx.fillRect(Math.round(sx0 + k), 0, 1, NH); nx.fillStyle = '#ffffff'; nx.fillRect(Math.round(sx0 + 6), 0, 2, NH); nx.restore();
+        nx.fillStyle = LCD_ON; nx.globalCompositeOperation = 'destination-over'; nx.fillRect(0, 0, NW, NH); nx.globalCompositeOperation = 'source-over';
       }
-    } else if (scr.mode === 'title' || scr.mode === 'launch' || scr.mode === 'welcome') {
-      const img = thumbOf(g), z = REDUCE ? 1.02 : 1.05 + .035 * Math.sin(now / 2400);
-      cover(sx, img, 0, 0, SW, SH, z, REDUCE ? 0 : Math.sin(now / 3100) * 10);
-      const gr = sx.createLinearGradient(0, SH * .45, 0, SH); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,.72)'); sx.fillStyle = gr; sx.fillRect(0, 0, SW, SH);
-      sx.fillStyle = 'rgba(0,0,0,.55)'; sx.fillRect(10, 10, 96, 22); sx.fillStyle = '#fff'; sx.font = `400 12px ${PX}`; sx.fillText(g ? g.code : '', 18, 26);
-      if (scr.mode === 'launch') { const a = Math.max(0, 1 - t / .6); sx.fillStyle = `rgba(255,255,255,${a})`; sx.fillRect(0, 0, SW, SH); blinkBox('¡A JUGAR!', SH - 52, '#c6f432', '#1c1a22'); }
-      else if (scr.mode === 'welcome') { sx.fillStyle = 'rgba(28,26,34,.6)'; sx.fillRect(0, 0, SW, SH); pixText('¡HAS VUELTO!', 17, '#c6f432', SH / 2 - 26); blinkBox('+1 PEGATINA', SH / 2 + 46, '#ffd23f', '#1c1a22'); }
-      else if (Math.floor(now / 520) % 2 === 0) blinkBox('PRESS START', SH - 50);
+      if (t > 1.6) { const letters = 'POCKET', shown = Math.min(letters.length, Math.floor((t - 1.6) / .09) + 1); let px0 = 80 - 21; for (let i = 0; i < shown; i++) { const pop = (t - 1.6 - i * .09) < .08 ? -2 : 0; put(pxText(letters[i], accentOf(g), 8, true), px0 + i * 7, y + 40 + pop); } }
+      if (t > 2.2) { put(pxText('™', INK), 80 + 24, y + 38); put(pxText('© gavilanbe', '#8a8f7a'), 80, 90, 'center'); }
+      if (t > 2.5) { // disolución en bloques hacia la pantalla de título
+        pvx.clearRect(0, 0, NW, NH); drawTitle(g, now, pvx);
+        const n = Math.floor(Math.min(1, (t - 2.5) / .45) * BLOCKS.length);
+        for (let i = 0; i < n; i++) { const [bx, by] = BLOCKS[i]; nx.drawImage(prev, bx, by, 4, 4, bx, by, 4, 4); }
+      }
+    } else if (scr.mode === 'title') {
+      drawTitle(g, now);
+    } else if (scr.mode === 'launch') {
+      drawTitle(g, now);
+      const a = Math.max(0, 1 - t / .7); nx.fillStyle = `rgba(255,255,255,${a})`; nx.fillRect(0, 0, NW, NH);
+      nx.fillStyle = '#c6f432'; nx.fillRect(40, 40, 80, 18); nx.fillStyle = INK; nx.fillRect(40, 58, 80, 1);
+      put(pxText('¡A JUGAR!', INK, 8, true), 80, 45, 'center');
+    } else if (scr.mode === 'welcome') {
+      drawTitle(g, now);
+      nx.fillStyle = 'rgba(16,12,24,.7)'; nx.fillRect(0, 0, NW, NH);
+      put(pxText('¡HAS VUELTO!', '#c6f432', 16, true), 80, 26, 'center');
+      nx.fillStyle = '#ffd23f'; nx.fillRect(44, 56, 72, 14); put(pxText('+1 PEGATINA', INK), 80, 58, 'center');
     } else if (scr.mode === 'glitch') {
-      sx.fillStyle = '#12161a'; sx.fillRect(0, 0, SW, SH);
       const img = thumbOf(g);
-      for (let i = 0; i < 16; i++) { const y = Math.random() * SH, h = 4 + Math.random() * 30; if (img) sx.drawImage(img, 0, y / SH * img.height, img.width, h / SH * img.height, (Math.random() - .5) * 70, y, SW, h); }
-      for (let i = 0; i < 40; i++) { sx.fillStyle = ['#ff5b35', '#c6f432', '#6fd3ff', '#fff'][i % 4]; sx.fillRect(Math.random() * SW, Math.random() * SH, 4 + Math.random() * 30, 3); }
-      sx.fillStyle = 'rgba(18,22,26,.85)'; sx.fillRect(34, SH / 2 - 48, SW - 68, 96);
-      sx.fillStyle = '#fff'; sx.textAlign = 'center'; sx.font = `700 22px ${PX}`; sx.fillText('ERROR DE LECTURA', SW / 2, SH / 2 - 6);
-      sx.fillStyle = '#c6f432'; sx.font = `400 14px ${PX}`; sx.fillText('SOPLA EL CARTUCHO', SW / 2, SH / 2 + 26); sx.textAlign = 'left';
+      nx.fillStyle = '#12161a'; nx.fillRect(0, 0, NW, NH);
+      for (let i = 0; i < 18; i++) { const yy = Math.floor(Math.random() * NH), h = 1 + Math.floor(Math.random() * 8); if (img) nx.drawImage(img, 0, yy, NW, h, Math.floor((Math.random() - .5) * 30), yy, NW, h); }
+      for (let i = 0; i < 30; i++) { nx.fillStyle = ['#ff5b35', '#c6f432', '#6fd3ff', '#fff'][i % 4]; nx.fillRect(Math.floor(Math.random() * NW), Math.floor(Math.random() * NH), 2 + Math.floor(Math.random() * 10), 1); }
+      nx.fillStyle = 'rgba(18,22,26,.9)'; nx.fillRect(14, 32, 132, 34); nx.fillStyle = '#ff5b35'; nx.fillRect(14, 32, 132, 1);
+      put(pxText('ERROR DE LECTURA', '#fff6e0', 8, true), 80, 37, 'center');
+      if (Math.floor(now / 400) % 2) put(pxText('SOPLA EL CARTUCHO', '#c6f432'), 80, 51, 'center');
     }
+    // ×3 sin suavizado + rejilla de puntos del LCD + reflejo
+    sx.imageSmoothingEnabled = false; sx.drawImage(nat, 0, 0, SW, SH);
     sx.fillStyle = lcdPat; sx.fillRect(0, 0, SW, SH);
+    if (scr.mode !== 'off') { const gr = sx.createLinearGradient(0, 0, SW * .6, SH); gr.addColorStop(0, 'rgba(255,255,255,.07)'); gr.addColorStop(.5, 'rgba(255,255,255,0)'); sx.fillStyle = gr; sx.fillRect(0, 0, SW, SH); }
+    else { const gr = sx.createLinearGradient(0, 0, SW, SH); gr.addColorStop(0, 'rgba(255,255,255,.08)'); gr.addColorStop(.45, 'rgba(255,255,255,0)'); sx.fillStyle = gr; sx.fillRect(0, 0, SW, SH); }
     screenTex.needsUpdate = true;
   }
+  const lcdPat = (() => { const c = document.createElement('canvas'); c.width = c.height = 3; const x = c.getContext('2d'); x.fillStyle = 'rgba(0,0,0,.1)'; x.fillRect(0, 2, 3, 1); x.fillRect(2, 0, 1, 2); return sx.createPattern(c, 'repeat'); })();
   // monitor del ordenador
   let trm = {mode: 'idle', t0: performance.now(), g: null}, lastTermKey = '';
   function drawTerm(now) {
@@ -536,8 +619,8 @@ function main() {
   }
   async function boot(g, my) {
     setScr('boot', g); GB.setState('Arrancando…', 'busy');
-    setTimeout(() => { if (my === token && scr.mode === 'boot') Sound.boot(); }, REDUCE ? 0 : 900);
-    await wait(2.3);
+    setTimeout(() => { if (my === token && scr.mode === 'boot') Sound.boot(); }, REDUCE ? 0 : 1100);
+    await wait(2.95);
     if (my !== token || scr.mode !== 'boot') return;
     setScr('title', g); GB.setState('Pulsa START', 'on');
   }
@@ -611,7 +694,7 @@ function main() {
     if (gold) { shellTo.set('#d9a93f'); shellMat.metalness = .9; shellMat.roughness = .26; }
     else { shellTo.set(hex); shellMat.metalness = 0; shellMat.roughness = .42; }
     const l = shellTo.r * .3 + shellTo.g * .59 + shellTo.b * .11;
-    printColor = l < .35 ? '#ece6da' : '#2a2640'; printSoft = l < .35 ? 'rgba(236,230,218,.6)' : 'rgba(42,38,64,.55)';
+    printColor = l < .35 ? '#ece6da' : '#2a2640'; printSoft = l < .35 ? 'rgba(236,230,218,.6)' : 'rgba(42,38,64,.6)'; faceBase = '#' + shellTo.getHexString(); shellMat.color.copy(shellTo); faceMat.metalness = shellMat.metalness; faceMat.roughness = shellMat.roughness;
     fonts.then(drawFace);
     if (!REDUCE && started) spinV += gold ? 16 : 9;
     wake();
@@ -689,7 +772,7 @@ function main() {
     if (!pendingMove) return; const pm = pendingMove; pendingMove = null;
     const o = pickAt(pm.x, pm.y), item = o && o.userData.item;
     hoverItem = item || null;
-    el.style.cursor = o ? (o.userData.action === 'spin' ? 'grab' : 'pointer') : 'grab';
+    el.dataset.cur = o && o.userData.action !== 'spin' ? 'hand' : 'grab';
     if (item) { const g = item.userData.game, foc = item.userData.gi === GB.st.focus; GB.tip(foc ? (kind === 'cart' ? `Meter «${g.label}»` : `Meter «${g.label}» en el PC`) : g.label, pm.tx, pm.ty); }
     else if (o === screen) GB.tip({title: 'START · Jugar', boot: 'Saltar intro', glitch: 'Soplar el cartucho', off: 'Meter el cartucho'}[scr.mode] || '', pm.tx, pm.ty);
     else if (o && TIPS[o.userData.action]) GB.tip(TIPS[o.userData.action], pm.tx, pm.ty);
@@ -755,7 +838,6 @@ function main() {
     rig.scale.set(1 - jolt * 1.2, 1 + jolt * 2, 1 - jolt * 1.2);
     rig.rotation.x += ((REDUCE ? 0 : mouse.y * .2) - .03 - rig.rotation.x) * .1;
     rig.rotation.y += (((REDUCE || L.narrow ? 0 : mouse.x * .4) - (L.narrow ? 0 : .26)) + spin - rig.rotation.y) * (drag && drag.mode === 'spin' ? .5 : .12);
-    shellMat.color.lerp(shellTo, 1 - Math.exp(-fdt * 6));
     power.position.x += ((powerOn ? -.92 : -1.2) - power.position.x) * .2;
     const li = ledOn ? 2.6 : 0; led.material.emissiveIntensity += (li - led.material.emissiveIntensity) * .2; ledGlow.material.opacity = led.material.emissiveIntensity / 2.6 * .9;
     driveBlink = Math.max(0, driveBlink - fdt); driveLed.material.emissiveIntensity = driveBlink > 0 ? (Math.sin(t * 40) > 0 ? 3 : .3) : (inDrive ? 1.2 : 0);
@@ -780,8 +862,8 @@ function main() {
     return {left: Math.min(...xs), top: Math.min(...ys), width: Math.abs(xs[1] - xs[0]), height: Math.abs(ys[1] - ys[0])};
   }
   function onFirstFrames() { started = true; Promise.race([fonts, wait(1.5)]).then(() => GB.hideLoader(screenRect())); }
-  fonts.then(() => { drawFace(); drawSticker(); drawPcFront(); lastScreenKey = ''; lastTermKey = ''; wake(); });
-  drawFace(); drawSticker(); drawPcFront();
+  fonts.then(() => { drawFace(); drawBezel(); drawSticker(); drawPcFront(); txtCache.clear(); lastScreenKey = ''; lastTermKey = ''; wake(); });
+  drawFace(); drawBezel(); drawSticker(); drawPcFront();
 
   GB.ready({
     mode: (m, l, f, instant) => setMode(m, l, f, instant),
