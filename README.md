@@ -37,8 +37,8 @@ resto es HTML, CSS y JavaScript sin build.
   consola (Ⓐ, Ⓑ, START, SELECT), barra de controles, marcador de pegatinas,
   avisos de logro, cursor pixelado, tipografías Pixelify Sans y Silkscreen, y
   animaciones a pasos (`steps()`).
-- **El archivo** (Mundo 2): expositor de tienda con una balda por **modelo** (placa de latón con el modelo delante y su plástico detrás). Los cartuchos están de frente con su etiqueta y captura; se inclinan en 3D hacia el cursor con un brillo que lo sigue, caen uno a uno a su balda al aparecer y salen girando a una pantalla de «objeto» antes de volar a la consola. Los disquetes van en el archivador.
-- **Álbum de pegatinas** (Mundo 3) y **créditos** al final.
+- **El archivo** (Mundo 2): un **estuche de coleccionista por modelo** (tapa de espuma, placa de latón, cierres). Los cartuchos son cajas 3D de verdad (CSS: frente, trasera, cantos y lomo) encajadas de pie en sus ranuras. El estuche gira hacia el cursor, el cartucho asoma al pasar por encima y al pulsarlo **sale tirando hacia arriba, gira en el aire y vuela** a la ficha, donde se **arrastra para girarlo 360°**. Al devolverlo cae en su ranura con un *clac* y el estuche tiembla. Los disquetes siguen en el archivador.
+- **Álbum de cromos** (Mundo 3): un libro con una doble página por modelo, pestañas y paso de página en 3D. Cada juego arrancado da un **sobre** que se rasga, suelta los cromos, se dan la vuelta (los destacados, holográficos) y se pegan en su hueco numerado; un modelo completo recibe el sello «¡COMPLETO!».
 - Rendimiento: sin refracción, sombras dinámicas ni postprocesado; render bajo
   demanda y resolución adaptativa.
 
