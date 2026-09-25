@@ -716,8 +716,8 @@ function main() {
     L = narrow
       ? {narrow, floorY, conPos: [0, 3.3, -1.6], pcPos: [0, floorY, -2.4], beltX: 0, beltZ: 4.2, beltY: floorY + .36 + 1.4, beltItem: .82,
          box: {cart: [-2.3, 2.3, floorY + .2, 7.2], disk: [-3.4, 3.4, floorY, floorY + 10.4]}, safe: [-.94, .94, -.3, .8]}
-      : {narrow, floorY, conPos: [3.9, 1.0, 0], pcPos: [4.2, floorY, -1.6], beltX: .4, beltZ: 3, beltY: floorY + .36 + 1.1, beltItem: .78,
-         box: {cart: [-2.2, 6.2, floorY + .1, 5.1], disk: [-2.2, 7.8, floorY + .1, floorY + 10.6]}, safe: [-.18, .86, -.72, .8]};
+      : {narrow, floorY, conPos: [3.3, 1.5, 0], pcPos: [3.6, floorY, -1.6], beltX: 3.3, beltZ: 3, beltY: floorY + .36 + 1.0, beltItem: .74,
+         box: {cart: [.1, 6.5, floorY + .1, 6.1], disk: [-.6, 7.8, floorY + .1, floorY + 10.6]}, safe: [-.12, .9, -.8, .86]};
     floor.position.y = floorY; plinth.position.set(0, floorY + .18, 0); spot.position.set(0, floorY + .37, .3);
     con.position.set(ST.cart + L.conPos[0], L.conPos[1], L.conPos[2]);
     conShadow.position.set(con.position.x, floorY + .01, con.position.z + .4);
