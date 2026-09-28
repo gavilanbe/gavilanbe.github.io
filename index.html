@@ -260,11 +260,34 @@ a{color:inherit}
 .seg button{display:inline-flex;align-items:center;gap:6px;min-height:56px;padding:0 12px;font:400 15px/1 var(--tiny);letter-spacing:.06em;text-transform:uppercase;background:none;color:var(--cream)}
 .seg button span{opacity:.65}
 .seg button[aria-pressed=true]{--bi:var(--bi-sun);color:var(--ink)}
-.jumps{display:flex;gap:18px;overflow-x:auto;scrollbar-width:none;padding:6px 18px}
-.jumps::-webkit-scrollbar{display:none}
-.jump{flex:none;display:inline-flex;align-items:center;gap:8px;border:0;padding:4px 0;background:none;font:400 14px/1 var(--tiny);letter-spacing:.08em;text-transform:uppercase;color:#fff6e0cc}
-.jump:hover{color:var(--sun)}
-.jump.cursor-item::before{background:var(--sun)}
+/* selector de modelo: teclas de plástico de cada edición */
+.mkeys{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;padding:12px 18px 14px}
+.mkeys::-webkit-scrollbar{display:none}
+.mkey{flex:none;padding:0 0 6px;border:0;background:none;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.mkey .cap{position:relative;display:flex;align-items:center;gap:9px;padding:10px 12px 9px;background:linear-gradient(160deg,var(--p1),var(--p2) 55%,var(--p3));color:var(--pi);font:400 14px/1 var(--tiny);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;box-shadow:0 0 0 2px #000,0 6px 0 #000,inset 0 2px 0 #fff9,inset 0 -3px 0 #0003;transform:translateY(-2px);transition:transform .09s var(--step),box-shadow .09s var(--step),filter .25s}
+.mkey .cap b{font-weight:400}
+.mkey .cap em{font-style:normal;min-width:1.6em;padding:3px 4px 2px;text-align:center;background:var(--pi);color:#fff}
+.mkey .cap .sw{width:12px;height:12px;box-shadow:0 0 0 1px #0006}
+.mkey[data-ed="all"] .cap{--p1:#fff6e0;--p2:#f3e6c4;--p3:#d8c79c;--pi:#2a2233}
+.mkey[data-ed="opus-5.5"] .cap{background:linear-gradient(110deg,#ffe3f4,#d9f2ff,#e8ffdc,#fff2cf,#ffe3f4);background-size:300% 100%;animation:holo 6s linear infinite alternate}
+.mkey:hover .cap{transform:translateY(-5px);box-shadow:0 0 0 2px #000,0 9px 0 #000,inset 0 2px 0 #fff9,inset 0 -3px 0 #0003}
+.mkey[aria-pressed=true] .cap{transform:translateY(4px);box-shadow:0 0 0 2px #000,0 0 0 #000,inset 0 3px 6px #0005,0 0 26px var(--p2)}
+.mkey[aria-pressed=true] .cap::after{content:"";position:absolute;left:50%;bottom:-16px;width:6px;height:6px;margin-left:-3px;background:var(--lime);box-shadow:0 0 8px var(--lime);animation:blink 1s steps(1) infinite}
+.mkeys.on .mkey[aria-pressed=false] .cap{filter:saturate(.25) brightness(.62)}
+.mkeys.on .mkey[aria-pressed=false]:hover .cap{filter:none}
+.mkey.boop .cap{animation:bump .3s var(--step)}
+/* estuches que se quedan fuera del filtro: baja la persiana, se pliegan y los demás se recolocan */
+.case .shutter{position:absolute;left:12px;right:12px;top:52px;bottom:44px;z-index:4;border-radius:10px 10px 0 0;background:repeating-linear-gradient(#4a4454 0 9px,#2c2834 9px 12px);box-shadow:inset 0 -4px 0 #0009,inset 0 2px 0 #fff2;transform:scaleY(0);transform-origin:50% 0;transition:transform .3s steps(7);pointer-events:none}
+.case .shutter::after{content:"";position:absolute;left:50%;bottom:6px;width:40px;height:8px;margin-left:-20px;border-radius:2px;background:linear-gradient(#f3d58f,#8f6522);box-shadow:0 0 0 2px #120b07}
+.case.shut .shutter{transform:scaleY(1)}
+.case.gone,.slot.gone{display:none}
+.case.lit .lid{box-shadow:0 0 0 3px #000,inset 0 3px 0 #ffffff14,0 0 0 6px var(--litc),0 0 50px -6px var(--litc)}
+.sp.lit .fr{box-shadow:0 0 0 3px var(--litc),0 0 22px var(--litc)}
+.sp.boing{animation:boing .62s cubic-bezier(.3,.7,.4,1)}
+@keyframes boing{30%{transform:translateY(-42px)}55%{transform:translateY(0) scale(1.06,.94)}72%{transform:translateY(-12px)}100%{transform:none}}
+.fd.gone,.dtab.gone{display:none}
+.fd.lit{box-shadow:0 0 0 3px var(--litc),0 0 20px var(--litc)}
+.fd.boing{animation:boing .62s cubic-bezier(.3,.7,.4,1)}
 .count{margin:6px 0 0;font:400 14px var(--tiny);letter-spacing:.1em;text-transform:uppercase;color:#fff6e080}
 .count b{color:var(--lime)}
 /* estantería */
@@ -687,7 +710,7 @@ a{color:inherit}
           <button class="px dark" type="button" data-type="terminal" aria-pressed="false">Archivador<span></span></button>
         </div>
       </div>
-      <div class="jumps" id="jumps" role="group" aria-label="Ir al modelo"></div>
+      <div class="mkeys" id="mkeys" role="group" aria-label="Filtrar por modelo"></div>
     </div>
     <p class="count" id="count" aria-live="polite"></p>
     <div class="cabinet" id="cabinet" aria-label="Estantería de cartuchos"></div>
@@ -1079,7 +1102,7 @@ for (const id of edIds) {
 }
 // reparte las piezas en baldas llenas según el ancho disponible
 const widthOf = el => el.classList.contains('divider') ? 44 : el.classList.contains('dtab') ? 48 : el.classList.contains('fd') ? 120 : 48;
-function shelve() {
+function buildCases() {
   // cartuchos: un estuche por modelo, cada cartucho de pie en su ranura
   const cases = []; let tray = null;
   for (const el of cartSeq) {
@@ -1088,13 +1111,17 @@ function shelve() {
       const lid = document.createElement('div'); lid.className = 'lid'; lid.setAttribute('aria-hidden', 'true');
       tray = document.createElement('div'); tray.className = 'tray'; tray.setAttribute('role', 'list');
       const front = document.createElement('div'); front.className = 'front'; front.setAttribute('aria-hidden', 'true'); front.innerHTML = '<i></i><span>gavilanbe · colección</span><i></i>';
-      cs.append(lid, el, tray, front); cases.push(cs);
+      const shut = document.createElement('div'); shut.className = 'shutter'; shut.setAttribute('aria-hidden', 'true');
+      cs.append(lid, el, tray, shut, front); cases.push(cs);
     } else { el.setAttribute('role', 'listitem'); const sl = el.parentElement && el.parentElement.classList.contains('slot') ? el.parentElement : document.createElement('div'); sl.className = 'slot'; sl.append(el); tray.append(sl); }
   }
   cabinet.replaceChildren(...cases);
-  // disquetes: filas del archivador
+}
+buildCases();
+function shelve() {
+  // disquetes: filas del archivador (solo los que deja ver el filtro de modelo)
   const W = Math.max(260, (drawer.clientWidth || 1200) - 24), rows = [[]]; let x = 0;
-  for (const el of diskSeq) { const ew = widthOf(el); if (x + ew > W && rows[rows.length - 1].length) { rows.push([]); x = 0; } rows[rows.length - 1].push(el); x += ew; }
+  for (const el of diskSeq) { if (el.classList.contains('gone')) continue; const ew = widthOf(el); if (x + ew > W && rows[rows.length - 1].length) { rows.push([]); x = 0; } rows[rows.length - 1].push(el); x += ew; }
   drawer.replaceChildren(...rows.map(items => { const r = document.createElement('div'); r.className = 'drow'; r.append(...items); return r; }));
 }
 shelve();
@@ -1132,13 +1159,66 @@ for (const [name, el] of pieces) {
   el.addEventListener('pointerleave', hidePeek);
   el.addEventListener('focus', () => { if (g.type !== 'web') showPeek(g, el); }); el.addEventListener('blur', hidePeek);
 }
-// saltos a cada balda
-for (const id of edIds) {
+// selector de modelo: una tecla por edición; filtra la estantería y el archivador
+const inModel = (g, m) => g.model === m || !!(g.also && g.also.model === m);
+const mkeys = $('#mkeys');
+for (const id of ['all', ...edIds]) {
   const b = document.createElement('button');
-  b.type = 'button'; b.className = 'jump cursor-item'; b.dataset.ed = id;
-  b.innerHTML = `<span class="sw"></span>${esc(EDITIONS[id].model)}`;
-  b.addEventListener('click', () => { const d0 = $('#balda-' + id.replace('.', '-')), t = (d0 && d0.closest('.case')) || $('#cajon-' + id.replace('.', '-')); if (!t) return; t.scrollIntoView({behavior: REDUCE ? 'auto' : 'smooth', block: 'center'}); t.animate && t.animate([{filter: 'brightness(2)'}, {filter: 'none'}], {duration: 900}); Sound.click(); });
-  $('#jumps').append(b);
+  b.type = 'button'; b.className = 'mkey'; b.dataset.ed = id; b.setAttribute('aria-pressed', String(id === 'all'));
+  const n = id === 'all' ? games.length : games.filter(g => inModel(g, id)).length;
+  b.innerHTML = `<span class="cap">${id === 'all' ? '' : `<i class="sw" data-ed="${esc(id)}"></i>`}<b>${id === 'all' ? 'Todos' : esc(EDITIONS[id].model)}</b><em>${n}</em></span>`;
+  b.title = id === 'all' ? 'Ver toda la colección' : `Solo lo hecho con ${EDITIONS[id].model} (también a medias)`;
+  b.addEventListener('click', () => setModel(id === 'all' || archState.m === id ? '' : id));
+  mkeys.append(b);
+}
+let modelRun = 0;
+const soon = (fn, ms) => setTimeout(fn, REDUCE ? 0 : ms);
+const wait = ms => new Promise(r => setTimeout(r, REDUCE ? 0 : ms));
+async function setModel(m) {
+  const run = ++modelRun;
+  archState.m = m;
+  mkeys.classList.toggle('on', !!m);
+  $$('.mkey', mkeys).forEach(k => { const on = k.dataset.ed === (m || 'all'); k.setAttribute('aria-pressed', String(on)); if (on) { k.classList.remove('boop'); void k.offsetWidth; k.classList.add('boop'); mkeys.scrollTo({left: k.offsetLeft - (mkeys.clientWidth - k.offsetWidth) / 2, behavior: REDUCE ? 'auto' : 'smooth'}); } });
+  Sound.press(); if (m) soon(() => Sound.holo(), 80);
+  cabinet.style.setProperty('--litc', m ? EDITIONS[m].studio : 'transparent'); drawer.style.setProperty('--litc', m ? EDITIONS[m].studio : 'transparent');
+  const cases = $$('.case', cabinet);
+  const keep = cs => !m || $$('.sp', cs).some(el => inModel(byName.get(el.dataset.name), m));
+  const leaving = cases.filter(cs => !cs.classList.contains('gone') && !keep(cs));
+  const entering = cases.filter(cs => cs.classList.contains('gone') && keep(cs));
+  cases.forEach(cs => { if (keep(cs) && !cs.classList.contains('gone')) cs.classList.remove('shut'); });
+  applyArchive();
+  // 1 · bajan las persianas de lo que sobra
+  leaving.forEach((cs, i) => { cs.classList.add('shut'); soon(() => Sound.clack(), i * 70); });
+  await wait(leaving.length ? 360 + leaving.length * 40 : 280);
+  if (run !== modelRun) return;
+  // 2 · se pliegan y los que quedan se recolocan (FLIP)
+  const before = new Map(cases.filter(c => !c.classList.contains('gone')).map(c => [c, c.getBoundingClientRect()]));
+  leaving.forEach(cs => cs.classList.add('gone'));
+  entering.forEach(cs => cs.classList.remove('gone'));
+  requestAnimationFrame(() => requestAnimationFrame(() => entering.forEach((cs, i) => { if (run !== modelRun) return; cs.classList.remove('shut'); soon(() => Sound.slide(), i * 50); })));
+  for (const cs of cases) {
+    let n = 0;
+    for (const sl of $$('.slot', cs)) { const off = !!m && !inModel(byName.get(sl.firstElementChild.dataset.name), m); sl.classList.toggle('gone', off); if (!off) n++; }
+    cs.style.setProperty('--n', n); const nb = cs.querySelector('.divider b'); if (nb) nb.textContent = n;
+  }
+  for (const el of diskSeq) {
+    const g = el.classList.contains('fd') ? byName.get(el.dataset.name) : null;
+    el.classList.toggle('gone', !!m && (g ? !inModel(g, m) : !lists.disk.some(x => x.model === el.dataset.ed && inModel(x, m))));
+  }
+  shelve();
+  if (!REDUCE) for (const c of cases) {
+    if (c.classList.contains('gone')) continue;
+    const a = before.get(c), r = c.getBoundingClientRect();
+    if (!a) { c.animate([{transform: 'translateY(40px) scale(.94)', opacity: 0}, {transform: 'none', opacity: 1}], {duration: 380, easing: 'cubic-bezier(.3,1.5,.5,1)'}); continue; }
+    const dx = a.left - r.left, dy = a.top - r.top;
+    if (dx || dy) c.animate([{transform: `translate(${dx}px,${dy}px)`}, {transform: 'none'}], {duration: 460, easing: 'cubic-bezier(.3,1.35,.5,1)'});
+  }
+  cases.forEach(c => c.classList.toggle('lit', !!m && !c.classList.contains('gone')));
+  // 3 · ola: los cartuchos (y disquetes) del modelo dan un brinco, en escala ascendente
+  if (!m) return;
+  const hits = [...pieces.entries()].filter(([name, el]) => inModel(byName.get(name), m) && !el.classList.contains('gone')).map(([, el]) => el);
+  hits.sort((a, b) => { const ra = a.getBoundingClientRect(), rb = b.getBoundingClientRect(); return ra.top - rb.top || ra.left - rb.left; });
+  hits.forEach((el, i) => soon(() => { if (run !== modelRun) return; el.classList.remove('boing'); void el.offsetWidth; el.classList.add('boing'); Sound.tick(i); }, 260 + i * 70));
 }
 // asomar: una etiqueta sobre la pieza
 const peek = $('#peek');
@@ -1152,24 +1232,26 @@ function showPeek(g, el) {
 function hidePeek() { peek.classList.remove('on'); }
 addEventListener('scroll', hidePeek, {passive: true});
 
-const archState = {type: 'all', q: ''};
+const archState = {type: 'all', q: '', m: ''};
 function applyArchive() {
   const terms = norm(archState.q).split(/\s+/).filter(Boolean);
   let hits = 0;
   for (const [name, el] of pieces) {
-    const g = byName.get(name), match = terms.every(t => g.text.includes(t));
-    el.classList.toggle('dim', !match); el.classList.toggle('hit', match && terms.length > 0);
+    const g = byName.get(name), inM = !archState.m || inModel(g, archState.m), match = inM && terms.every(t => g.text.includes(t));
+    el.classList.toggle('dim', !match); el.classList.toggle('hit', match && terms.length > 0); el.classList.toggle('lit', !!archState.m && match);
     if (match && (archState.type === 'all' || g.type === archState.type)) hits++;
   }
-  $('#cabinet').hidden = archState.type === 'terminal';
-  $('#filebox').hidden = archState.type === 'web';
+  const inM = g => !archState.m || inModel(g, archState.m);
+  $('#cabinet').hidden = archState.type === 'terminal' || !lists.cart.some(inM);
+  $('#filebox').hidden = archState.type === 'web' || !lists.disk.some(inM);
   $('#empty').hidden = hits > 0;
-  $('#count').innerHTML = terms.length ? `<b>${hits}</b> ${hits === 1 ? 'pieza encontrada' : 'piezas encontradas'} · el resto sigue en su sitio` : `${games.length} piezas · ${lists.cart.length} cartuchos de ${new Set(lists.cart.map(g => g.model)).size} modelos · ${lists.disk.length} disquetes`;
+  const mm = archState.m && EDITIONS[archState.m], shared = mm ? games.filter(g => inModel(g, archState.m) && g.model !== archState.m || g.model === archState.m && g.also).length : 0;
+  $('#count').innerHTML = mm && !terms.length ? `<b>${hits}</b> ${hits === 1 ? 'pieza' : 'piezas'} hechas con ${esc(mm.model)}${shared ? ` · ${shared} a medias con otro modelo` : ''}` : terms.length ? `<b>${hits}</b> ${hits === 1 ? 'pieza encontrada' : 'piezas encontradas'} · el resto sigue en su sitio` : `${games.length} piezas · ${lists.cart.length} cartuchos de ${new Set(lists.cart.map(g => g.model)).size} modelos · ${lists.disk.length} disquetes`;
   $$('.seg button').forEach(b => { b.setAttribute('aria-pressed', String(b.dataset.type === archState.type)); const k = b.dataset.type; b.querySelector('span').textContent = k === 'all' ? games.length : k === 'web' ? lists.cart.length : lists.disk.length; });
   $('#q-clear').hidden = !archState.q;
   
 }
-function resetArchive() { archState.type = 'all'; archState.q = ''; $('#q').value = ''; applyArchive(); }
+function resetArchive() { archState.type = 'all'; archState.q = ''; $('#q').value = ''; if (archState.m) setModel(''); else applyArchive(); }
 $$('.seg button').forEach(b => b.addEventListener('click', () => { archState.type = b.dataset.type; applyArchive(); Sound.click(); }));
 $('#q').addEventListener('input', e => { archState.q = e.target.value; applyArchive(); });
 $('#q-clear').addEventListener('click', () => { archState.q = ''; $('#q').value = ''; applyArchive(); $('#q').focus(); });

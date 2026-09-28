@@ -34,7 +34,11 @@ const GAMES = [
     "thumb": "thumbs/bitxo.jpg",
     "wip": false,
     "kind": "juego",
-    "model": "fable"
+    "model": "fable",
+    "also": {
+      "model": "opus-5.5",
+      "note": "con"
+    }
   },
   {
     "name": "bug-smash",
