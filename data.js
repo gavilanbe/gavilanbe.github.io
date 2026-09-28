@@ -82,7 +82,11 @@ const GAMES = [
     "thumb": "thumbs/chromara.jpg",
     "wip": false,
     "kind": "juego",
-    "model": "fable-5.1"
+    "model": "fable-5.1",
+    "also": {
+      "model": "opus-5.5",
+      "note": "con"
+    }
   },
   {
     "name": "command-wars",
@@ -252,6 +256,19 @@ const GAMES = [
     "wip": false,
     "kind": "juego",
     "model": "opus-4.8"
+  },
+  {
+    "name": "glup",
+    "title": "🐟 GLUP",
+    "tagline": "Plataformas 2D en pixel art para móvil y web: Nila y Bigotes, un pez gato que sorbe caracoles, cajas y piedras y los escupe. Cuatro niveles, la Garza como jefa, audio sintetizado y PWA, todo en HTML+JS vanilla.",
+    "type": "web",
+    "play": "https://gavilanbe.github.io/glup/",
+    "repo": "https://github.com/gavilanbe/glup",
+    "thumb": "thumbs/glup.jpg",
+    "wip": false,
+    "new": true,
+    "kind": "juego",
+    "model": "opus-5.5"
   },
   {
     "name": "gomi",
@@ -708,7 +725,11 @@ const GAMES = [
     "thumb": "thumbs/sprout-game.jpg",
     "wip": false,
     "kind": "juego",
-    "model": "fable"
+    "model": "opus-5.5",
+    "also": {
+      "model": "fable",
+      "note": "nació en"
+    }
   },
   {
     "name": "sprout-gbc",

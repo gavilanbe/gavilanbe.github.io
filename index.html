@@ -311,6 +311,7 @@ a{color:inherit}
 .fr .lt{display:block;margin:5% 6% 0;font:400 calc(var(--cw) * .11) / 1 var(--pix);text-transform:uppercase;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fr .gl{position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,#ffffff66 48%,transparent 60%);background-size:260% 100%;background-position:130% 0;transition:background-position .7s ease}
 .sp .nw{position:absolute;top:-8px;right:-6px;z-index:2;padding:4px 6px 3px;background:var(--lime);color:var(--ink);font:400 11px/1 var(--tiny);box-shadow:0 0 0 2px var(--ink),2px 2px 0 2px var(--ink);transform:translateZ(calc(var(--cd) / 2 + 2px)) rotate(8deg)}
+.sp .also{position:absolute;top:-8px;left:-7px;z-index:2;padding:4px 5px 3px;background:var(--p2);color:var(--pi);font:400 10px/1 var(--tiny);letter-spacing:.04em;white-space:nowrap;box-shadow:0 0 0 2px var(--ink),2px 2px 0 2px var(--ink);transform:translateZ(calc(var(--cd) / 2 + 2px)) rotate(-7deg)}
 .sp .ok{position:absolute;top:24%;left:-6px;z-index:2;display:grid;place-items:center;width:22px;height:22px;background:#2fbf71;color:#fff;font:400 15px/1 var(--tiny);box-shadow:0 0 0 2px var(--ink);transform:translateZ(calc(var(--cd) / 2 + 2px)) rotate(-8deg)}
 .sp:hover .c3d,.sp:focus-visible .c3d{--sy:calc(var(--chh) * -.34);--sx:-9deg}
 .sp:hover .gl,.sp:focus-visible .gl{background-position:-30% 0}
@@ -752,7 +753,7 @@ a{color:inherit}
 (() => {
 'use strict';
 // Los destacados salen antes en la cinta de la consola.
-const FEATURED = ['westieware','invoca','nagu-gavi','trazo','chromara','isomate','spore-quest','rana-gba','bitxo','sprout-game','nahugavi','gacha-zoo','libreta','makinamon','doodli','chef-game','poke-autobattler','short-hike-demo'];
+const FEATURED = ['westieware','glup','invoca','nagu-gavi','trazo','chromara','isomate','spore-quest','rana-gba','bitxo','sprout-game','nahugavi','gacha-zoo','libreta','makinamon','doodli','chef-game','poke-autobattler','short-hike-demo'];
 
 // Cada modelo es una edición de plástico con su plató.
 const EDITIONS = {
@@ -784,13 +785,14 @@ const edFor = id => EDITIONS[id] || (EDITIONS[id] = {name: 'Edición especial', 
 const games = GAMES.map(g => {
   const {emoji, label} = splitTitle(g.title), f = FEATURED.indexOf(g.name);
   const ed = edFor(g.model || 'opus-4.6');
-  return {...g, emoji, label, ed, feat: f, rank: g.new ? (f >= 0 ? f / 100 : .5) : f >= 0 ? 1 + f : 100, text: norm([g.title, g.tagline, g.name, ed.name, ed.model, g.type === 'web' ? 'cartucho navegador web' : 'disquete terminal pc', g.new ? 'nuevo novedad' : '', g.wip ? 'wip' : ''].join(' '))};
+  return {...g, emoji, label, ed, feat: f, rank: g.new ? (f >= 0 ? f / 100 : .5) : f >= 0 ? 1 + f : 100, text: norm([g.title, g.tagline, g.name, ed.name, ed.model, g.also ? edFor(g.also.model).model : '', g.type === 'web' ? 'cartucho navegador web' : 'disquete terminal pc', g.new ? 'nuevo novedad' : '', g.wip ? 'wip' : ''].join(' '))};
 });
 games.sort((a, b) => a.rank - b.rank || a.label.localeCompare(b.label, 'es'));
 games.forEach((g, i) => g.code = 'GVB-' + String(i + 1).padStart(3, '0'));
 const byName = new Map(games.map(g => [g.name, g]));
 const lists = {cart: games.filter(g => g.type === 'web'), disk: games.filter(g => g.type !== 'web')};
 const edIds = Object.keys(EDITIONS).filter(id => games.some(g => g.model === id));
+const alsoText = g => g.also ? `${g.also.note} ${edFor(g.also.model).model}` : '';
 const alpha = (a, b) => a.label.localeCompare(b.label, 'es');
 
 // ── sonido y música ─────────────────────────────────
@@ -1054,7 +1056,7 @@ for (const id of edIds) {
       const b = document.createElement('button');
       b.type = 'button'; b.className = 'sp'; b.dataset.name = g.name; b.dataset.ed = id;
       b.setAttribute('aria-label', `${g.label} · ${ed.name}`);
-      b.style.setProperty('--i', carts.indexOf(g)); b.innerHTML = `<span class="c3d"><span class="f bk"></span><span class="f sl"></span><span class="f sr"></span><span class="f tp"></span><span class="f fr"><span class="lab"><span class="band">${esc(g.ed.model)}<i>${g.code.slice(4)}</i></span><img src="${esc(g.thumb)}" alt="" loading="lazy" decoding="async" width="160" height="100"><span class="lt">${esc(g.label)}</span></span><span class="gl"></span></span></span>${g.new ? '<span class="nw">NUEVO</span>' : ''}<span class="ok" hidden>✓</span>`;
+      b.style.setProperty('--i', carts.indexOf(g)); b.innerHTML = `<span class="c3d"><span class="f bk"></span><span class="f sl"></span><span class="f sr"></span><span class="f tp"></span><span class="f fr"><span class="lab"><span class="band">${esc(g.ed.model)}<i>${g.code.slice(4)}</i></span><img src="${esc(g.thumb)}" alt="" loading="lazy" decoding="async" width="160" height="100"><span class="lt">${esc(g.label)}</span></span><span class="gl"></span></span></span>${g.new ? '<span class="nw">NUEVO</span>' : ''}${g.also ? `<span class="also" data-ed="${esc(g.also.model)}" title="${esc(alsoText(g))}">+ ${esc(edFor(g.also.model).model.toUpperCase())}</span>` : ''}<span class="ok" hidden>✓</span>`;
       cartSeq.push(b); pieces.set(g.name, b);
     }
   }
@@ -1178,7 +1180,7 @@ const insp = $('#insp'), obj = $('#obj3d');
 let ins = null, insFrom = null, insFlip = false, lastFocusEl = null;
 function objHTML(g) {
   if (g.type === 'web') return `<div class="c3" data-ed="${esc(g.model)}">
-    <div class="face front"><div class="ridges"></div><div class="label"><div class="band"><b>${esc(g.ed.model)}</b><span>${esc(g.ed.name)}</span></div><img src="${esc(g.thumb)}" alt=""><div class="lt">${esc(g.label)}</div><div class="lc">${esc(g.code)} · ${esc(g.ed.model)}</div></div><div class="grip"></div></div>
+    <div class="face front"><div class="ridges"></div><div class="label"><div class="band"><b>${esc(g.ed.model)}</b><span>${esc(g.ed.name)}</span></div><img src="${esc(g.thumb)}" alt=""><div class="lt">${esc(g.label)}</div><div class="lc">${esc(g.code)} · ${esc(g.ed.model)}${g.also ? ' + ' + esc(edFor(g.also.model).model) : ''}</div></div><div class="grip"></div></div>
     <div class="face back"><div class="label"><h4>${esc(g.ed.model)} · gavilanbe POCKET</h4><p>${esc(g.tagline)}</p><div class="bars"></div></div></div>
     <div class="face side l"></div><div class="face side r"></div><div class="face edge b"></div></div>`;
   return `<div class="d3" data-ed="${esc(g.model)}"><div class="face front"><div class="sh"></div><div class="fl"><b>${esc(g.label)}</b><small>${esc(g.ed.model)} · HD</small></div></div><div class="face back"><div class="hub"></div></div></div>`;
@@ -1201,7 +1203,7 @@ function fillInspect(g) {
   $('#i-title').textContent = (g.emoji ? g.emoji + ' ' : '') + g.label;
   $('#i-tag').textContent = g.tagline;
   $('#i-fmt').textContent = g.type === 'web' ? 'Cartucho' : 'Disquete 3½″';
-  $('#i-edn').textContent = g.ed.name; $('#i-model').textContent = g.ed.model;
+  $('#i-edn').textContent = g.ed.name; $('#i-model').textContent = g.ed.model + (g.also ? ` · ${alsoText(g)}` : '');
   $('#i-state').textContent = played.has(g.name) ? '★ Jugado' : 'Sin estrenar';
   $('#i-insert-t').textContent = inConsole ? (g.type === 'web' ? 'Ya está en la consola · ir' : 'Ya está en el PC · ir') : g.type === 'web' ? 'Meter en la consola' : 'Meter en el PC';
   const pl = $('#i-play'); pl.hidden = g.type !== 'web'; pl.href = g.play || '#';
@@ -1284,7 +1286,7 @@ const albumOf = id => games.filter(g => g.model === id).sort((a, b) => a.code.lo
 const HAWK_SVG = $('.brand svg') ? $('.brand svg').outerHTML : '';
 const isHolo = g => g.feat >= 0 || !!g.new;
 let bookPage = 0, awaiting = new Set();
-const cromoHTML = (g, cls = '') => `<button class="cromo${isHolo(g) ? ' holo' : ''}${cls ? ' ' + cls : ''}" type="button" data-n="${esc(g.name)}" data-ed="${esc(g.model)}" style="--r:${(hash(g.name) % 7) - 3}deg" aria-label="Cromo ${+g.code.slice(4)}: ${esc(g.label)}"><img src="${esc(g.thumb)}" alt="" loading="lazy"><span class="nb">${+g.code.slice(4)}</span><span class="rar">★ HOLO</span><span class="cn">${esc(g.label)}</span><span class="cm">${esc(g.ed.model)}</span></button>`;
+const cromoHTML = (g, cls = '') => `<button class="cromo${isHolo(g) ? ' holo' : ''}${cls ? ' ' + cls : ''}" type="button" data-n="${esc(g.name)}" data-ed="${esc(g.model)}" style="--r:${(hash(g.name) % 7) - 3}deg" aria-label="Cromo ${+g.code.slice(4)}: ${esc(g.label)}"><img src="${esc(g.thumb)}" alt="" loading="lazy"><span class="nb">${+g.code.slice(4)}</span><span class="rar">★ HOLO</span><span class="cn">${esc(g.label)}</span><span class="cm">${esc(g.ed.model)}${g.also ? ' + ' + esc(edFor(g.also.model).model) : ''}</span></button>`;
 const slotHTML = g => pasted.has(g.name) && !awaiting.has(g.name) ? cromoHTML(g) : `<div class="cslot${awaiting.has(g.name) ? ' await' : ''}" data-n="${esc(g.name)}"><img src="${esc(g.thumb)}" alt="" loading="lazy"><span class="no">${+g.code.slice(4)}</span><span class="nm">???</span></div>`;
 const gotOf = id => albumOf(id).filter(g => pasted.has(g.name) && !awaiting.has(g.name)).length;
 function spreadParts(i) {
