@@ -11,12 +11,13 @@
 ![gavilanbe POCKET](og.jpg)
 
 Una sola página estática: los juegos viven en [`data.js`](data.js) y las miniaturas en
-[`thumbs/`](thumbs/). La consola es 3D de verdad (three.js desde jsDelivr); el
-resto es HTML, CSS y JavaScript sin build.
+[`thumbs/`](thumbs/). La consola es 3D de verdad (three.js, empaquetado en
+[`lib/`](lib/) con solo lo que usa); el resto es HTML, CSS y JavaScript sin
+build, y las fuentes se sirven desde [`fonts/`](fonts/).
 
 ## Cómo funciona
 
-- **El cargador**: sol de rayos giratorio, el logo letra a letra en colores que caen y rebotan, un gavilán pixelado que cruza volando, barra arcoíris por celdas y un cierre en iris hacia la pantalla de la consola.
+- **El cargador**: sol de rayos giratorio, el logo letra a letra en colores que caen y rebotan, un gavilán pixelado que cruza volando, barra arcoíris por celdas y un cierre en iris hacia la pantalla de la consola. Se va en cuanto la consola está lista y el logo ha caído; en la misma sesión (al volver de un juego o recargar) sale con el logo ya puesto y se va casi al momento.
 - **La consola.** *gavilanbe POCKET* en 3D (three.js): carcasa con biseles y la
   esquina inferior derecha redondeada, costura entre mitades, marco de pantalla
   con volumen, cruceta con flechas en relieve, botones A/B abombados y un frontal
@@ -26,21 +27,38 @@ resto es HTML, CSS y JavaScript sin build.
   y se amplía ×3 sin suavizado con rejilla de matriz de puntos. El arranque:
   retroiluminación, el gavilán pixelado bajando píxel a píxel, *ding*, un brillo
   del color de la edición, «POCKET» letra a letra y disolución en bloques hasta la
-  pantalla de título con PRESS START. A veces hay **error de lectura** y toca soplar
-  (con el botón o con el micrófono).
+  pantalla de título con PRESS START. La consola se enciende al abrirse el
+  cargador, así que el primer arranque se ve entero; al cambiar de cartucho es un
+  **arranque en caliente** (el gavilán ya está posado y el resto va más deprisa).
+  A veces hay **error de lectura** y toca soplar (con el botón o con el micrófono).
 - **La cinta**: todos los cartuchos en 3D delante de la consola; `←` `→`, arrastrar,
-  la cruceta o un mando real. START mete la cámara en la pantalla y abre el juego;
-  al volver, la consola te recibe. Los disquetes van a un PC retro que teclea el
+  la cruceta o un mando real. START mete la cámara en la pantalla y abre el juego,
+  que se ha ido preparando por detrás (prerender) desde que hubo intención de
+  jugarlo; al volver, la consola te recibe. Los disquetes van a un PC retro que teclea el
   `git clone`.
 - **Interfaz de videojuego**: cajas con borde de píxel escalonado y sombra dura,
   cuadro de diálogo de RPG que escribe la descripción, botones con glifos de la
   consola (Ⓐ, Ⓑ, START, SELECT), barra de controles, marcador de pegatinas,
-  avisos de logro, cursor pixelado, tipografías Pixelify Sans y Silkscreen, y
+  avisos de logro, cursor pixelado, tipografías Jersey 15 y Tiny5 (más Nunito y Caveat), y
   animaciones a pasos (`steps()`).
-- **El archivo** (Mundo 2): un **estuche de coleccionista por modelo** (tapa de espuma, placa de latón, cierres). Los cartuchos son cajas 3D de verdad (CSS: frente, trasera, cantos y lomo) encajadas de pie en sus ranuras. El estuche gira hacia el cursor, el cartucho asoma al pasar por encima y al pulsarlo **sale tirando hacia arriba, gira en el aire y vuela** a la ficha, donde se **arrastra para girarlo 360°**. Al devolverlo cae en su ranura con un *clac* y el estuche tiembla. Los disquetes siguen en el archivador.
+- **El archivo** (Mundo 2): un **estuche de coleccionista por modelo** (tapa de espuma, placa de latón, cierres). Los cartuchos son cajas 3D de verdad (CSS: frente, cantos y lomo) encajadas de pie en sus ranuras. El estuche gira hacia el cursor, el cartucho asoma al pasar por encima y al pulsarlo **sale tirando hacia arriba, gira en el aire y vuela** a la ficha, donde se **arrastra para girarlo 360°**. Al devolverlo cae en su ranura con un *clac* y el estuche tiembla. Los disquetes siguen en el archivador.
 - **Álbum de cromos** (Mundo 3): un libro de piel cosida con **índice** (progreso total y barra por modelo) y una doble página por modelo con cinta de color, huecos con esquinas de foto y cromos con relieve y brillo holográfico que siguen al cursor. Cada juego arrancado da un **sobre** metalizado que se inclina hacia el cursor y se **rasga arrastrando por la línea** con unas tijeras: la tira sale volando, estallan destellos, los cromos salen, se abren en abanico y se revelan uno a uno (los holográficos con onda arcoíris, chispas y «¡HOLO!»). Al pegarlos, cada uno **vuela a su hueco exacto**, aterriza con aplastamiento, polvo y brillo de pegamento; al completar un modelo cae el sello «¡COMPLETO!» con confeti.
-- Rendimiento: sin refracción, sombras dinámicas ni postprocesado; render bajo
-  demanda y resolución adaptativa.
+- **Rendimiento** (sin tocar el aspecto):
+  - 3D: sin refracción, sombras dinámicas ni postprocesado; render bajo demanda y
+    resolución adaptativa. Todos los shaders se compilan **en paralelo y antes del
+    primer frame** (`compileAsync`), incluidas las variantes que aún no están en
+    escena, así que la página no se congela al cargar ni hay tirones después. Lo
+    pesado de una vez (el relieve del frontal, despertar el audio) se hace mientras
+    la GPU compila y el cargador sigue delante. Los lienzos de las texturas se pintan
+    en la CPU para no competir con la GPU.
+  - Red: three.js empaquetado y minificado en el mismo origen (una petición), fuentes
+    en casa precargadas (sin Google Fonts) y miniaturas pequeñas en WebP
+    (`thumbs/s/`, ~7 KB) para etiquetas, cromos, cinta y LCD; las grandes solo en la
+    ficha y al asomar.
+  - Página: el archivo, el archivador y el álbum usan `content-visibility` (no se
+    calculan ni pintan hasta acercarse), el color del plató cambia solo en el
+    escenario y no en toda la página, y los scripts van diferidos.
+  - Atajos: un toque mientras salen los cromos de un sobre los destapa todos.
 
 La versión anterior (la consola horizontal y la tienda nocturna) sigue en
 [`/classic/`](https://gavilanbe.github.io/classic/) y en la etiqueta git `arcade-v1`.
@@ -48,7 +66,16 @@ La versión anterior (la consola horizontal y la tienda nocturna) sigue en
 ## Desarrollo
 
 `node scripts/build.mjs` valida el JavaScript y copia lo publicable en `dist/`.
-`npm ci && npm test` ejecuta las regresiones de la colección y de la versión clásica.
+`npm ci && npm test` ejecuta las regresiones de la colección y de la versión clásica
+(también comprueba que cada juego tenga su miniatura pequeña y que `lib/` exporte
+todo lo que usa el plató).
+
+- `npm run thumbs` genera las miniaturas pequeñas (`thumbs/s/*.webp`, 320×200) que
+  falten o estén viejas; necesita ImageMagick (`magick`).
+- `npm run vendor` vuelve a empaquetar three.js en `lib/three.pocket.js` (no en `vendor/`,
+  que Jekyll puede excluir al publicar en GitHub Pages). Hace
+  falta si `pocket3d.js` empieza a usar algo nuevo de `THREE` o un addon (el script
+  lee qué se usa; los addons nuevos se añaden a su tabla).
 
 ## Añadir un juego
 
@@ -70,7 +97,7 @@ La versión anterior (la consola horizontal y la tienda nocturna) sigue en
 }
 ```
 
-2. Deja su captura en `thumbs/mi-juego.jpg` (640×400).
+2. Deja su captura en `thumbs/mi-juego.jpg` (640×400) y ejecuta `npm run thumbs` (crea `thumbs/s/mi-juego.webp`).
 3. Si es de los buenos, ponlo en la lista `FEATURED` de `index.html`: sale antes en la cinta de la consola. Un modelo nuevo funciona solo; para darle nombre de plástico y color de plató añádelo a `EDITIONS` (`index.html`) y su material 3D a `edMat` (`pocket3d.js`).
 4. Quita el `"new": true` de la hornada anterior.
 

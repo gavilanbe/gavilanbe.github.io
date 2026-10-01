@@ -4,10 +4,14 @@
   "private": true,
   "scripts": {
     "build": "node scripts/build.mjs",
-    "test": "node scripts/check.cjs && node scripts/check-classic.cjs"
+    "test": "node scripts/check.cjs && node scripts/check-classic.cjs",
+    "vendor": "node scripts/vendor-three.mjs",
+    "thumbs": "node scripts/thumbs.mjs"
   },
   "devDependencies": {
     "css-tree": "3.1.0",
-    "jsdom": "26.1.0"
+    "esbuild": "0.24.0",
+    "jsdom": "26.1.0",
+    "three": "0.169.0"
   }
 }

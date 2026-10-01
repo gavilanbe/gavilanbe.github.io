@@ -7,13 +7,22 @@ const assert = require('node:assert/strict');
 const root = path.join(__dirname, '..');
 const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
 const data = fs.readFileSync(path.join(root, 'data.js'), 'utf8');
-const ui = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(m => m[1]).join('\n');
+// scripts en línea (el del cargador y el módulo de la interfaz), en su orden
+const ui = [...html.matchAll(/<script(?: type="module")?>([\s\S]*?)<\/script>/g)].map(m => m[1]).join('\n');
 
 const cssErrors = [];
-css.parse(html.match(/<style>([\s\S]*?)<\/style>/)[1], {onParseError: e => cssErrors.push(e.message)});
+const style = html.match(/<style>([\s\S]*?)<\/style>/)[1];
+css.parse(style, {onParseError: e => cssErrors.push(e.message)});
 assert.deepEqual(cssErrors, [], 'CSS sin errores');
-JSON.parse(html.match(/<script type="importmap">([\s\S]*?)<\/script>/)[1]);
 assert.ok(fs.existsSync(path.join(root, 'pocket3d.js')), 'existe el plató 3D');
+// three.js empaquetado en casa (lib/): exporta todo lo que usa el plató (si no, `npm run vendor`)
+const p3d = fs.readFileSync(path.join(root, 'pocket3d.js'), 'utf8');
+const vendor = fs.readFileSync(path.join(root, 'lib/three.pocket.js'), 'utf8');
+const exported = new Set([...vendor.matchAll(/export\s*\{([^}]*)\}/g)].flatMap(m => m[1].split(',').map(s => s.trim().split(/\s+as\s+/).pop())));
+const used = new Set([...p3d.matchAll(/\bTHREE\.([A-Za-z_]\w*)/g)].map(m => m[1]).concat([...p3d.matchAll(/import\s*\{([^}]*)\}\s*from\s*'\.\/lib\/three\.pocket\.js'/g)].flatMap(m => m[1].split(',').map(s => s.trim()).filter(Boolean))));
+assert.deepEqual([...used].filter(n => !exported.has(n)), [], 'lib/three.pocket.js exporta lo que usa pocket3d.js (npm run vendor)');
+// las fuentes y lo precargado existen
+for (const [, f] of [...style.matchAll(/url\((fonts\/[^)]+)\)/g), ...html.matchAll(/<link rel="(?:module)?preload" href="([^"]+)"/g)]) assert.ok(fs.existsSync(path.join(root, f)), `existe ${f}`);
 
 function fixture({hash = '', storage = {}} = {}) {
   const errors = [];
@@ -43,6 +52,8 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     assert.equal(new Set(ids).size, ids.length, 'ids únicos');
     for (const g of GAMES) {
       assert.ok(fs.existsSync(path.join(root, g.thumb.split('?')[0])), `existe ${g.thumb}`);
+      const s = GB.games.find(x => x.name === g.name).thumbS;
+      if (g.thumb) assert.ok(fs.existsSync(path.join(root, s.split('?')[0])), `existe ${s} (npm run thumbs)`);
       assert.ok(/^https:\/\/github\.com\/gavilanbe\//.test(g.repo), `repo: ${g.name}`);
       if (g.type === 'web') assert.ok(/^https:\/\//.test(g.play), `enlace de juego: ${g.name}`);
     }
@@ -61,7 +72,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     const firstId = d.querySelector('#tabs button').dataset.ed;
     d.querySelectorAll('#tabs button')[1].click(); await sleep(900); assert.notEqual(d.querySelector('#spread .page').dataset.ed, firstId, 'las pestañas pasan de página');
     assert.ok(d.querySelectorAll('#spread .cslot').length > 0, 'huecos vacíos al empezar');
-    assert.equal(d.querySelectorAll('#jumps .jump').length, new Set(GAMES.map(g => g.model)).size);
+    assert.equal(d.querySelectorAll('#mkeys .mkey').length, new Set(GAMES.map(g => g.model)).size + 1, 'una tecla por modelo y otra para todos');
     assert.equal(GB.lists.cart.length, web.length); assert.equal(GB.lists.disk.length, term.length);
     assert.ok(GB.lists.cart[0].new, 'lo nuevo va primero en la cinta');
     // arranca con un cartucho dentro y enfocado
@@ -102,7 +113,7 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     d.querySelector('#next').click();
     const g = GB.lists.cart[GB.st.focus];
     assert.notEqual(g, first); assert.equal(d.querySelector('#primary-t').textContent, 'Meter en la consola');
-    assert.ok(d.documentElement.style.getPropertyValue('--studio'), 'el plató toma el color de la edición');
+    assert.ok(d.querySelector('#consola').style.getPropertyValue('--studio'), 'el plató toma el color de la edición');
     d.querySelector('#primary').click();
     assert.equal(GB.st.inserted, g); assert.equal(w.location.hash, '#/' + g.name);
     assert.equal(d.querySelector('#primary-t').textContent, 'Jugar ahora');
@@ -139,8 +150,10 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
     d.querySelector('.modes [data-mode="cart"]').click();
     key(w, 'r'); assert.equal(GB.st.mode, 'cart'); assert.equal(GB.st.inserted.type, 'web');
     // del archivo a la consola
-    d.querySelector('.sp[data-name="invoca"]').click(); d.querySelector('#i-insert').click(); await sleep(1100);
-    assert.equal(GB.st.inserted.name, 'invoca'); assert.equal(d.querySelector('#insp').hidden, true);
+    // (otro cartucho que no sea el del cromo pegado: el del día cambia con la fecha)
+    const pick = g.name === 'invoca' ? 'chromara' : 'invoca';
+    d.querySelector(`.sp[data-name="${pick}"]`).click(); d.querySelector('#i-insert').click(); await sleep(1100);
+    assert.equal(GB.st.inserted.name, pick); assert.equal(d.querySelector('#insp').hidden, true);
     const cromo = d.querySelector('#spread .cromo'); const cn = cromo.dataset.n;
     cromo.click(); assert.equal(d.querySelector('#insp').hidden, false, 'el cromo saca su cartucho');
     d.querySelector('#i-insert').click(); await sleep(1100); assert.equal((GB.st.inserted.name === cn || GB.st.disk.name === cn), true);

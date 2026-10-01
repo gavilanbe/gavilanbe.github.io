@@ -13,13 +13,27 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js" crossorigin>
-<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Jersey+15&family=Nunito:ital,wght@0,600..900;1,900&family=Tiny5&family=Caveat:wght@700&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jersey+15&family=Nunito:ital,wght@0,600..900;1,900&family=Tiny5&family=Caveat:wght@700&display=swap">
+<link rel="preload" href="fonts/jersey15-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/tiny5-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/nunito-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/nunito-italic-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="modulepreload" href="lib/three.pocket.js">
+<link rel="modulepreload" href="pocket3d.js">
 <style>
+/* fuentes en casa (antes Google Fonts): sin dos orígenes más ni una hoja que bloquee el primer pintado.
+   Las pixeladas esperan a cargar (block: el logo del cargador no parpadea en otra letra); pesan 9 KB y van precargadas */
+@font-face{font-family:'Jersey 15';font-style:normal;font-weight:400;font-display:block;src:url(fonts/jersey15-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Jersey 15';font-style:normal;font-weight:400;font-display:block;src:url(fonts/jersey15-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Tiny5';font-style:normal;font-weight:400;font-display:block;src:url(fonts/tiny5-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Tiny5';font-style:normal;font-weight:400;font-display:block;src:url(fonts/tiny5-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Caveat';font-style:normal;font-weight:700;font-display:swap;src:url(fonts/caveat-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Caveat';font-style:normal;font-weight:700;font-display:swap;src:url(fonts/caveat-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Nunito';font-style:italic;font-weight:900;font-display:swap;src:url(fonts/nunito-italic-vietnamese.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}
+@font-face{font-family:'Nunito';font-style:italic;font-weight:900;font-display:swap;src:url(fonts/nunito-italic-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Nunito';font-style:italic;font-weight:900;font-display:swap;src:url(fonts/nunito-italic-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
+@font-face{font-family:'Nunito';font-style:normal;font-weight:600 900;font-display:swap;src:url(fonts/nunito-vietnamese.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}
+@font-face{font-family:'Nunito';font-style:normal;font-weight:600 900;font-display:swap;src:url(fonts/nunito-latin-ext.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF}
+@font-face{font-family:'Nunito';font-style:normal;font-weight:600 900;font-display:swap;src:url(fonts/nunito-latin.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 :root{--bi-cream:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18' shape-rendering='crispEdges'%3E%3Cpath fill='%231b1726' d='M2 0h14v1h1v1h1v14h-1v1h-1v1H2v-1H1v-1H0V2h1V1h1z'/%3E%3Cpath fill='%23fff6e0' d='M2 1h14v1h1v14h-1v1H2v-1H1V2h1z'/%3E%3Cpath fill='%23ffffff' d='M2 2h14v1H2zM1 3h1v10H1z'/%3E%3Cpath fill='%23e6d6b0' d='M2 15h14v1H2zM16 5h1v10h-1z'/%3E%3C/svg%3E");--bi-dark:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18' shape-rendering='crispEdges'%3E%3Cpath fill='%231b1726' d='M2 0h14v1h1v1h1v14h-1v1h-1v1H2v-1H1v-1H0V2h1V1h1z'/%3E%3Cpath fill='%232a2433' d='M2 1h14v1h1v14h-1v1H2v-1H1V2h1z'/%3E%3Cpath fill='%233e3549' d='M2 2h14v1H2zM1 3h1v10H1z'/%3E%3Cpath fill='%231e1926' d='M2 15h14v1H2zM16 5h1v10h-1z'/%3E%3C/svg%3E");--bi-tomato:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18' shape-rendering='crispEdges'%3E%3Cpath fill='%231b1726' d='M2 0h14v1h1v1h1v14h-1v1h-1v1H2v-1H1v-1H0V2h1V1h1z'/%3E%3Cpath fill='%23ff5b35' d='M2 1h14v1h1v14h-1v1H2v-1H1V2h1z'/%3E%3Cpath fill='%23ff9474' d='M2 2h14v1H2zM1 3h1v10H1z'/%3E%3Cpath fill='%23d23c19' d='M2 15h14v1H2zM16 5h1v10h-1z'/%3E%3C/svg%3E");--bi-lime:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18' shape-rendering='crispEdges'%3E%3Cpath fill='%231b1726' d='M2 0h14v1h1v1h1v14h-1v1h-1v1H2v-1H1v-1H0V2h1V1h1z'/%3E%3Cpath fill='%23c6f432' d='M2 1h14v1h1v14h-1v1H2v-1H1V2h1z'/%3E%3Cpath fill='%23ebffa3' d='M2 2h14v1H2zM1 3h1v10H1z'/%3E%3Cpath fill='%239cc41c' d='M2 15h14v1H2zM16 5h1v10h-1z'/%3E%3C/svg%3E");--bi-sun:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18' shape-rendering='crispEdges'%3E%3Cpath fill='%231b1726' d='M2 0h14v1h1v1h1v14h-1v1h-1v1H2v-1H1v-1H0V2h1V1h1z'/%3E%3Cpath fill='%23ffd23f' d='M2 1h14v1h1v14h-1v1H2v-1H1V2h1z'/%3E%3Cpath fill='%23fff0a0' d='M2 2h14v1H2zM1 3h1v10H1z'/%3E%3Cpath fill='%23d7a515' d='M2 15h14v1H2zM16 5h1v10h-1z'/%3E%3C/svg%3E");--bi-glass:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 18 18' shape-rendering='crispEdges'%3E%3Cpath fill='%231b1726' d='M2 0h14v1h1v1h1v14h-1v1h-1v1H2v-1H1v-1H0V2h1V1h1z'/%3E%3Cpath fill='%23fff6e0e6' d='M2 1h14v1h1v14h-1v1H2v-1H1V2h1z'/%3E%3Cpath fill='%23ffffffe6' d='M2 2h14v1H2zM1 3h1v10H1z'/%3E%3Cpath fill='%23e6d6b0e6' d='M2 15h14v1H2zM16 5h1v10h-1z'/%3E%3C/svg%3E");}
 :root{
   --studio:#cfc6b6;--ink:#1b1726;--ink2:#4a4358;--ink3:#8a8296;--cream:#fff6e0;--cream2:#f1e3bf;--night:#15111c;--night2:#221c2b;
@@ -36,7 +50,7 @@
 }
 [data-ed]{--hard:var(--p2)}
 :root{--on:#1b1726;--on2:#1b1726c4;--hard:#ffffff80}
-:root.dark{--on:#fff6e0;--on2:#fff6e0c4}
+.stage.dark{--on:#fff6e0;--on2:#fff6e0c4}
 *{box-sizing:border-box}
 html{background:var(--night);-webkit-text-size-adjust:100%;cursor:var(--cur);overflow-x:clip}
 body{margin:0;background:var(--night);color:var(--ink);font:600 17px/1.5 var(--body);-webkit-font-smoothing:antialiased;overflow-x:hidden}
@@ -86,7 +100,7 @@ a{color:inherit}
 /* ── cargador ─────────────────────────── */
 #loader{position:fixed;inset:0;z-index:200;display:grid;place-items:center;overflow:hidden;background:#ffb82e;color:var(--ink);clip-path:circle(150vmax at var(--ix,50%) var(--iy,50%));transition:clip-path .75s cubic-bezier(.7,0,.25,1)}
 #loader.go{clip-path:circle(0 at var(--ix,50%) var(--iy,50%));pointer-events:none}
-#loader .rays{position:absolute;left:50%;top:50%;width:260vmax;height:260vmax;margin:-130vmax 0 0 -130vmax;background:repeating-conic-gradient(from 0deg,#ffd84d 0 9deg,#ffc12e 9deg 18deg);animation:rays 30s linear infinite;will-change:transform}
+#loader .rays{position:absolute;left:50%;top:50%;width:150vmax;height:150vmax;margin:-75vmax 0 0 -75vmax;background:repeating-conic-gradient(from 0deg,#ffd84d 0 9deg,#ffc12e 9deg 18deg);animation:rays 30s linear infinite;will-change:transform}
 #loader::after{content:"";position:absolute;inset:0;background:radial-gradient(closest-side,transparent 40%,#ff7b2e66 100%);pointer-events:none}
 @keyframes rays{to{transform:rotate(360deg)}}
 .ld{position:relative;z-index:1;display:grid;justify-items:center}
@@ -107,6 +121,7 @@ a{color:inherit}
 .ld-t{margin:14px 0 0;font:400 16px var(--tiny);letter-spacing:.14em;color:var(--ink);animation:blink 1s steps(1) infinite}
 #loader.bye .ld-logo span{animation:lbye .5s cubic-bezier(.5,-0.4,.7,.5) calc(var(--i) * 30ms) both}
 @keyframes lbye{to{transform:translateY(-.4em) scale(1.15)}}
+#loader.quick:not(.bye) .ld-logo span{animation:lwave 1.6s steps(3) calc(var(--i) * 90ms) infinite}#loader.quick .ld-sub{animation:none}#loader.quick .ld-hawk{display:none}
 @media (prefers-reduced-motion:reduce){#loader{transition:opacity .2s}#loader.go{opacity:0}}
 /* ── HUD superior ─────────────────────── */
 .top{position:fixed;z-index:60;top:0;left:0;right:0;height:68px;display:flex;align-items:center;gap:14px;padding:0 var(--gut);transition:background .2s steps(2)}
@@ -240,6 +255,11 @@ a{color:inherit}
 }
 
 /* ── el archivo ───────────────────────── */
+/* archivo, archivador y álbum quedan fuera de la primera pantalla: el navegador no los calcula ni pinta hasta que se acercan */
+.archive,.album,.filebox{content-visibility:auto}
+.archive{contain-intrinsic-size:auto 2950px}.album{contain-intrinsic-size:auto 1180px}.filebox{contain-intrinsic-size:auto 520px}
+@media (max-width:1000px){.archive{contain-intrinsic-size:auto 4000px}.album{contain-intrinsic-size:auto 1540px}.filebox{contain-intrinsic-size:auto 900px}}
+@media (max-width:600px){.archive{contain-intrinsic-size:auto 6000px}.album{contain-intrinsic-size:auto 1650px}.filebox{contain-intrinsic-size:auto 2000px}}
 .archive{position:relative;padding:clamp(80px,9vw,130px) var(--gut) 90px;background:#1b1622;color:var(--cream);background-image:linear-gradient(45deg,#ffffff06 25%,transparent 25%,transparent 75%,#ffffff06 75%),linear-gradient(45deg,#ffffff06 25%,transparent 25%,transparent 75%,#ffffff06 75%);background-size:12px 12px;background-position:0 0,6px 6px}
 .arch-in{max-width:1320px;margin:0 auto}
 .stitle{display:flex;align-items:flex-end;gap:18px;flex-wrap:wrap}
@@ -306,6 +326,7 @@ a{color:inherit}
 .divider .tab2 strong{font:400 22px/1 var(--pix);letter-spacing:.02em;text-transform:none;font-weight:400}
 .divider .tab2 span{opacity:.75;font-size:11px}
 .divider .tab2 b{font:400 13px/1 var(--tiny);background:#3b2708;color:#f3d58f;padding:3px 5px 2px}
+@property --tilt{syntax:'<angle>';inherits:false;initial-value:0deg}
 .tray{position:relative;z-index:1;display:flex;flex-wrap:wrap;gap:14px 0;padding:18px 22px 0;transform-style:preserve-3d;transform:rotateX(14deg) rotateY(var(--tilt,0deg));transform-origin:50% 100%;transition:transform .6s var(--spring)}
 .case .front{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;height:44px;margin-top:-2px;padding:0 26px;border-radius:0 0 14px 14px;background:linear-gradient(#34303d,#1d1b24);box-shadow:0 0 0 3px #000,inset 0 3px 0 #ffffff1c,0 26px 30px -18px #000}
 .case .front i{width:34px;height:16px;border-radius:3px;background:linear-gradient(#f3d58f,#8f6522);box-shadow:0 0 0 2px #120b07,inset 0 2px 0 #fff6}
@@ -318,9 +339,8 @@ a{color:inherit}
 .sp{position:absolute;left:9px;bottom:0;width:var(--cw);height:var(--chh);padding:0;border:0;background:none;transform-style:preserve-3d;-webkit-tap-highlight-color:transparent}
 .c3d{position:absolute;inset:0;transform-style:preserve-3d;transform:translateY(var(--sy,0px)) rotateX(var(--sx,0deg)) rotateY(var(--sr,0deg));transition:transform .5s var(--spring)}
 .c3d .f{position:absolute;display:block;backface-visibility:hidden}
-.c3d .fr,.c3d .bk{left:0;top:0;width:var(--cw);height:var(--chh);clip-path:polygon(0 4%,4% 0,83% 0,100% 13%,100% 97%,96% 100%,4% 100%,0 97%);background:linear-gradient(90deg,#00000030,transparent 9%,transparent 91%,#00000038),linear-gradient(165deg,var(--p1),var(--p2) 50%,var(--p3))}
+.c3d .fr{left:0;top:0;width:var(--cw);height:var(--chh);clip-path:polygon(0 4%,4% 0,83% 0,100% 13%,100% 97%,96% 100%,4% 100%,0 97%);background:linear-gradient(90deg,#00000030,transparent 9%,transparent 91%,#00000038),linear-gradient(165deg,var(--p1),var(--p2) 50%,var(--p3))}
 .c3d .fr{transform:translateZ(calc(var(--cd) / 2))}
-.c3d .bk{transform:rotateY(180deg) translateZ(calc(var(--cd) / 2))}
 .c3d .tp{left:0;top:calc((var(--chh) - var(--cd)) / 2);width:calc(var(--cw) * .83);height:var(--cd);background:linear-gradient(90deg,var(--p2),var(--p1) 50%,var(--p2));transform:rotateX(90deg) translateZ(calc(var(--chh) / 2));box-shadow:inset 0 0 0 1px #0002}
 .c3d .tp::after{content:"";position:absolute;inset:25% 12%;background:repeating-linear-gradient(90deg,#00000030 0 3px,transparent 3px 7px)}
 .c3d .sl,.c3d .sr{top:0;left:calc((var(--cw) - var(--cd)) / 2);width:var(--cd);height:var(--chh);background:linear-gradient(90deg,var(--p3),var(--p2) 50%,var(--p3))}
@@ -575,7 +595,7 @@ a{color:inherit}
 }
 /* sobre */
 .packov{position:fixed;inset:0;z-index:140;display:grid;place-items:center;background:radial-gradient(closest-side,#5a2f8acc,#0d0a12f5);overflow:hidden;animation:fadein .3s ease both}
-.packov .rays2{position:absolute;left:50%;top:50%;width:200vmax;height:200vmax;margin:-100vmax 0 0 -100vmax;background:repeating-conic-gradient(#ffffff0d 0 8deg,transparent 8deg 16deg);animation:rays 40s linear infinite}
+.packov .rays2{position:absolute;left:50%;top:50%;width:150vmax;height:150vmax;margin:-75vmax 0 0 -75vmax;background:repeating-conic-gradient(#ffffff0d 0 8deg,transparent 8deg 16deg);animation:rays 40s linear infinite}
 .packov .flare{position:absolute;left:50%;top:50%;width:120vmax;height:120vmax;margin:-60vmax 0 0 -60vmax;border-radius:50%;background:radial-gradient(closest-side,#fff8 0,#ffd23f55 30%,transparent 70%);transform:scale(0);opacity:0;pointer-events:none}
 .packov.boom .flare{animation:flare .9s ease-out both}
 @keyframes flare{0%{transform:scale(.1);opacity:1}100%{transform:scale(1.4);opacity:0}}
@@ -652,6 +672,7 @@ a{color:inherit}
 </head>
 <body>
 <div id="loader" aria-hidden="true"><div class="rays"></div><div class="ld"><svg class="ld-hawk" viewBox="0 0 13 8" shape-rendering="crispEdges"><path fill="currentColor" d="M6 0h1v1h-1zM5 1h1v1h-1zM6 1h1v1h-1zM7 1h1v1h-1zM0 2h1v1h-1zM4 2h1v1h-1zM5 2h1v1h-1zM6 2h1v1h-1zM7 2h1v1h-1zM8 2h1v1h-1zM12 2h1v1h-1zM0 3h1v1h-1zM1 3h1v1h-1zM3 3h1v1h-1zM4 3h1v1h-1zM5 3h1v1h-1zM6 3h1v1h-1zM7 3h1v1h-1zM8 3h1v1h-1zM9 3h1v1h-1zM11 3h1v1h-1zM12 3h1v1h-1zM1 4h1v1h-1zM2 4h1v1h-1zM3 4h1v1h-1zM4 4h1v1h-1zM5 4h1v1h-1zM6 4h1v1h-1zM7 4h1v1h-1zM8 4h1v1h-1zM9 4h1v1h-1zM10 4h1v1h-1zM11 4h1v1h-1zM3 5h1v1h-1zM4 5h1v1h-1zM5 5h1v1h-1zM6 5h1v1h-1zM7 5h1v1h-1zM8 5h1v1h-1zM9 5h1v1h-1zM4 6h1v1h-1zM8 6h1v1h-1zM3 7h1v1h-1zM4 7h1v1h-1zM8 7h1v1h-1zM9 7h1v1h-1z"/></svg><div class="ld-logo"><span style="--i:0;--c:#ff5b35">g</span><span style="--i:1;--c:#ffd23f">a</span><span style="--i:2;--c:#c6f432">v</span><span style="--i:3;--c:#6fd3ff">i</span><span style="--i:4;--c:#9b6bff">l</span><span style="--i:5;--c:#ff7ac8">a</span><span style="--i:6;--c:#ff5b35">n</span><span style="--i:7;--c:#ffd23f">b</span><span style="--i:8;--c:#c6f432">e</span></div><div class="ld-sub">POCKET</div><div class="ld-bar" id="load-bar"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><p class="ld-t" id="load-t">CARGANDO CARTUCHOS…</p></div></div>
+<script>try{if(sessionStorage.getItem('pocket:seen')==='1')document.getElementById('loader').classList.add('quick')}catch(e){}</script>
 
 <header class="top" id="top">
   <a class="brand px" href="#consola" aria-label="gavilanbe POCKET, arriba"><svg viewBox="0 0 13 8" shape-rendering="crispEdges" aria-hidden="true"><path fill="currentColor" d="M6 0h1v1h-1zM5 1h1v1h-1zM6 1h1v1h-1zM7 1h1v1h-1zM0 2h1v1h-1zM4 2h1v1h-1zM5 2h1v1h-1zM6 2h1v1h-1zM7 2h1v1h-1zM8 2h1v1h-1zM12 2h1v1h-1zM0 3h1v1h-1zM1 3h1v1h-1zM3 3h1v1h-1zM4 3h1v1h-1zM5 3h1v1h-1zM6 3h1v1h-1zM7 3h1v1h-1zM8 3h1v1h-1zM9 3h1v1h-1zM11 3h1v1h-1zM12 3h1v1h-1zM1 4h1v1h-1zM2 4h1v1h-1zM3 4h1v1h-1zM4 4h1v1h-1zM5 4h1v1h-1zM6 4h1v1h-1zM7 4h1v1h-1zM8 4h1v1h-1zM9 4h1v1h-1zM10 4h1v1h-1zM11 4h1v1h-1zM3 5h1v1h-1zM4 5h1v1h-1zM5 5h1v1h-1zM6 5h1v1h-1zM7 5h1v1h-1zM8 5h1v1h-1zM9 5h1v1h-1zM4 6h1v1h-1zM8 6h1v1h-1zM3 7h1v1h-1zM4 7h1v1h-1zM8 7h1v1h-1zM9 7h1v1h-1z"/></svg><b class="word"><span style="--i:0;--c:#ff5b35">g</span><span style="--i:1;--c:#ffd23f">a</span><span style="--i:2;--c:#c6f432">v</span><span style="--i:3;--c:#6fd3ff">i</span><span style="--i:4;--c:#9b6bff">l</span><span style="--i:5;--c:#ff7ac8">a</span><span style="--i:6;--c:#ff5b35">n</span><span style="--i:7;--c:#ffd23f">b</span><span style="--i:8;--c:#c6f432">e</span></b><span class="tag">POCKET</span></a>
@@ -721,7 +742,6 @@ a{color:inherit}
     </div>
     <div class="empty" id="empty" hidden><p>Nada coincide en el archivo.</p><button class="pbtn px sun" type="button" id="empty-reset">Ver toda la colección</button></div>
   </div>
-  <div class="peek px" id="peek" aria-hidden="true"><img id="peek-img" alt=""><b id="peek-t"></b><small id="peek-s"></small></div>
 </section>
 
 <section class="album" id="album" aria-labelledby="album-h">
@@ -734,6 +754,7 @@ a{color:inherit}
   </div>
 </section>
 </main>
+<div class="peek px" id="peek" aria-hidden="true"><img id="peek-img" alt=""><b id="peek-t"></b><small id="peek-s"></small></div>
 
 <footer class="credits">
   <p class="end">¡Gracias por <em>jugar</em>!</p>
@@ -775,8 +796,8 @@ a{color:inherit}
   <div class="pk-act" id="pk-act" hidden><button class="pbtn big px lime" id="pk-paste" type="button"><span class="glyph go">A</span>¡Pegar en el álbum!</button></div>
   <button class="i-x pk-x px tomato" id="pk-x" type="button" aria-label="Cerrar">✕</button>
 </div>
-<script src="data.js"></script>
-<script>
+<script src="data.js" defer></script>
+<script type="module">
 (() => {
 'use strict';
 // Los destacados salen antes en la cinta de la consola.
@@ -809,11 +830,15 @@ const lum = hex => { const n = parseInt(hex.slice(1), 16); return ((n >> 16) * .
 
 function splitTitle(t) { const m = String(t).match(/^(\S+)\s+(.+)$/); return m && !/[\p{L}\p{N}]/u.test(m[1]) ? {emoji: m[1], label: m[2]} : {emoji: '', label: String(t)}; }
 const edFor = id => EDITIONS[id] || (EDITIONS[id] = {name: 'Edición especial', model: id, studio: '#d8cbb3', accent: '#5e5a53'});
+// miniatura pequeña (thumbs/s/*.webp, 320×200, `npm run thumbs`): etiquetas, cromos, cinta 3D y LCD
+const smallThumb = t => t ? t.replace(/^thumbs\/([^/?]+)\.\w+(\?.*)?$/, 'thumbs/s/$1.webp$2') : '';
 const games = GAMES.map(g => {
   const {emoji, label} = splitTitle(g.title), f = FEATURED.indexOf(g.name);
   const ed = edFor(g.model || 'opus-4.6');
-  return {...g, emoji, label, ed, feat: f, rank: g.new ? (f >= 0 ? f / 100 : .5) : f >= 0 ? 1 + f : 100, text: norm([g.title, g.tagline, g.name, ed.name, ed.model, g.also ? edFor(g.also.model).model : '', g.type === 'web' ? 'cartucho navegador web' : 'disquete terminal pc', g.new ? 'nuevo novedad' : '', g.wip ? 'wip' : ''].join(' '))};
+  return {...g, emoji, label, ed, feat: f, thumbS: smallThumb(g.thumb), rank: g.new ? (f >= 0 ? f / 100 : .5) : f >= 0 ? 1 + f : 100, text: norm([g.title, g.tagline, g.name, ed.name, ed.model, g.also ? edFor(g.also.model).model : '', g.type === 'web' ? 'cartucho navegador web' : 'disquete terminal pc', g.new ? 'nuevo novedad' : '', g.wip ? 'wip' : ''].join(' '))};
 });
+// si falta la pequeña de algún juego nuevo, la imagen cae a la grande
+document.addEventListener('error', e => { const i = e.target; if (i.tagName === 'IMG' && i.dataset.full) { const f = i.dataset.full; delete i.dataset.full; i.src = f; } }, true);
 games.sort((a, b) => a.rank - b.rank || a.label.localeCompare(b.label, 'es'));
 games.forEach((g, i) => g.code = 'GVB-' + String(i + 1).padStart(3, '0'));
 const byName = new Map(games.map(g => [g.name, g]));
@@ -824,9 +849,11 @@ const alpha = (a, b) => a.label.localeCompare(b.label, 'es');
 
 // ── sonido y música ─────────────────────────────────
 const Sound = (() => {
-  let ac = null, out = null, mus = null, on = !!store.get('sound', true), musicOn = false, seqT = 0, step = 0, nextT = 0;
+  let ac = null, out = null, mus = null, on = !!store.get('sound', true), musicOn = false, seqT = 0, step = 0, nextT = 0, resumed = false;
   const init = () => { if (ac) return; const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return; ac = new AC(); out = ac.createGain(); out.gain.value = .32; out.connect(ac.destination); mus = ac.createGain(); mus.gain.value = .5; mus.connect(ac.destination); };
-  const live = () => ac && ac.state === 'running';
+  // crear el contexto cuesta ~0,1-0,3 s (arranca el audio del sistema): se crea mientras la GPU compila, con el
+  // cargador delante (GB.busy), y el primer clic solo lo reanuda. Lo que suene en ese clic sale al despertar.
+  const live = () => ac && (ac.state === 'running' || (resumed && ac.state === 'suspended'));
   function tone(f, {type = 'square', dur = .12, gain = .12, when = 0, slide = 0, dest} = {}) {
     if (!live() || (!dest && !on)) return;
     const t = (when > 1e3 ? when : ac.currentTime + when), o = ac.createOscillator(), g = ac.createGain();
@@ -865,7 +892,8 @@ const Sound = (() => {
     get on() { return on; }, get music() { return musicOn; },
     set(v) { on = v; store.set('sound', v); if (v) this.unlock(); },
     setMusic(v) { musicOn = v; init(); if (ac) { ac.resume(); nextT = 0; } clearInterval(seqT); if (v) seqT = setInterval(schedule, 60); },
-    unlock() { init(); if (ac && ac.state === 'suspended') ac.resume(); },
+    unlock() { init(); if (ac && ac.state === 'suspended') { resumed = true; const p = ac.resume(); if (p && p.catch) p.catch(() => { resumed = false; }); } },
+    warm() { init(); },
     get ctx() { init(); return ac; },
     tick(i = 0) { tone(900 + (i % 5) * 90, {dur: .03, gain: .05}); },
     click() { tone(1400, {dur: .03, gain: .06}); },
@@ -892,8 +920,7 @@ const Sound = (() => {
     sticker() { tone(1760, {dur: .06, gain: .06, type: 'triangle'}); tone(2349, {dur: .3, gain: .06, type: 'triangle', when: .06}); noise(.15, .06, 5000, 0, .5); },
   };
 })();
-addEventListener('pointerdown', () => Sound.unlock(), {passive: true});
-addEventListener('keydown', () => Sound.unlock());
+for (const t of ['pointerdown', 'click', 'touchend', 'keydown']) addEventListener(t, () => Sound.unlock(), {passive: true});
 
 // ── estado ──────────────────────────────────────────
 const played = new Set(store.get('played', []).filter(n => byName.has(n)));
@@ -902,14 +929,17 @@ let pocket = null, pending = [];
 const focused = () => lists[st.mode][st.focus];
 
 // ── el plató ────────────────────────────────────────
-const root = document.documentElement;
+// el color del plató se pone en el escenario y no en :root: cambiar de cartucho solo recalcula la consola
+const stageEl = $('#consola');
 function setStudio(g) {
-  root.style.setProperty('--studio', g.ed.studio); root.style.setProperty('--accent', g.ed.accent);
-  root.classList.toggle('dark', lum(g.ed.studio) < .45);
+  stageEl.style.setProperty('--studio', g.ed.studio); stageEl.style.setProperty('--accent', g.ed.accent);
+  stageEl.classList.toggle('dark', lum(g.ed.studio) < .45);
   const tc = document.querySelector('meta[name=theme-color]'); if (tc) tc.content = g.ed.studio;
   if (pocket) pocket.studio(g.ed.studio);
 }
 function wordsHTML(text) { return text.split(/\s+/).map((w, i) => `<span class="w"><span style="--i:${i}">${esc(w)}</span></span>`).join(' '); }
+// reinicia la animación CSS sin forzar un reflow de toda la página (el truco de offsetWidth)
+function restartAnim(el) { if (el.getAnimations) { for (const a of el.getAnimations()) { a.cancel(); a.play(); } } else { el.style.animation = 'none'; void el.offsetWidth; el.style.animation = ''; } }
 let lastPanel = '';
 let typeT = 0;
 function typeInto(text) {
@@ -929,9 +959,9 @@ function renderPanel() {
     typeInto(g.tagline);
     $('#pstats').innerHTML = `<span>Nº <b>${g.code.slice(4)}</b></span><span>Formato <b>${g.type === 'web' ? 'Cartucho' : 'Disquete'}</b></span><span>Se juega <b>${g.type === 'web' ? 'en el navegador' : 'en la terminal'}</b></span><span>${played.has(g.name) ? '<b>★ Jugado</b>' : 'Sin estrenar'}</span>`;
     setStudio(g);
-    const gn = $('#ghostno'); gn.textContent = g.code.slice(4); gn.style.animation = 'none'; void gn.offsetWidth; gn.style.animation = '';
+    const gn = $('#ghostno'); gn.textContent = g.code.slice(4); restartAnim(gn);
     $('#code').href = g.repo;
-    $('#fb-img').src = g.thumb;
+    if (!$('#fallback').hidden) $('#fb-img').src = g.thumb;
   }
   lastPanel = g.name + '|' + inside;
   const P = $('#primary'), term = g.type !== 'web';
@@ -993,16 +1023,38 @@ function insert(g, opt = {}) {
   renderPanel();
 }
 const nav = url => (window.__pocketNav || (u => location.assign(u)))(url);
+// el juego se va preparando (prerender) en cuanto hay intención de jugarlo: al meter un cartucho a mano y
+// llegar a PRESS START, al pasar por «Jugar ahora» o, como tarde, al pulsar START (el picado dura 1,25 s).
+// Así, al terminar el picado, el juego aparece ya cargado. Sin datos de sobra (ahorro de datos, 2G), nada;
+// con datos móviles, solo con las señales fuertes (pasar por «Jugar ahora» o START), no al llegar al título.
+const Spec = (() => {
+  const can = !!(window.HTMLScriptElement && HTMLScriptElement.supports && HTMLScriptElement.supports('speculationrules'));
+  const c = navigator.connection, frugal = !!(c && (c.saveData || /(^|-)2g$/.test(c.effectiveType || '')));
+  let el = null, url = '';
+  return {
+    metered: !!(c && c.type === 'cellular'),
+    want(u) {
+      if (!u || u === url || frugal) return;
+      url = u; if (el) el.remove();
+      el = document.createElement(can ? 'script' : 'link');
+      if (can) { el.type = 'speculationrules'; el.textContent = JSON.stringify({prerender: [{source: 'list', urls: [u]}]}); }
+      else { el.rel = 'prefetch'; el.href = u; }
+      document.head.append(el);
+    },
+  };
+})();
+let autoFirst = null; // el cartucho que entra solo al llegar (el del día): ese no se precarga sin una señal
 function start() {
   const g = st.mode === 'cart' ? st.inserted : st.disk;
   if (!g) return;
   if (g.type !== 'web') { copyCmd(g); return; }
-  markPlayed(g); Sound.start();
+  markPlayed(g); Sound.start(); Spec.want(g.play);
   // la cámara se mete en la pantalla y el juego se abre en esta pestaña; al volver, sale
   if (pocket && !REDUCE) { $('#consola').classList.add('diving'); pocket.dive(); setTimeout(() => nav(g.play), 1250); }
   else nav(g.play);
 }
 function primary() { const g = focused(); if (!g) return; const inside = g === (st.mode === 'cart' ? st.inserted : st.disk); if (inside) start(); else insert(g); }
+const playIntent = () => { const g = focused(); if (g && g.type === 'web' && g === st.inserted) Spec.want(g.play); };
 function surprise() {
   if (st.mode !== 'cart') setMode('cart', true);
   const pool = lists.cart.filter(g => g !== st.inserted);
@@ -1026,6 +1078,7 @@ function flip() { st.flipped = !st.flipped; if (pocket) pocket.flip(st.flipped);
 
 $$('.modes button').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
 $('#primary').addEventListener('click', primary);
+for (const t of ['pointerenter', 'focus']) $('#primary').addEventListener(t, playIntent);
 $('#prev').addEventListener('click', () => { focus(st.focus - 1); pocket && pocket.press('left'); });
 $('#next').addEventListener('click', () => { focus(st.focus + 1); pocket && pocket.press('right'); });
 $('#flip').addEventListener('click', flip);
@@ -1033,7 +1086,6 @@ $('#newtab').addEventListener('click', () => { const g = focused(); if (g) markP
 $('#pcmd-copy').addEventListener('click', () => { const g = st.disk; if (g) copyCmd(g); });
 $('#blow').addEventListener('click', () => pocket && pocket.blow());
 $('#blow-mic').addEventListener('click', micBlow);
-if ('ResizeObserver' in window) new ResizeObserver(([e]) => root.style.setProperty('--panel-h', Math.round(e.target.offsetHeight) + 'px')).observe($('#panel'));
 
 async function micBlow() {
   let stream;
@@ -1083,7 +1135,7 @@ for (const id of edIds) {
       const b = document.createElement('button');
       b.type = 'button'; b.className = 'sp'; b.dataset.name = g.name; b.dataset.ed = id;
       b.setAttribute('aria-label', `${g.label} · ${ed.name}`);
-      b.style.setProperty('--i', carts.indexOf(g)); b.innerHTML = `<span class="c3d"><span class="f bk"></span><span class="f sl"></span><span class="f sr"></span><span class="f tp"></span><span class="f fr"><span class="lab"><span class="band${g.also ? ' duo' : ''}" title="${esc(g.ed.model + (g.also ? ' · ' + alsoText(g) : ''))}">${esc(g.ed.model)}${g.also ? `<span class="b2" data-ed="${esc(g.also.model)}">${esc(edFor(g.also.model).model)}</span>` : ''}<i>${g.code.slice(4)}</i></span><img src="${esc(g.thumb)}" alt="" loading="lazy" decoding="async" width="160" height="100"><span class="lt">${esc(g.label)}</span></span><span class="gl"></span></span></span>${g.new ? '<span class="nw">NUEVO</span>' : ''}<span class="ok" hidden>✓</span>`;
+      b.style.setProperty('--i', carts.indexOf(g)); b.innerHTML = `<span class="c3d"><span class="f sl"></span><span class="f sr"></span><span class="f tp"></span><span class="f fr"><span class="lab"><span class="band${g.also ? ' duo' : ''}" title="${esc(g.ed.model + (g.also ? ' · ' + alsoText(g) : ''))}">${esc(g.ed.model)}${g.also ? `<span class="b2" data-ed="${esc(g.also.model)}">${esc(edFor(g.also.model).model)}</span>` : ''}<i>${g.code.slice(4)}</i></span><img src="${esc(g.thumbS)}" data-full="${esc(g.thumb)}" alt="" loading="lazy" decoding="async" width="160" height="100"><span class="lt">${esc(g.label)}</span></span><span class="gl"></span></span></span>${g.new ? '<span class="nw">NUEVO</span>' : ''}<span class="ok" hidden>✓</span>`;
       cartSeq.push(b); pieces.set(g.name, b);
     }
   }
@@ -1118,15 +1170,15 @@ function buildCases() {
   cabinet.replaceChildren(...cases);
 }
 buildCases();
-function shelve() {
+function shelve(cw = drawer.clientWidth) {
   // disquetes: filas del archivador (solo los que deja ver el filtro de modelo)
-  const W = Math.max(260, (drawer.clientWidth || 1200) - 24), rows = [[]]; let x = 0;
+  const W = Math.max(260, (cw || 1200) - 24), rows = [[]]; let x = 0;
   for (const el of diskSeq) { if (el.classList.contains('gone')) continue; const ew = widthOf(el); if (x + ew > W && rows[rows.length - 1].length) { rows.push([]); x = 0; } rows[rows.length - 1].push(el); x += ew; }
   drawer.replaceChildren(...rows.map(items => { const r = document.createElement('div'); r.className = 'drow'; r.append(...items); return r; }));
 }
-shelve();
-let shelveW = drawer.clientWidth;
-if ('ResizeObserver' in window) new ResizeObserver(() => { if (Math.abs(drawer.clientWidth - shelveW) > 30) { shelveW = drawer.clientWidth; shelve(); } }).observe(drawer);
+let shelveW = -99;
+if ('ResizeObserver' in window) new ResizeObserver(([e]) => { const w = e.contentRect.width + 24; if (Math.abs(w - shelveW) > 30) { shelveW = w; shelve(w); } }).observe(drawer);
+else shelve();
 // los estuches se llenan al aparecer: cada cartucho cae en su ranura con un clac
 if ('IntersectionObserver' in window && !REDUCE) {
   const io = new IntersectionObserver(es => es.forEach(e => { if (!e.isIntersecting) return; const cs = e.target; io.unobserve(cs); cs.classList.add('in'); const n = cs.querySelectorAll('.sp').length; for (let i = 0; i < n; i++) setTimeout(() => Sound.tick(i), 180 + i * 50); setTimeout(() => cs.classList.add('done'), 800 + n * 50); }), {threshold: .2});
@@ -1304,6 +1356,7 @@ function fillInspect(g) {
 function inspect(g, fromEl) {
   hidePeek();
   if (fromEl && fromEl.classList.contains('out')) { pickToConsole(g); return; }
+  if (fromEl && !fromEl.isConnected) fromEl = null;
   lastFocusEl = document.activeElement;
   insFrom = fromEl || null;
   insp.hidden = false; insp.classList.remove('closing');
@@ -1339,8 +1392,8 @@ function pickToConsole(g) {
     if (!REDUCE && obj.animate) obj.animate([{transform: obj.style.transform}, {transform: 'translateY(-110vh) rotateX(40deg) rotateY(-20deg) scale(.8)'}], {duration: 520, easing: 'cubic-bezier(.6,0,.8,.3)', fill: 'forwards'});
     Sound.whoosh();
     setTimeout(() => { closeInspect(true); toTop(); }, REDUCE ? 0 : 420);
-    setTimeout(() => insert(g), REDUCE ? 0 : 900);
-  } else { toTop(); setTimeout(() => insert(g), REDUCE ? 0 : 450); }
+    setTimeout(() => insert(g), REDUCE ? 0 : 650);
+  } else { toTop(); setTimeout(() => insert(g), REDUCE ? 0 : 250); }
 }
 function stepInspect(d) {
   const sib = ins.type === 'web' ? lists.cart.filter(x => x.model === ins.model).sort(alpha) : lists.disk.filter(x => x.model === ins.model).sort(alpha);
@@ -1372,8 +1425,8 @@ const albumOf = id => games.filter(g => g.model === id).sort((a, b) => a.code.lo
 const HAWK_SVG = $('.brand svg') ? $('.brand svg').outerHTML : '';
 const isHolo = g => g.feat >= 0 || !!g.new;
 let bookPage = 0, awaiting = new Set();
-const cromoHTML = (g, cls = '') => `<button class="cromo${isHolo(g) ? ' holo' : ''}${cls ? ' ' + cls : ''}" type="button" data-n="${esc(g.name)}" data-ed="${esc(g.model)}" style="--r:${(hash(g.name) % 7) - 3}deg" aria-label="Cromo ${+g.code.slice(4)}: ${esc(g.label)}"><img src="${esc(g.thumb)}" alt="" loading="lazy"><span class="nb">${+g.code.slice(4)}</span><span class="rar">★ HOLO</span><span class="cn">${esc(g.label)}</span><span class="cm">${esc(g.ed.model)}${g.also ? ' + ' + esc(edFor(g.also.model).model) : ''}</span></button>`;
-const slotHTML = g => pasted.has(g.name) && !awaiting.has(g.name) ? cromoHTML(g) : `<div class="cslot${awaiting.has(g.name) ? ' await' : ''}" data-n="${esc(g.name)}"><img src="${esc(g.thumb)}" alt="" loading="lazy"><span class="no">${+g.code.slice(4)}</span><span class="nm">???</span></div>`;
+const cromoHTML = (g, cls = '') => `<button class="cromo${isHolo(g) ? ' holo' : ''}${cls ? ' ' + cls : ''}" type="button" data-n="${esc(g.name)}" data-ed="${esc(g.model)}" style="--r:${(hash(g.name) % 7) - 3}deg" aria-label="Cromo ${+g.code.slice(4)}: ${esc(g.label)}"><img src="${esc(g.thumbS)}" data-full="${esc(g.thumb)}" alt="" loading="lazy" decoding="async"><span class="nb">${+g.code.slice(4)}</span><span class="rar">★ HOLO</span><span class="cn">${esc(g.label)}</span><span class="cm">${esc(g.ed.model)}${g.also ? ' + ' + esc(edFor(g.also.model).model) : ''}</span></button>`;
+const slotHTML = g => pasted.has(g.name) && !awaiting.has(g.name) ? cromoHTML(g) : `<div class="cslot${awaiting.has(g.name) ? ' await' : ''}" data-n="${esc(g.name)}"><img src="${esc(g.thumbS)}" data-full="${esc(g.thumb)}" alt="" loading="lazy" decoding="async"><span class="no">${+g.code.slice(4)}</span><span class="nm">???</span></div>`;
 const gotOf = id => albumOf(id).filter(g => pasted.has(g.name) && !awaiting.has(g.name)).length;
 function spreadParts(i) {
   if (i === 0) {
@@ -1527,6 +1580,22 @@ function tearPack() {
   }, 700 + k * 80 + i * 380));
   later(() => { packStage = 3; $('#pk-act').hidden = false; $('#pk-paste').focus({preventScroll: true}); }, 900 + k * 80 + k * 380);
 }
+// con prisa: un toque (o Enter) mientras salen los cromos les da la vuelta a todos de golpe
+function revealAll() {
+  if (packStage !== 2) return;
+  packTimers.forEach(clearTimeout); packTimers = [];
+  packEl.classList.add('gone');
+  const cards = $$('.pcard', pcards), k = cards.length, sp = Math.min(190, (innerWidth - 60) / Math.max(1, k));
+  let holo = false;
+  cards.forEach((c, i) => {
+    const x = (i - (k - 1) / 2) * sp, r = (i - (k - 1) / 2) * 4; c.dataset.x = x; c.dataset.r = r;
+    c.classList.add('show'); c.style.transform = `translate(${x}px,-20px) rotate(${r}deg)`;
+    if (!c.classList.contains('flip')) { c.classList.add('flip'); if (isHolo(packCards[i])) { c.classList.add('holohit'); holo = true; } }
+  });
+  Sound.sticker(); if (holo) Sound.holo();
+  packStage = 3; $('#pk-act').hidden = false; $('#pk-paste').focus({preventScroll: true});
+}
+packov.addEventListener('click', e => { if (packStage === 2 && !e.target.closest('button')) revealAll(); });
 function closePack() { packTimers.forEach(clearTimeout); packTimers = []; tearDrag = null; packov.hidden = true; packStage = 0; $('#main').removeAttribute('inert'); document.body.style.overflow = ''; const pb = $('#pack-btn'); if (!pb.disabled) pb.focus({preventScroll: true}); else if (document.activeElement && document.activeElement.blur) document.activeElement.blur(); }
 function pastePack() {
   if (packStage < 2) return;
@@ -1606,7 +1675,7 @@ renderAlbum(); renderPlayed();
 // ── barra, teclado y mando ──────────────────────────
 const top = $('#top');
 function onScroll() { top.classList.toggle('solid', scrollY > 40); }
-addEventListener('scroll', onScroll, {passive: true}); onScroll();
+addEventListener('scroll', onScroll, {passive: true}); requestAnimationFrame(onScroll);
 const sb = $('#sound');
 const paintSound = () => { sb.setAttribute('aria-pressed', String(Sound.on)); $('#snd-w').setAttribute('d', Sound.on ? 'M7 3h1v1H7zM8 4h1v2H8zM7 6h1v1H7z' : 'M6 3h1v1H6zM8 3h1v1H8zM7 4h1v2H7zM6 6h1v1H6zM8 6h1v1H8z'); };
 paintSound();
@@ -1623,6 +1692,7 @@ document.addEventListener('keydown', e => {
   if (!packov.hidden) {
     if (e.key === 'Escape') { e.preventDefault(); closePack(); }
     else if ((e.key === 'Enter' || e.key === ' ') && packStage === 1) { e.preventDefault(); tearPack(); }
+    else if ((e.key === 'Enter' || e.key === ' ') && packStage === 2) { e.preventDefault(); revealAll(); }
     return;
   }
   if (!insp.hidden) {
@@ -1688,11 +1758,18 @@ const fromHash = () => { const m = location.hash.match(/^#\/(.+)$/); return m &&
 const linked = fromHash(), last = byName.get(store.get('last', ''));
 const first = linked || (last && last.type === 'web' ? last : daily);
 const firstNote = linked ? 'Enlace directo' : last && first === last ? 'Donde lo dejaste' : 'Cartucho del día';
-insert(first, {first: true, silent: !linked});
+insert(first, {first: true, silent: !linked}); if (!linked) autoFirst = first;
 addEventListener('hashchange', () => { const g = fromHash(); if (g && g !== st.inserted && g !== st.disk) insert(g); });
 
-// cargador: barra arcoíris que se enciende por celdas y un cierre en iris hacia la pantalla de la consola
+// cargador: barra arcoíris que se enciende por celdas y un cierre en iris hacia la pantalla de la consola.
+// Se va en cuanto la consola está lista y el logo ha terminado de caer (~1,4 s desde que se pinta); en la
+// misma sesión (volver de un juego que recarga, F5) sale con el logo ya puesto y se va casi al momento.
+// Al abrirse, la consola se enciende: el arranque del LCD se ve entero y no detrás del telón.
+const SEEN = (() => { try { return sessionStorage.getItem('pocket:seen') === '1'; } catch { return false; } })();
+const INTRO = REDUCE ? 0 : SEEN ? 300 : 1400;
+let reveal; const revealed = new Promise(r => { reveal = r; });
 const bootT0 = performance.now();
+const shownAt = () => { const p = performance.getEntriesByName && performance.getEntriesByName('first-contentful-paint')[0]; return p ? p.startTime : bootT0; };
 let loadP = 0;
 const cells = $$('#load-bar i');
 const paintLoad = p => { const n = Math.round(p * cells.length); cells.forEach((c, i) => c.classList.toggle('on', i < n)); };
@@ -1700,24 +1777,34 @@ const loadTimer = setInterval(() => { loadP = Math.min(.85, loadP + Math.random(
 let loaderGone = false;
 function hideLoader(rect) {
   if (loaderGone) return; loaderGone = true;
-  const Ld = $('#loader'); if (!Ld) return;
-  const wait = Math.max(0, 2600 - (performance.now() - bootT0));
+  try { sessionStorage.setItem('pocket:seen', '1'); } catch {}
+  const Ld = $('#loader'); if (!Ld) { reveal(); return; }
+  const wait = Math.max(0, INTRO - (performance.now() - shownAt()));
   setTimeout(() => {
     clearInterval(loadTimer); paintLoad(1); $('#load-t').textContent = '¡LISTO!';
+    reveal();
     if (REDUCE) { Ld.classList.add('go'); setTimeout(() => Ld.remove(), 300); return; }
     Ld.classList.add('bye');
     const x = rect && rect.width > 10 ? rect.left + rect.width / 2 : innerWidth / 2, y = rect && rect.width > 10 ? rect.top + rect.height / 2 : innerHeight / 2;
     Ld.style.setProperty('--ix', x + 'px'); Ld.style.setProperty('--iy', y + 'px');
-    setTimeout(() => { Ld.classList.add('go'); Sound.whoosh(); }, 380);
-    setTimeout(() => Ld.remove(), 1300);
+    const pause = SEEN ? 120 : 380;
+    setTimeout(() => { Ld.classList.add('go'); Sound.whoosh(); }, pause);
+    setTimeout(() => Ld.remove(), pause + 920);
   }, wait);
 }
-setTimeout(() => { try { if (!pocket) { $('#fallback').hidden = false; $('#beltui').hidden = true; hideLoader(); setState(firstNote, 'on'); } } catch {} }, 7000);
+// si el plató 3D no llega o falla (sin WebGL, sin red), la consola se queda en foto y la interfaz sigue
+function fail() { $('#fallback').hidden = false; const g = focused(); if (g) $('#fb-img').src = g.thumb; hideLoader(); setState(firstNote, 'on'); }
+setTimeout(() => { if (!pocket) fail(); }, 7000);
 
 window.GB = {
   games, lists, st, SHELLS, EDITIONS, get shell() { return shell; }, get played() { return played; },
-  focus, insert, start, primary, surprise, cycleShell, setState, hideLoader, markPlayed, inspect, closeInspect,
-  sound: Sound, firstNote,
+  focus, insert, start, primary, surprise, cycleShell, setState, hideLoader, markPlayed, inspect, closeInspect, fail,
+  sound: Sound, firstNote, revealed, seen: SEEN,
+  // el plató avisa cuando la GPU está compilando (hilo libre, cargador delante): se despierta el audio,
+  // que cuesta ~0,1-0,3 s, para que no lo pague el primer clic
+  busy() { Sound.warm(); },
+  // el LCD llegó a PRESS START: si el cartucho lo metió el jugador (o vino por enlace), se prepara el juego
+  titled(g) { if (g && g.type === 'web' && g === st.inserted && g !== autoFirst && !Spec.metered) Spec.want(g.play); },
   tip(text, x, y) { const t = $('#tip3d'); if (!text) { t.classList.remove('on'); return; } t.textContent = text; t.style.transform = `translate(${Math.round(x + 16)}px,${Math.round(y + 16)}px)`; t.classList.add('on'); },
   flash() { if (REDUCE) return; const f = document.createElement('div'); f.className = 'flash'; document.body.append(f); setTimeout(() => f.remove(), 1000); },
   undive() { $('#consola').classList.remove('diving'); },
@@ -1726,14 +1813,14 @@ window.GB = {
     p.shell(SHELLS[shell]);
     p.studio(focused().ed.studio);
     p.mode(st.mode, lists[st.mode], st.focus, true);
-    setTimeout(() => { if (document.getElementById('loader')) hideLoader(); }, 4000);
+    // red de seguridad: en equipos muy lentos, compilar los shaders puede tardar; el telón no espera eternamente
+    setTimeout(() => { if (document.getElementById('loader')) hideLoader(); }, 8000);
     const q = pending; pending = [];
     for (const [a, g, o] of q) if (a === 'insert') p.insert(g, {...o, first: true});
   },
 };
 })();
 </script>
-<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script>
 <script type="module" src="pocket3d.js"></script>
 </body>
 </html>

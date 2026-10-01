@@ -1,19 +1,21 @@
 // gavilanbe POCKET · el plató 3D (three.js). La interfaz vive en index.html (window.GB).
 // Pensado para ir ligero: sin refracción, sin sombras dinámicas ni postprocesado,
-// cartuchos de una sola malla y render bajo demanda.
-import * as THREE from 'three';
-import {RoundedBoxGeometry} from 'three/addons/geometries/RoundedBoxGeometry.js';
-import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
-import {mergeGeometries} from 'three/addons/utils/BufferGeometryUtils.js';
+// cartuchos de una sola malla y render bajo demanda. Los shaders se compilan en paralelo
+// antes del primer frame (sin congelar el cargador) y three.js va empaquetado en lib/.
+import * as THREE from './lib/three.pocket.js';
+import {RoundedBoxGeometry, RoomEnvironment, mergeGeometries} from './lib/three.pocket.js';
 
 const GB = window.GB;
 const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
-if (GB) { try { main(); } catch (e) { console.error('POCKET 3D', e); } }
+if (GB) main().catch(e => { console.error('POCKET 3D', e); if (GB.fail) GB.fail(); });
 
-function main() {
+async function main() {
   const host = document.getElementById('stage');
   const LOW = matchMedia('(max-width: 760px), (pointer: coarse)').matches;
+  // que el cargador llegue a pantalla antes del trabajo pesado: crear el contexto y el entorno bloquean
+  await new Promise(r => { requestAnimationFrame(() => requestAnimationFrame(() => setTimeout(r, 0))); setTimeout(r, 200); });
   const renderer = new THREE.WebGLRenderer({antialias: true, powerPreference: 'high-performance'});
+  renderer.debug.checkShaderErrors = false; // sin leer los logs de cada shader al estrenarlo (son llamadas síncronas a la GPU)
   let dpr = Math.min(devicePixelRatio || 1, LOW ? 1.25 : 1.5);
   renderer.setPixelRatio(dpr);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -27,10 +29,17 @@ function main() {
   const studio = new THREE.Color('#cfc9bf'), studioTo = studio.clone();
   scene.background = studio.clone();
   scene.fog = new THREE.Fog(studio.clone(), 36, 95);
+  // entorno para los reflejos: sus shaders se compilan en paralelo antes de generarlo
+  // (con un render target activo, como los usa el PMREM: sin tone mapping y en lineal)
+  const room = new RoomEnvironment(), envRT = new THREE.WebGLRenderTarget(16, 16, {type: THREE.HalfFloatType});
+  renderer.setRenderTarget(envRT);
+  const roomReady = renderer.compileAsync(room, new THREE.PerspectiveCamera(90, 1, .1, 100));
+  renderer.setRenderTarget(null); envRT.dispose();
+  await roomReady;
   const pmrem = new THREE.PMREMGenerator(renderer);
-  scene.environment = pmrem.fromScene(new RoomEnvironment(), .04).texture;
+  scene.environment = pmrem.fromScene(room, .04).texture;
   scene.environmentIntensity = .6;
-  pmrem.dispose();
+  pmrem.dispose(); room.dispose();
   const camera = new THREE.PerspectiveCamera(30, 1, .1, 300);
   const hemi = new THREE.HemisphereLight('#ffffff', '#b9ab95', .4); scene.add(hemi);
   const key = new THREE.DirectionalLight('#fff1dc', 2.1); key.position.set(-7, 9, 11); scene.add(key); scene.add(key.target);
@@ -43,17 +52,23 @@ function main() {
 
   // ── lienzos ─────────────────────────────────────
   const maxAniso = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+  // todos los lienzos de texturas se pintan en la CPU (son pequeños y simples): sin rasterizado en la GPU que
+  // compita con la compilación de shaders y congele el cargador la primera vez, y subirlos a WebGL es directo
+  const ctx2d = c => c.getContext('2d', {willReadFrequently: true});
   function canvasTex(w, h, draw) {
     const c = document.createElement('canvas'); c.width = w; c.height = h;
-    const x = c.getContext('2d'); if (draw) draw(x, w, h);
+    const x = ctx2d(c); if (draw) draw(x, w, h);
     const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = maxAniso;
     t.userData.ctx = x; return t;
   }
   const imgs = new Map();
-  function loadImg(src) {
-    if (!imgs.has(src)) imgs.set(src, new Promise(res => { const i = new Image(); i.decoding = 'async'; i.onload = () => res(i); i.onerror = () => res(null); i.src = src; }));
+  function loadImg(src, alt) {
+    if (!src) return Promise.resolve(null);
+    if (!imgs.has(src)) imgs.set(src, new Promise(res => { const i = new Image(); i.decoding = 'async'; i.onload = () => res(i); i.onerror = () => res(alt ? loadImg(alt) : null); i.src = src; }));
     return imgs.get(src);
   }
+  // la miniatura pequeña (thumbs/s, ~10 KB) basta para etiquetas y LCD; si falta, la grande
+  const thumbImg = g => loadImg(g.thumbS || g.thumb, g.thumbS ? g.thumb : null);
   const rr = (x, a, b, w, h, r) => { x.beginPath(); x.roundRect(a, b, w, h, r); };
   function cover(x, img, a, b, w, h, zoom = 1, ox = 0) {
     if (!img) { x.fillStyle = '#bdb6a8'; x.fillRect(a, b, w, h); return; }
@@ -62,7 +77,10 @@ function main() {
   }
   function fit(x, text, maxW, size, font) { let s = size; do { x.font = font.replace('%', s); s -= 1; } while (x.measureText(text).width > maxW && s > 10); }
   function wrap(x, text, maxW) { const words = text.split(/\s+/), lines = []; let l = ''; for (const w of words) { const t = l ? l + ' ' + w : w; if (x.measureText(t).width > maxW && l) { lines.push(l); l = w; } else l = t; } if (l) lines.push(l); return lines; }
-  const fonts = document.fonts ? Promise.all(['40px "Jersey 15"', 'italic 900 40px Nunito', '900 40px Nunito', '20px Tiny5', '700 40px Caveat'].map(f => document.fonts.load(f).catch(() => null))) : Promise.resolve();
+  // la Caveat (50 KB) solo hace falta para las etiquetas de los disquetes: se pide la primera vez que sale uno
+  const loadFonts = list => document.fonts ? Promise.all(list.map(f => document.fonts.load(f).catch(() => null))) : Promise.resolve();
+  const fonts = loadFonts(['40px "Jersey 15"', 'italic 900 40px Nunito', '900 40px Nunito', '20px Tiny5']);
+  let handFont = null; const hand = () => handFont || (handFont = loadFonts(['700 40px Caveat']));
   const BR = '"Jersey 15", system-ui, sans-serif', MO = 'Tiny5, ui-monospace, monospace', PX = 'Tiny5, ui-monospace, monospace', NU = 'Nunito, system-ui, sans-serif';
   const ACC = id => (GB.EDITIONS[id] && GB.EDITIONS[id].accent) || '#5e5a53';
   const blobTex = canvasTex(128, 128, x => { const g = x.createRadialGradient(64, 64, 0, 64, 64, 64); g.addColorStop(0, 'rgba(30,20,10,.55)'); g.addColorStop(.45, 'rgba(30,20,10,.2)'); g.addColorStop(1, 'rgba(30,20,10,0)'); x.fillStyle = g; x.fillRect(0, 0, 128, 128); });
@@ -70,11 +88,11 @@ function main() {
 
   // etiquetas de cartucho (delante y detrás) y de disquete
   const texCache = new Map();
-  function once(key, w, h, draw, needsImg) {
+  function once(key, w, h, draw, img, fontsFor = fonts) {
     if (texCache.has(key)) return texCache.get(key);
     const t = canvasTex(w, h, x => draw(x, null));
     texCache.set(key, t);
-    Promise.all([needsImg ? loadImg(needsImg) : null, fonts]).then(([img]) => { draw(t.userData.ctx, img); t.needsUpdate = true; wake(); });
+    Promise.all([img || null, fontsFor]).then(([im]) => { draw(t.userData.ctx, im); t.needsUpdate = true; wake(); });
     return t;
   }
   const frontTex = g => once('f:' + g.name, 384, 384, (x, img) => {
@@ -91,7 +109,7 @@ function main() {
     x.font = `500 13px ${MO}`; x.fillStyle = a; x.fillText(`${g.code} · ${g.ed.model.toUpperCase()}`, 18, 376);
     x.save(); x.translate(360, 362); x.strokeStyle = a; x.lineWidth = 2.5; x.beginPath(); x.arc(0, 0, 24, 0, 7); x.stroke(); x.fillStyle = a; x.font = `700 8px ${MO}`; x.textAlign = 'center'; x.fillText('CALIDAD', 0, -4); x.font = `13px ${BR}`; x.fillText('gavi', 0, 9); x.restore();
     if (g.new) { x.save(); x.translate(350, 96); x.rotate(.25); x.fillStyle = '#c6f432'; x.beginPath(); for (let i = 0; i < 24; i++) { const r = i % 2 ? 27 : 38, an = i / 24 * Math.PI * 2; x.lineTo(Math.cos(an) * r, Math.sin(an) * r); } x.fill(); x.fillStyle = '#1c1a22'; x.font = `18px ${BR}`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('NUEVO', 0, 1); x.restore(); }
-  }, g.thumb);
+  }, thumbImg(g));
   const backTex = g => once('b:' + g.name, 384, 384, x => {
     const a = ACC(g.model), S = 384 / 400;
     x.setTransform(S, 0, 0, S, 0, 0);
@@ -113,7 +131,7 @@ function main() {
     x.fillStyle = '#1b3d8f'; x.save(); x.translate(24, 132); x.rotate(-.035); fit(x, g.label, 460, 74, '700 %px Caveat, cursive'); x.fillText(g.label, 0, 0); x.restore();
     x.font = `500 17px ${MO}`; x.fillStyle = ACC(g.model); x.fillText(`${g.ed.model.toUpperCase()} · TERMINAL`, 24, 272);
     x.fillStyle = '#1c1a22'; x.font = `500 15px ${MO}`; x.fillText('HD 1.44MB', 380, 28);
-  });
+  }, null, Promise.all([fonts, hand()]));
 
   // ── materiales (sin refracción: los translúcidos son transparencia + barniz) ──
   const PM = THREE.MeshPhysicalMaterial, SM = THREE.MeshStandardMaterial;
@@ -207,6 +225,11 @@ function main() {
   const PPU = 180, FW = Math.round(CW * PPU), FH = Math.round(CH * PPU);
   const faceTex = canvasTex(FW, FH), heightCv = document.createElement('canvas'); heightCv.width = FW; heightCv.height = FH;
   faceTex.repeat.set(1 / CW, 1 / CH); faceTex.offset.set(.5, .5);
+  // el mapa de normales existe desde el principio (plano) para que el material no cambie de shader
+  // cuando se calcula de verdad, ya con el plató en marcha
+  const normCv = document.createElement('canvas'); normCv.width = FW; normCv.height = FH;
+  { const x = ctx2d(normCv); x.fillStyle = 'rgb(128,128,255)'; x.fillRect(0, 0, FW, FH); }
+  const normalTex = new THREE.CanvasTexture(normCv); normalTex.repeat.copy(faceTex.repeat); normalTex.offset.copy(faceTex.offset); normalTex.anisotropy = maxAniso;
   const C = (X, Y) => [(X + CW / 2) * PPU, (CH / 2 - Y) * PPU], U = v => v * PPU;
   let printColor = '#2a2640', printSoft = 'rgba(42,38,64,.6)', faceBase = '#dcd6ca';
   function capsule(x, cx, cy, len, rad, ang) { x.save(); x.translate(cx, cy); x.rotate(ang); rr(x, -len / 2, -rad, len, rad * 2, rad); x.restore(); }
@@ -219,23 +242,25 @@ function main() {
     for (let i = 0; i < 6; i++) { const [cx, cy] = C(.74 + i * .15, -2.2 + i * .075); x.fillStyle = depth(1); capsule(x, cx, cy, U(.64 - Math.abs(i - 2.5) * .07), U(.038), -1.07); x.fill(); }
   }
   function drawHeight() {
-    const x = heightCv.getContext('2d');
+    const x = ctx2d(heightCv);
     x.fillStyle = 'rgb(128,128,128)'; x.fillRect(0, 0, FW, FH);
     x.filter = `blur(${U(.018)}px)`;
     wells(x, d => `rgb(${Math.round(128 - 80 * d)},0,0)`.replace(/rgb\((\d+),0,0\)/, (m, v) => `rgb(${v},${v},${v})`));
     // logotipo grabado muy leve
     x.fillStyle = 'rgb(118,118,118)'; x.font = `italic 900 ${U(.36)}px ${NU}`; const [gx, gy] = C(-1.45, -.26); x.fillText('gavilanbe', gx, gy);
     x.filter = 'none';
-    const img = x.getImageData(0, 0, FW, FH), h = img.data, out = new ImageData(FW, FH), o = out.data, S = 2.4;
-    for (let yy = 0; yy < FH; yy++) for (let xx = 0; xx < FW; xx++) {
-      const i = (yy * FW + xx) * 4, l = h[(yy * FW + Math.max(0, xx - 1)) * 4], r = h[(yy * FW + Math.min(FW - 1, xx + 1)) * 4], u = h[(Math.max(0, yy - 1) * FW + xx) * 4], dn = h[(Math.min(FH - 1, yy + 1) * FW + xx) * 4];
-      let nx = (l - r) / 255 * S, ny = (dn - u) / 255 * S, nz = 1; const n = Math.hypot(nx, ny, nz); nx /= n; ny /= n; nz /= n;
-      const grain = ((xx * 73856093 ^ yy * 19349663) & 7) - 3.5;
-      o[i] = (nx * .5 + .5) * 255 + grain * .6; o[i + 1] = (ny * .5 + .5) * 255 + grain * .6; o[i + 2] = nz * 255; o[i + 3] = 255;
+    const h = x.getImageData(0, 0, FW, FH).data, out = new ImageData(FW, FH), o = out.data, S = 2.4 / 255;
+    for (let yy = 0; yy < FH; yy++) {
+      const row = yy * FW, up = Math.max(0, yy - 1) * FW, dn = Math.min(FH - 1, yy + 1) * FW;
+      for (let xx = 0; xx < FW; xx++) {
+        const i = (row + xx) * 4, l = h[(row + (xx ? xx - 1 : 0)) * 4], r = h[(row + (xx < FW - 1 ? xx + 1 : xx)) * 4];
+        const nx = (l - r) * S, ny = (h[(dn + xx) * 4] - h[(up + xx) * 4]) * S, k = 1 / Math.sqrt(nx * nx + ny * ny + 1);
+        const grain = (((xx * 73856093) ^ (yy * 19349663)) & 7) - 3.5;
+        o[i] = (nx * k * .5 + .5) * 255 + grain * .6; o[i + 1] = (ny * k * .5 + .5) * 255 + grain * .6; o[i + 2] = k * 255; o[i + 3] = 255;
+      }
     }
-    const nc = document.createElement('canvas'); nc.width = FW; nc.height = FH; nc.getContext('2d').putImageData(out, 0, 0);
-    const nt = new THREE.CanvasTexture(nc); nt.repeat.copy(faceTex.repeat); nt.offset.copy(faceTex.offset); nt.anisotropy = maxAniso;
-    return nt;
+    ctx2d(normCv).putImageData(out, 0, 0);
+    normalTex.needsUpdate = true; wake();
   }
   function drawFace() {
     const x = faceTex.userData.ctx;
@@ -254,10 +279,9 @@ function main() {
     x.save(); x.translate(...C(1.25, -2.62)); x.fillStyle = printSoft; x.font = `500 ${U(.055)}px ${MO}`; x.fillText('))) PHONES', 0, 0); x.restore();
     faceTex.needsUpdate = true; wake();
   }
-  const faceMat = new SM({map: faceTex, roughness: .44});
+  const faceMat = new SM({map: faceTex, normalMap: normalTex, roughness: .44});
   const face = add(new THREE.Mesh(new THREE.ShapeGeometry(shellShape, 32), faceMat), 0, 0, FR + .001);
   face.raycast = () => {};
-  fonts.then(() => { faceMat.normalMap = drawHeight(); faceMat.needsUpdate = true; wake(); });
   // marco de la pantalla con volumen propio
   const bezelShape = rounded(2.92, 2.44, .13, .62);
   const bezelGeo = new THREE.ExtrudeGeometry(bezelShape, {depth: .02, bevelEnabled: true, bevelThickness: .025, bevelSize: .025, bevelSegments: 4, curveSegments: 24});
@@ -394,18 +418,6 @@ function main() {
   }
   function setBeltList(newList, newKind, focusIdx) { list = newList; kind = newKind; beltPos = beltTarget = focusIdx; beltLast = Math.round(beltPos); for (const s of slots) s.gi = -1; }
   function focusBelt(i) { const n = list.length; if (!n) return; beltTarget = i + n * Math.round((beltPos - i) / n); flipTo = 0; wake(); }
-  // fantasma: contorno del cartucho que está en la consola
-  const ghostMat = new THREE.LineDashedMaterial({color: '#ffffff', transparent: true, opacity: .8, dashSize: .12, gapSize: .09});
-  const ghost = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(cartShape(2.5, CART_H, .12, .4).getPoints(8)), ghostMat); ghost.computeLineDistances(); belt.add(ghost);
-  function placeGhost() {
-    ghost.visible = false; return;
-    const g = kind === 'cart' ? inSlot && inSlot.userData.game : null, gi = g ? list.indexOf(g) : -1;
-    ghost.visible = gi >= 0 && beltHide.has(gi);
-    if (!ghost.visible) return;
-    const n = list.length; let o = gi - beltPos; o -= n * Math.round(o / n);
-    if (Math.abs(o) > 4.5) { ghost.visible = false; return; }
-    const p = beltPose(o); ghost.position.set(p.x, p.y, p.z); ghost.rotation.set(0, p.ry, 0); ghost.scale.setScalar(p.s);
-  }
 
   // ── animación ─────────────────────────────────
   const anims = new Set();
@@ -442,28 +454,29 @@ function main() {
   }
 
   // ── pantalla de la consola: LCD nativo de 160×100, ampliado ×3 con rejilla de puntos ──
-  let scr = {mode: 'off', t0: 0, g: null};
-  const setScr = (mode, g) => { scr = {mode, t0: performance.now(), g: g || scr.g}; wake(); };
+  // t del LCD = off + segundos reales × k (el arranque en caliente empieza más adelante y va más deprisa)
+  let scr = {mode: 'off', t0: 0, g: null, off: 0, k: 1};
+  const setScr = (mode, g, off = 0, k = 1) => { scr = {mode, t0: performance.now(), g: g || scr.g, off, k}; wake(); };
   const NW = 160, NH = 100;
-  const nat = document.createElement('canvas'); nat.width = NW; nat.height = NH; const nx = nat.getContext('2d');
-  const prev = document.createElement('canvas'); prev.width = NW; prev.height = NH; const pvx = prev.getContext('2d');
+  const nat = document.createElement('canvas'); nat.width = NW; nat.height = NH; const nx = ctx2d(nat);
+  const prev = document.createElement('canvas'); prev.width = NW; prev.height = NH; const pvx = ctx2d(prev);
   const thumbs = new Map();
   function thumbOf(g) {
     if (!g) return null;
     if (!thumbs.has(g.name)) {
       thumbs.set(g.name, null);
-      loadImg(g.thumb).then(img => { if (!img) return; const c = document.createElement('canvas'); c.width = NW; c.height = NH; const x = c.getContext('2d'); x.imageSmoothingQuality = 'high'; const s = Math.max(NW / img.width, NH / img.height); x.drawImage(img, (NW - img.width * s) / 2, (NH - img.height * s) / 2, img.width * s, img.height * s); thumbs.set(g.name, c); wake(); });
+      thumbImg(g).then(img => { if (!img) return; const c = document.createElement('canvas'); c.width = NW; c.height = NH; const x = ctx2d(c); x.imageSmoothingQuality = 'high'; const s = Math.max(NW / img.width, NH / img.height); x.drawImage(img, (NW - img.width * s) / 2, (NH - img.height * s) / 2, img.width * s, img.height * s); thumbs.set(g.name, c); wake(); });
     }
     return thumbs.get(g.name);
   }
   // texto pixelado de verdad: se rasteriza y se umbraliza (sin antialias)
-  const txtCache = new Map();
+  const txtCache = new Map(), meter = ctx2d(document.createElement('canvas'));
   function pxText(text, color, size = 8, bold = false) {
     const key = text + color + size + bold;
     if (txtCache.has(key)) return txtCache.get(key);
-    const m = document.createElement('canvas').getContext('2d'); m.font = `${size}px ${PX}`;
+    const m = meter; m.font = `${size}px ${PX}`;
     const w = Math.ceil(m.measureText(text).width) + 2, h = size + 4;
-    const c = document.createElement('canvas'); c.width = w; c.height = h; const x = c.getContext('2d');
+    const c = document.createElement('canvas'); c.width = w; c.height = h; const x = ctx2d(c);
     x.font = m.font; x.textBaseline = 'top'; x.fillStyle = color; x.fillText(text, 1, 1);
     const d = x.getImageData(0, 0, w, h); for (let i = 3; i < d.data.length; i += 4) d.data[i] = d.data[i] > 110 ? 255 : 0; x.putImageData(d, 0, 0);
     if (txtCache.size > 200) txtCache.clear();
@@ -491,8 +504,10 @@ function main() {
   }
   let lastScreenKey = '';
   function drawScreen(now) {
-    const t = (now - scr.t0) / 1000, g = scr.g, still = scr.mode === 'off';
-    const key = scr.mode + (g && g.name) + (thumbs.get(g && g.name) ? 1 : 0) + (still ? '' : Math.floor(now / 40));
+    const t = scr.off + (now - scr.t0) / 1000 * scr.k, g = scr.g, m = scr.mode;
+    // solo se repinta (y se vuelve a subir la textura) cuando cambia algo: el título solo parpadea
+    const tick = m === 'off' || m === 'welcome' ? '' : m === 'title' ? Math.floor(now / 530) % 3 !== 2 : Math.floor(now / 40);
+    const key = m + (g && g.name) + (thumbs.get(g && g.name) ? 1 : 0) + tick;
     if (key === lastScreenKey) return; lastScreenKey = key;
     nx.imageSmoothingEnabled = false;
     if (scr.mode === 'off') {
@@ -547,7 +562,7 @@ function main() {
     else { const gr = sx.createLinearGradient(0, 0, SW, SH); gr.addColorStop(0, 'rgba(255,255,255,.08)'); gr.addColorStop(.45, 'rgba(255,255,255,0)'); sx.fillStyle = gr; sx.fillRect(0, 0, SW, SH); }
     screenTex.needsUpdate = true;
   }
-  const lcdPat = (() => { const c = document.createElement('canvas'); c.width = c.height = 3; const x = c.getContext('2d'); x.fillStyle = 'rgba(0,0,0,.1)'; x.fillRect(0, 2, 3, 1); x.fillRect(2, 0, 1, 2); return sx.createPattern(c, 'repeat'); })();
+  const lcdPat = (() => { const c = document.createElement('canvas'); c.width = c.height = 3; const x = ctx2d(c); x.fillStyle = 'rgba(0,0,0,.1)'; x.fillRect(0, 2, 3, 1); x.fillRect(2, 0, 1, 2); return sx.createPattern(c, 'repeat'); })();
   // monitor del ordenador
   let trm = {mode: 'idle', t0: performance.now(), g: null}, lastTermKey = '';
   function drawTerm(now) {
@@ -590,9 +605,12 @@ function main() {
     beltHide.add(gi);
     const cart = makeCart(g); scene.add(cart);
     if (opt.first) {
-      rig.add(cart); cart.position.set(0, SLOT_Y, SLOT_Z); inSlot = cart; ledOn = 1; powerOn = 1;
-      GB.setState(GB.firstNote, 'on');
-      setScr('power', g); await wait(1.3); if (my !== token) return; Sound.power(); boot(g, my); return;
+      rig.add(cart); cart.position.set(0, SLOT_Y, SLOT_Z); inSlot = cart;
+      GB.setState(GB.firstNote, 'on'); setScr('off', g);
+      // se enciende cuando se abre el cargador: así el arranque se ve entero y no detrás del telón
+      await GB.revealed; if (my !== token) return;
+      ledOn = 1; powerOn = 1; Sound.power(); setScr('power', g); await wait(.45); if (my !== token) return;
+      boot(g, my); return;
     }
     if (kind === 'cart' && gi >= 0) { beltWorld(gi, cart.position); cart.quaternion.copy(belt.getWorldQuaternion(Q())); cart.scale.setScalar(beltPose(0).s); }
     else { cart.position.set(con.position.x + 6, 9, 4); cart.rotation.set(.4, -1, .3); }
@@ -613,19 +631,25 @@ function main() {
     rig.attach(cart); cart.position.set(0, SLOT_Y, SLOT_Z); cart.rotation.set(0, 0, 0); cart.scale.setScalar(1);
     Sound.insert(); joltV = -7; navigator.vibrate && navigator.vibrate(30);
     burst(rig.localToWorld(new THREE.Vector3(0, CH / 2, 0)), ['#ffffff', '#ffd23f', (GB.EDITIONS[g.model] || {}).studio || '#fff'], 36, 6, 4);
-    await prev; await wait(.2);
+    await prev; await wait(.12);
     if (my !== token) return;
     powerOn = 1; Sound.power(); ledOn = 1; setScr('power', g); await wait(.45);
     if (my !== token) return;
     if (!glitched && !opt.roulette && !REDUCE && Math.random() < .12) { glitched = true; setScr('glitch', g); Sound.error(); GB.setState('Error de lectura', 'glitch'); return; }
     boot(g, my);
   }
+  // el primer encendido enseña el arranque entero (2,95 s); al cambiar de cartucho, arranque en caliente:
+  // el gavilán ya está posado y el resto (campanilla, brillo, POCKET, disolución) va 1,4× más deprisa
+  const BOOT = 2.95, WARM_FROM = 1, WARM_K = 1.4;
+  let booted = !!GB.seen;
   async function boot(g, my) {
-    setScr('boot', g); GB.setState('Arrancando…', 'busy');
-    setTimeout(() => { if (my === token && scr.mode === 'boot') Sound.boot(); }, REDUCE ? 0 : 1100);
-    await wait(2.95);
+    const quick = booted; booted = true;
+    setScr('boot', g, quick ? WARM_FROM : 0, quick ? WARM_K : 1); GB.setState('Arrancando…', 'busy');
+    const {off, k} = scr;
+    setTimeout(() => { if (my === token && scr.mode === 'boot') Sound.boot(); }, REDUCE ? 0 : (1.1 - off) / k * 1000);
+    await wait((BOOT - off) / k);
     if (my !== token || scr.mode !== 'boot') return;
-    setScr('title', g); GB.setState('Pulsa START', 'on');
+    setScr('title', g); GB.setState('Pulsa START', 'on'); GB.titled && GB.titled(g);
   }
   async function blow() {
     if (scr.mode !== 'glitch' || !inSlot) return;
@@ -693,12 +717,13 @@ function main() {
   // carcasa
   const shellTo = new THREE.Color('#dcd6ca');
   let spin = 0, spinV = 0;
+  let printed = false; // la serigrafía se pinta una vez al arrancar (paintPrints); después, en cada cambio de carcasa
   function setShell(hex, gold) {
     if (gold) { shellTo.set('#d9a93f'); shellMat.metalness = .9; shellMat.roughness = .26; }
     else { shellTo.set(hex); shellMat.metalness = 0; shellMat.roughness = .42; }
     const l = shellTo.r * .3 + shellTo.g * .59 + shellTo.b * .11;
     printColor = l < .35 ? '#ece6da' : '#2a2640'; printSoft = l < .35 ? 'rgba(236,230,218,.6)' : 'rgba(42,38,64,.6)'; faceBase = '#' + shellTo.getHexString(); shellMat.color.copy(shellTo); faceMat.metalness = shellMat.metalness; faceMat.roughness = shellMat.roughness;
-    fonts.then(drawFace);
+    if (printed) drawFace();
     if (!REDUCE && started) spinV += gold ? 16 : 9;
     wake();
   }
@@ -819,12 +844,11 @@ function main() {
   new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible) wake(); }).observe(host);
   new ResizeObserver(() => layout()).observe(host);
   document.addEventListener('visibilitychange', () => wake());
-  layout();
-  const white = new THREE.Color('#ffffff');
-  renderer.setAnimationLoop(now => {
+  const white = new THREE.Color('#ffffff'), BUSY = new Set(['power', 'boot', 'launch', 'glitch', 'welcome']);
+  function loop(now) {
     const dt = Math.min(.05, (now - last) / 1000); last = now;
     if ((!visible || document.hidden) && frames > 3) return;
-    const busyScreen = /power|boot|launch|glitch|welcome/.test(scr.mode) || (trm.mode === 'load' && now - trm.t0 < 4000) || driveBlink > 0;
+    const busyScreen = BUSY.has(scr.mode) || (trm.mode === 'load' && now - trm.t0 < 4000) || driveBlink > 0;
     const active = now < awakeUntil || anims.size > 0 || busyScreen || !!drag || diving || sparkAlive > 0 || Math.abs(jolt) > .0005 || Math.abs(spinV) > .01;
     if (!active && now - lastRender < 110 && frames > 3) return;
     const fdt = Math.min(.05, (now - lastRender) / 1000 || dt); lastRender = now;
@@ -845,7 +869,7 @@ function main() {
     const li = ledOn ? 2.6 : 0; led.material.emissiveIntensity += (li - led.material.emissiveIntensity) * .2; ledGlow.material.opacity = led.material.emissiveIntensity / 2.6 * .9;
     driveBlink = Math.max(0, driveBlink - fdt); driveLed.material.emissiveIntensity = driveBlink > 0 ? (Math.sin(t * 40) > 0 ? 3 : .3) : (inDrive ? 1.2 : 0);
     if (updateBelt(fdt)) wake(300);
-    placeGhost(); updateSparks(fdt); hoverPick();
+    updateSparks(fdt); hoverPick();
     // cámara
     if (diving) divePose(camWant); else camPose(mode, camWant);
     const k = 1 - Math.exp(-fdt * (diving ? 5 : 3));
@@ -857,17 +881,19 @@ function main() {
     // si va justo, baja la resolución
     if (active && frames > 30) { slowFrames = dt > .026 ? slowFrames + 1 : Math.max(0, slowFrames - 1); if (slowFrames > 40 && dpr > 1) { dpr = Math.max(1, dpr - .25); renderer.setPixelRatio(dpr); layout(); slowFrames = 0; } }
     if (++frames === 3) onFirstFrames();
-  });
+  }
   function screenRect() {
     const pts = [[-1.15, -.72], [1.15, .72]].map(([a, b]) => screen.localToWorld(new THREE.Vector3(a, b, 0)).project(camera));
     const r = el.getBoundingClientRect();
     const xs = pts.map(p => r.left + (p.x + 1) / 2 * r.width), ys = pts.map(p => r.top + (1 - p.y) / 2 * r.height);
     return {left: Math.min(...xs), top: Math.min(...ys), width: Math.abs(xs[1] - xs[0]), height: Math.abs(ys[1] - ys[0])};
   }
-  function onFirstFrames() { started = true; Promise.race([fonts, wait(1.5)]).then(() => GB.hideLoader(screenRect())); }
-  fonts.then(() => { drawFace(); drawBezel(); drawSticker(); drawPcFront(); txtCache.clear(); lastScreenKey = ''; lastTermKey = ''; wake(); });
-  drawFace(); drawBezel(); drawSticker(); drawPcFront();
+  function onFirstFrames() { started = true; GB.hideLoader(screenRect()); }
+  // serigrafías (carcasa, marco, pegatina, PC): con las fuentes ya cargadas o, si tardan, con las de reserva y otra vez al llegar
+  const paintPrints = () => { printed = true; drawFace(); drawBezel(); drawSticker(); drawPcFront(); txtCache.clear(); lastScreenKey = ''; lastTermKey = ''; wake(); };
+  const fontsReady = Promise.race([fonts.then(() => true), wait(1.2)]).then(onTime => { paintPrints(); if (!onTime) fonts.then(paintPrints); });
 
+  layout(); // antes de GB.ready: la cinta se coloca con las medidas del plató
   GB.ready({
     mode: (m, l, f, instant) => setMode(m, l, f, instant),
     focus: i => focusBelt(i),
@@ -878,4 +904,19 @@ function main() {
     studio: hex => { studioTo.set(hex); wake(1600); },
     get screenMode() { return scr.mode; },
   });
+
+  // todos los shaders se compilan a la vez y en paralelo antes del primer frame (KHR_parallel_shader_compile):
+  // el hilo principal no se congela y luego ningún cartucho, disquete ni edición nueva provoca un tirón.
+  // Lo que aún no está en escena (una carcasa de cada edición) va en un grupo oculto solo para compilar.
+  const warm = new THREE.Group(); warm.visible = false; scene.add(warm);
+  for (const id of Object.keys(GB.EDITIONS)) warm.add(new THREE.Mesh(cartGeo, edMat(id)));
+  warm.add(new THREE.Mesh(pcbGeo, pcbMat));
+  const compiled = renderer.compileAsync(scene, camera);
+  // mientras la GPU compila, el hilo principal está libre y el cargador sigue delante: es el momento de lo
+  // pesado que solo se hace una vez (el relieve del frontal y despertar el audio), no en plena animación
+  fonts.then(() => setTimeout(drawHeight, 0));
+  if (GB.busy) setTimeout(GB.busy, 0);
+  await Promise.all([compiled, fontsReady]);
+  scene.remove(warm);
+  renderer.setAnimationLoop(loop);
 }
