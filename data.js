@@ -13,6 +13,19 @@ const GAMES = [
     "model": "opus-4.7"
   },
   {
+    "name": "barcanueva",
+    "title": "⛵ BARCANUEVA",
+    "tagline": "Vida y rol en pixel art de GBA en una Barcelona de fantasía: trabaja, pesca, cultiva y gánate a sus 63 vecinos, y pelea a d20 con pulso, paradas y la balanza del seny y la rauxa contra bandoleros, follets, la Quarantamaula y el Drac de Olorda. Con ecosistema vivo, fiestas y banda sonora original.",
+    "type": "web",
+    "play": "https://gavilanbe.github.io/barcanueva/",
+    "repo": "https://github.com/gavilanbe/barcanueva",
+    "thumb": "thumbs/barcanueva.jpg",
+    "wip": false,
+    "new": true,
+    "kind": "juego",
+    "model": "opus-5.5"
+  },
+  {
     "name": "bingo",
     "title": "🎱 Bingo Español (90 bolas)",
     "tagline": "El clásico bingo de 90 bolas, ahora en tu terminal y con voz de cantor.",
@@ -113,7 +126,6 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/cuchi",
     "thumb": "thumbs/cuchi.jpg",
     "wip": false,
-    "new": true,
     "kind": "juego",
     "model": "fable-5.1"
   },
@@ -270,7 +282,6 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/glup",
     "thumb": "thumbs/glup.jpg",
     "wip": false,
-    "new": true,
     "kind": "juego",
     "model": "opus-5.5"
   },
@@ -307,7 +318,6 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/invoca",
     "thumb": "thumbs/invoca.jpg",
     "wip": false,
-    "new": true,
     "kind": "juego",
     "model": "fable-5.1"
   },
@@ -840,7 +850,6 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/torremon",
     "thumb": "thumbs/torremon.jpg",
     "wip": false,
-    "new": true,
     "kind": "juego",
     "model": "fable-5.1"
   },
@@ -889,7 +898,6 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/westieware",
     "thumb": "thumbs/westieware.jpg",
     "wip": false,
-    "new": true,
     "kind": "juego",
     "model": "opus-5.5"
   },
