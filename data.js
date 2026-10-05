@@ -562,6 +562,19 @@ const GAMES = [
     "model": "opus-4.8"
   },
   {
+    "name": "poke-wars",
+    "title": "⚔️ POKÉ WARS",
+    "tagline": "Táctica por turnos tipo Advance Wars con Pokémon: ocho comandantes con su equipo y su poder, captura de edificios, salvajes que se atrapan lanzando Balls a tiempo, evoluciones, clima, día y noche, y un tutorial que juega solo. Todo con ratón o teclado.",
+    "type": "web",
+    "play": "https://gavilanbe.github.io/poke-wars/",
+    "repo": "https://github.com/gavilanbe/poke-wars",
+    "thumb": "thumbs/poke-wars.jpg",
+    "wip": false,
+    "new": true,
+    "kind": "juego",
+    "model": "opus-5.5"
+  },
+  {
     "name": "pokechess",
     "title": "♟️ PokéChess — Type Sumo",
     "tagline": "Sumo de tipos sobre un tablero: empuja a los Pokémon rivales fuera del ring aprovechando la efectividad de tipos.",
