@@ -564,7 +564,7 @@ const GAMES = [
   {
     "name": "poke-wars",
     "title": "⚔️ POKÉ WARS",
-    "tagline": "Táctica por turnos tipo Advance Wars con Pokémon: ocho comandantes con su equipo y su poder, captura de edificios, salvajes que se atrapan lanzando Balls a tiempo, evoluciones, clima, día y noche, y un tutorial que juega solo. Todo con ratón o teclado.",
+    "tagline": "Táctica por turnos tipo Advance Wars con Pokémon. Modo historia de ocho misiones, «La Guerra de las Banderas», con objetivos distintos y comandantes que se unen a ti; partida libre contra la IA o a dos; salvajes que se atrapan lanzando Balls a tiempo, evoluciones, clima, día y noche, y un tutorial que juega solo.",
     "type": "web",
     "play": "https://gavilanbe.github.io/poke-wars/",
     "repo": "https://github.com/gavilanbe/poke-wars",
