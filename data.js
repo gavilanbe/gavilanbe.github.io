@@ -21,7 +21,6 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/barcanueva",
     "thumb": "thumbs/barcanueva.jpg",
     "wip": false,
-    "new": true,
     "kind": "juego",
     "model": "opus-5.5"
   },
@@ -781,6 +780,19 @@ const GAMES = [
     "wip": false,
     "kind": "juego",
     "model": "opus-4.7"
+  },
+  {
+    "name": "srak-l-zit-2",
+    "title": "🪳 SRAK L ZIT · سراق الزيت",
+    "tagline": "En dariya, a la cucaracha se la llama «ladrona de aceite», y este juego se lo toma al pie de la letra: sigilo en 3D con aspecto de pixel art por la cocina, el salón, el patio y el hanout de una casa de Marrakech. Vuela a lo alto de los muebles, haz resbalar a la jadda con una gota y vuelve al agujero antes de que amanezca. Con cinemáticas, orquesta árabe sintetizada, móvil y PWA.",
+    "type": "web",
+    "play": "https://gavilanbe.github.io/srak-l-zit-2/",
+    "repo": "https://github.com/gavilanbe/srak-l-zit-2",
+    "thumb": "thumbs/srak-l-zit-2.jpg",
+    "wip": false,
+    "new": true,
+    "kind": "juego",
+    "model": "opus-5.5"
   },
   {
     "name": "stratecorum-terminal",
