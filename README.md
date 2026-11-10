@@ -93,7 +93,7 @@ todo lo que usa el plató).
   "wip": false,                                          // cinta adhesiva "WIP"
   "new": true,                                           // pegatina "NUEVO"
   "kind": "juego",
-  "model": "astra"            // edición de plástico: "opus-5.5" | "astra" | "fable-5.1" | "fable" | "opus-4.8" | "opus-4.7" | "opus-4.6"
+  "model": "astra"            // edición de plástico: "opus-5.5" | "astra" | "fable-5.2" | "fable-5.1" | "fable" | "opus-4.8" | "opus-4.7" | "opus-4.6"
 }
 ```
 
@@ -106,3 +106,5 @@ El cartucho **TRAZO** es de edición `astra` (plástico fosforito) y se publica 
 El cartucho **NAGU & GAVI · El corazón de la selva** también es `astra`: [jugar](https://gavilanbe.github.io/nagu-gavi/) · [código](https://github.com/gavilanbe/nagu-gavi). Incluye intro con retratos parlantes, cinco semillas de sol y 36 plumas.
 
 El cartucho **INVOCA** (ajedrez de bestias isométrico en micro pixel art) es de edición `fable-5.1` (hielo): [jugar](https://gavilanbe.github.io/invoca/) · [código](https://github.com/gavilanbe/invoca).
+
+El cartucho **CEBA** (aventura 3D tipo Ocarina de una cebolla dulce, con arte estilo picoCAD) estrena la edición `fable-5.2` (coral): [jugar](https://gavilanbe.github.io/ceba/) · [código](https://github.com/gavilanbe/ceba).

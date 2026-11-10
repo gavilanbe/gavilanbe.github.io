@@ -94,6 +94,7 @@ a{color:inherit}
 [data-ed="opus-4.8"]{--p1:#fbe29a;--p2:#d9a93f;--p3:#9c6f16;--pi:#7c5610}
 [data-ed="fable"]{--p1:#c29bf8;--p2:#9058ea;--p3:#5b22b8;--pi:#5b22b8}
 [data-ed="fable-5.1"]{--p1:#e6f7ff;--p2:#ade0fb;--p3:#62b3e3;--pi:#1f7fae}
+[data-ed="fable-5.2"]{--p1:#ffe1d6;--p2:#ff9d86;--p3:#e2573f;--pi:#a32a17}
 [data-ed="astra"]{--p1:#e2ffb0;--p2:#abec62;--p3:#6cbf28;--pi:#3f8a14}
 [data-ed="opus-5.5"]{--p1:#fff4fb;--p2:#dcd2f7;--p3:#b7c7f2;--pi:#7a5bb5}
 
@@ -801,12 +802,13 @@ a{color:inherit}
 (() => {
 'use strict';
 // Los destacados salen antes en la cinta de la consola.
-const FEATURED = ['westieware','glup','invoca','nagu-gavi','trazo','chromara','isomate','spore-quest','rana-gba','bitxo','sprout-game','nahugavi','gacha-zoo','libreta','makinamon','doodli','chef-game','poke-autobattler','short-hike-demo'];
+const FEATURED = ['ceba','westieware','glup','invoca','nagu-gavi','trazo','chromara','isomate','spore-quest','rana-gba','bitxo','sprout-game','nahugavi','gacha-zoo','libreta','makinamon','doodli','chef-game','poke-autobattler','short-hike-demo'];
 
 // Cada modelo es una edición de plástico con su plató.
 const EDITIONS = {
   'opus-5.5':  {name:'Holográfico',  model:'Opus 5.5',  studio:'#f1cbe5', accent:'#7a3aa0'},
   'astra':     {name:'Fosforito',    model:'Astra',     studio:'#c2e57e', accent:'#2f6b0c'},
+  'fable-5.2': {name:'Coral',        model:'Fable 5.2', studio:'#ffb9a6', accent:'#a32a17'},
   'fable-5.1': {name:'Hielo',        model:'Fable 5.1', studio:'#a9d9f0', accent:'#10668f'},
   'fable':     {name:'Uva atómica',  model:'Fable 5',   studio:'#b59bf2', accent:'#4b1a9e'},
   'opus-4.8':  {name:'Oro',          model:'Opus 4.8',  studio:'#efc267', accent:'#7c5610'},

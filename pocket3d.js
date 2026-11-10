@@ -144,12 +144,13 @@ async function main() {
       'opus-4.8': () => new SM({color: '#e4b24b', metalness: .9, roughness: .26}),
       'fable': () => new SM({color: '#9b5cf2', roughness: .15, transparent: true, opacity: .84, emissive: '#3b0f8a', emissiveIntensity: .25}),
       'fable-5.1': () => new SM({color: '#b8e4fb', roughness: .1, transparent: true, opacity: .78, emissive: '#2a7fb0', emissiveIntensity: .15}),
+      'fable-5.2': () => new SM({color: '#ff8f76', roughness: .12, transparent: true, opacity: .82, emissive: '#b3321c', emissiveIntensity: .22}),
       'astra': () => new SM({color: '#a9ec63', roughness: .14, transparent: true, opacity: .84, emissive: '#48b51a', emissiveIntensity: .3}),
       'opus-5.5': () => new PM({color: '#f3eefb', metalness: .45, roughness: .16, iridescence: 1, iridescenceIOR: 1.8, iridescenceThicknessRange: [160, 860], clearcoat: 1}),
     }[id];
     return edMats[id] = f ? f() : new PM({color: '#cbc4b8', roughness: .5});
   }
-  const CLEAR = new Set(['fable', 'fable-5.1', 'astra']);
+  const CLEAR = new Set(['fable', 'fable-5.1', 'fable-5.2', 'astra']);
   const pcbMat = new SM({roughness: .6, map: canvasTex(256, 256, x => {
     x.fillStyle = '#1d6e3e'; x.fillRect(0, 0, 256, 256);
     x.strokeStyle = '#48b074'; x.lineWidth = 2; for (let i = 0; i < 14; i++) { x.beginPath(); const a = 20 + i * 16; x.moveTo(a, 200); x.lineTo(a, 120 - (i % 4) * 14); x.lineTo(a + 30, 90 - (i % 3) * 10); x.stroke(); }

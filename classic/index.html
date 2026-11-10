@@ -167,6 +167,7 @@
   .chip b{margin-left:7px; font-weight:500; opacity:.7; font-size:10px}
   .chip:hover{opacity:1; translate:0 -1px}
   .chip.on{opacity:1; box-shadow:0 0 0 2px var(--night),0 0 0 4px var(--accent); translate:0 -1px}
+  .chip.m-f52{background:linear-gradient(110deg,#5a1d14,#a8452f 42%,#7a2a3a); color:#fff1ea}
   .chip.m-f51{background:linear-gradient(110deg,#2c2141,#28464e 42%,#544063); color:#f4eeff}
   .chip.m-fable{background:linear-gradient(110deg,#e8dfff,#d8eff5 37%,#eef3d7 72%,#fce1ec); color:#453855}
   .chip.m-o55{background:linear-gradient(115deg,#0e3a2b,#1b5540 40%,#2a7356 66%,#c49a3a); color:#fff0a6; border-color:#c49a3a6b}
@@ -255,6 +256,8 @@
   .tier-astra .band,.tier-astra .plate{color:#e1e9d1ad;text-shadow:0 1px 0 #0006}
   .chip.m-astra,.mchip.astra{background:linear-gradient(115deg,#174455,#2e6780 48%,#213556);color:#ffe48a;border:1px solid #75a6b16b}
   .tier-fable{--edge:#b1a4c7;--g:linear-gradient(120deg,#f0e3fa,#daecf6 26%,#dcecdc 52%,#f1e6cf 74%,#edd5e9)}
+  .tier-f52{--edge:#7a2a1c;--g:linear-gradient(115deg,#c9523a,#ff9d86 24%,#ffc9a8 44%,#e2573f 68%,#a8392a 89%)}
+  .tier-f52 .band,.tier-f52 .plate{color:#4a140bcc}
   .tier-f51{--edge:#463c58;--g:linear-gradient(115deg,#3d314e,#37515b 24%,#46665d 44%,#65516f 68%,#41374d 89%)}
   .tier-o55{--edge:#0f3d2d;--g:linear-gradient(125deg,#0f3d2d,#1d6247 28%,#2f8660 50%,#1b5540 70%,#b88f35 92%)}
   .tier-o55 .band,.tier-o55 .plate{color:#fff0c8b0;text-shadow:0 1px 0 #0006}
@@ -561,6 +564,11 @@
     background-size:280% 100%; color:#3A2140; border:1px solid rgba(58,33,64,.28);
     animation:foil 7s linear infinite;
   }
+  .mchip.f52{
+    background:linear-gradient(110deg,#ff9d86,#ffd0a8,#ff7a8a,#ffb37a,#ff9d86);
+    background-size:280% 100%; color:#4a140b; border:1px solid rgba(74,20,11,.4);
+    animation:foil 7s linear infinite;
+  }
   .mchip.f51{
     background:linear-gradient(110deg,#3A2A5A,#1E4A5E,#2E5A44,#5A3E6E,#3A2A5A);
     background-size:280% 100%; color:#F4EEFF; border:1px solid rgba(58,33,64,.55);
@@ -807,6 +815,7 @@
     </div>
     <div class="chips" id="chips" role="group" aria-label="Modelo que creó el juego">
       <button class="chip m-astra" data-m="astra" type="button" title="Juegos construidos con OpenAI Astra">✦ ASTRA<b></b></button>
+      <button class="chip m-f52" data-m="fable-5.2" type="button" title="Juegos construidos con Claude Fable 5.2">✦ FABLE 5.2<b></b></button>
       <button class="chip m-f51" data-m="fable-5.1" type="button" title="Juegos construidos con Claude Fable 5.1">✦ FABLE 5.1<b></b></button>
       <button class="chip m-fable" data-m="fable" type="button" title="Juegos construidos con Claude Fable 5">✦ FABLE 5<b></b></button>
       <button class="chip m-o55" data-m="opus-5.5" type="button" title="Juegos construidos con Claude Opus 5.5">✦ OPUS 5.5<b></b></button>
@@ -849,6 +858,7 @@
   <div class="legend">
     <span>Cada juego lleva la pegatina del modelo que lo construyó conmigo:</span>
     <span class="mchip astra">✦ ASTRA</span>
+    <span class="mchip f52">✦ FABLE 5.2</span>
     <span class="mchip f51">✦ FABLE 5.1</span>
     <span class="mchip fable">✦ FABLE 5</span>
     <span class="mchip o55">✦ OPUS 5.5</span>
@@ -932,6 +942,7 @@
 
   const MCHIP = {
     'astra': ['astra', '✦ ASTRA', 'Construido con OpenAI Astra'],
+    'fable-5.2':['f52',   '✦ FABLE 5.2', 'Construido con Claude Fable 5.2'],
     'fable-5.1':['f51',   '✦ FABLE 5.1', 'Construido con Claude Fable 5.1'],
     'fable':    ['fable', '✦ FABLE 5',   'Construido con Claude Fable 5'],
     'opus-5.5': ['o55',   '✦ OPUS 5.5', 'Construido con Claude Opus 5.5'],
@@ -967,7 +978,7 @@
     document.querySelectorAll('.slot3d[data-name]').forEach(el => { if (el.dataset.name === g.name) el.classList.add('played'); });
   }
 
-  const TIER = {'astra':'tier-astra','fable-5.1':'tier-f51','fable':'tier-fable','opus-5.5':'tier-o55','opus-4.8':'tier-o48','opus-4.7':'tier-o47','opus-4.6':'tier-o46'};
+  const TIER = {'astra':'tier-astra','fable-5.2':'tier-f52','fable-5.1':'tier-f51','fable':'tier-fable','opus-5.5':'tier-o55','opus-4.8':'tier-o48','opus-4.7':'tier-o47','opus-4.6':'tier-o46'};
   function cartSlot(g, eager, num){
     const el = document.createElement('div');
     el.className = 'slot3d reveal' + (played.has(g.name) ? ' played' : '');

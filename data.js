@@ -65,6 +65,19 @@ const GAMES = [
     "model": "opus-4.6"
   },
   {
+    "name": "ceba",
+    "title": "🧅 CEBA",
+    "tagline": "Aventura 3D tipo Ocarina en un mundo-cebolla donde no llueve: toda el agua la ha llorado alguien. Ceba, la cebolla dulce, pierde capas para encoger, hacer llorar a plagas y estatuas y dejar mudas que pesan. Arte estilo picoCAD con paleta PICO-8, pueblo, mazmorra con enigmas, jefa y un menú de pausa que se pela capa a capa.",
+    "type": "web",
+    "play": "https://gavilanbe.github.io/ceba/",
+    "repo": "https://github.com/gavilanbe/ceba",
+    "thumb": "thumbs/ceba.jpg",
+    "wip": false,
+    "new": true,
+    "kind": "juego",
+    "model": "fable-5.2"
+  },
+  {
     "name": "celda",
     "title": "🗡️ Celda",
     "tagline": "Un action-RPG top-down con alma de Game Boy, en canvas puro y sin una sola dependencia.",
@@ -569,7 +582,6 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/poke-wars",
     "thumb": "thumbs/poke-wars.jpg",
     "wip": false,
-    "new": true,
     "kind": "juego",
     "model": "opus-5.5"
   },
@@ -790,7 +802,6 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/srak-l-zit-2",
     "thumb": "thumbs/srak-l-zit-2.jpg",
     "wip": false,
-    "new": true,
     "kind": "juego",
     "model": "opus-5.5"
   },
