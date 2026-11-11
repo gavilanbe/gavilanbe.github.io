@@ -1,0 +1,34 @@
+<!doctype html><meta charset="utf-8"><title>taller</title>
+<style>
+@font-face{font-family:"Bricolage Grotesque";src:url(../fonts/bricolage-latin.woff2) format("woff2");font-weight:200 800;font-stretch:75% 100%}
+@font-face{font-family:"JetBrains Mono";src:url(../fonts/jbmono-latin.woff2) format("woff2");font-weight:100 800}
+html,body{margin:0;height:100%;background:#2a1d5c}canvas{width:100vw;height:100vh;display:block}
+</style>
+<script type="importmap">{"imports":{"three":"../node_modules/three/build/three.module.js","three/addons/":"../node_modules/three/examples/jsm/"}}</script>
+<canvas id="gl"></canvas>
+<script src="../data.js"></script>
+<script type="module">
+import * as THREE from 'three';
+import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
+import {fontsReady, blob} from './kit.js';
+import {edition, splitTitle} from '../editions.js';
+await fontsReady();
+const q = new URLSearchParams(location.search), name = q.get('a') || 'cart';
+const r = new THREE.WebGLRenderer({canvas: document.getElementById('gl'), antialias: true}); r.setPixelRatio(2); r.setSize(innerWidth, innerHeight, false);
+r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap;
+const scene = new THREE.Scene(); scene.background = new THREE.Color('#2a1d5c');
+scene.environment = new THREE.PMREMGenerator(r).fromScene(new RoomEnvironment(), .04).texture; scene.environmentIntensity = .4;
+scene.add(new THREE.HemisphereLight('#c9c0ff', '#5a3b52', 1.2));
+const sun = new THREE.DirectionalLight('#ffd0a0', 2.6); sun.position.set(-3, 4, 3); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, {left: -2, right: 2, top: 2, bottom: -2}); sun.shadow.bias = -.0005; sun.shadow.normalBias = .01; scene.add(sun);
+const floor = new THREE.Mesh(new THREE.CircleGeometry(4, 40), new THREE.MeshStandardMaterial({color: '#7a4a8a', roughness: .9})); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+const games = GAMES.map(g => ({...g, ...splitTitle(g.title), ed: edition(g.model), thumbS: g.thumb ? '../' + g.thumb.replace(/^thumbs\/([^/?]+)\.\w+/, 'thumbs/s/$1.webp') : ''}));
+const mod = await import(`./${q.get('m') || name}.js`);
+const obj = await mod.lab(games, q);
+scene.add(obj);
+const box = new THREE.Box3().setFromObject(obj), c = box.getCenter(new THREE.Vector3()), s = box.getSize(new THREE.Vector3()).length();
+const cam = new THREE.PerspectiveCamera(28, innerWidth / innerHeight, .01, 50);
+const d = +(q.get('d') || 1) * s * 1.25, yaw = +(q.get('yaw') || .6), pitch = +(q.get('pitch') || .45);
+cam.position.set(c.x + Math.sin(yaw) * Math.cos(pitch) * d, c.y + Math.sin(pitch) * d, c.z + Math.cos(yaw) * Math.cos(pitch) * d); cam.lookAt(c);
+function f(){ requestAnimationFrame(f); r.render(scene, cam); } f();
+setTimeout(() => window.ready = true, 900);
+</script>

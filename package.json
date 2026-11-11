@@ -3,12 +3,11 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "node scripts/build.mjs",
+    "bundle": "node scripts/bundle.mjs",
+    "build": "node scripts/bundle.mjs && node scripts/build.mjs",
     "test": "node scripts/check.cjs && node scripts/check-classic.cjs",
     "smoke": "node scripts/smoke.mjs",
-    "carts": "node scripts/carts.mjs",
-    "thumbs": "node scripts/thumbs.mjs",
-    "vendor": "node scripts/vendor-three.mjs"
+    "thumbs": "node scripts/thumbs.mjs"
   },
   "devDependencies": {
     "css-tree": "3.1.0",

@@ -1,58 +1,56 @@
 <div align="center">
 
-# 🎮 gavilanbe POCKET
+# 🎮 gavilanbe 64
 
-**El catálogo de todos mis juegos: cada uno, en un cartucho del color del modelo que lo hizo. Elige uno, mételo en la consola y pulsa START.**
+**Una habitación de los 90 con todos mis juegos en cartucho, cada uno del color del modelo que lo hizo. Coge uno de la pared, mételo en la consola y pulsa START.**
 
 [![jugar](https://img.shields.io/badge/▶_abrir_la_colección-ff5b35?style=for-the-badge&labelColor=1c1a22)](https://gavilanbe.github.io/)
 
 </div>
 
-![gavilanbe POCKET](og.jpg)
-
-Una página estática sin build: los juegos viven en [`data.js`](data.js), las ediciones de plástico
-en [`editions.js`](editions.js), la interfaz en [`app.js`](app.js) y la consola 3D en
-[`stage.js`](stage.js) (three.js empaquetado en [`lib/`](lib/) con solo lo que usa).
+![gavilanbe 64](og.jpg)
 
 ## Cómo funciona
 
-- **El catálogo.** A la izquierda, papel: titular, buscador y un estante por modelo (lo más reciente,
-  primero). Cada juego es un **cartucho del color de su modelo**, y no es un dibujo: es un render 3D
-  horneado (`carts/<slug>.webp`) con el mismo modelo y la misma luz que la consola, con su captura,
-  su título y el sello del modelo en la etiqueta. Los juegos de terminal llevan la banda `>_ TERMINAL`.
-- **El plató.** A la derecha, siempre a la vista, la **gavilanbe POCKET** en 3D con luz de estudio
-  sobre el color de la edición del juego que tiene dentro. Al elegir un cartucho, **sale volando de
-  su hueco, gira y entra por la boca de la consola**; el que estaba dentro vuelve a su sitio en el
-  estante. La consola da un respingo, se enciende el LED y la pantalla arranca.
-- **La pantalla** es un LCD de 160×100 pintado a resolución nativa: arranque con el logo, carátula
-  del juego y `START` parpadeando. En los juegos de terminal teclea el `git clone`.
-- **START** (el botón grande, `↵`, o el botón A o la pantalla de la propia consola) mete la cámara
-  en la pantalla y abre el juego. En los de terminal copia el comando.
-- **La consola se toca**: se inclina hacia el cursor, se arrastra para girarla, la cruceta cambia de
-  cartucho, B saca uno al azar y SELECT cambia la carcasa (cinco colores).
-- **En el móvil** el plató es la portada; al tocar un cartucho sube a pantalla completa y, al
-  cerrarlo, queda una barra con lo que hay en la consola.
+- **Pantalla de título.** El emblema se monta, el logo cae letra a letra y espera un START. Al pulsarlo,
+  la cámara sale de dentro de la tele y descubre la habitación.
+- **La habitación** es una maqueta en corte de un dormitorio al atardecer, modelada por código con
+  pocos polígonos y color por vértice (three.js): la **gavilanbe 64** con su mando de tres cuernos
+  sobre la alfombra, la tele de tubo con Gavi (el gavilán de peluche) encima, la cama bajo la ventana
+  y una pared entera con la colección. El reloj marca la hora de verdad.
+- **La colección.** Una columna de baldas por modelo, con su placa y su color. Cada cartucho lleva la
+  captura del juego, su título y el sello del modelo; los de terminal, la marca `>_`. Al pasar el
+  ratón se asoman y dicen su nombre.
+- **Elegir.** Al tocar un cartucho sale volando, gira y entra en la consola; el que estaba dentro
+  vuelve a su balda. La tele arranca con el logo y enseña la carátula, y su resplandor toma el color
+  del modelo.
+- **START** (el botón, `↵` o tocar la pantalla de la tele) mete la cámara en la tele y abre el juego.
+  En los de terminal copia el `git clone`.
+- **Tres vistas** (Habitación, Colección, Consola; teclas `1` `2` `3`), flechas para cambiar de
+  cartucho o moverse por la pared, y `B` para volver.
+- **Buscar** (`/`): un panel con buscador, filtro por modelo y la lista completa. Lo que no coincide
+  se hunde en la pared. Es también la vía rápida en el móvil y lo que queda si no hay WebGL.
 - **Enlace directo**: `https://gavilanbe.github.io/#<slug>` abre con ese cartucho puesto.
-- Sin WebGL, en el sitio de la consola queda la foto del cartucho y todo lo demás funciona igual.
 
-Las versiones anteriores siguen en las etiquetas git `pocket-v8` (la consola con cinta de cartuchos,
-estuches y álbum de cromos) y anteriores; la primera, en [`/classic/`](https://gavilanbe.github.io/classic/).
+Las versiones anteriores siguen en las etiquetas git (`pocket-v8` y anteriores); la primera, en
+[`/classic/`](https://gavilanbe.github.io/classic/).
 
 ## Desarrollo
 
-Para verla en local basta un servidor estático: `python3 -m http.server 4391` y abrir
-`http://127.0.0.1:4391/`.
+El código vive en [`g64/`](g64/): `kit.js` (herramientas de modelado), `cart.js`, `console.js`,
+`tv.js`, `room.js` (las piezas), `scene.js` (luz, cámara, vuelo) y `main.js` (interfaz).
+`g64/index.html` es la página de desarrollo, que carga los módulos sueltos; la de la raíz y
+`lib/g64/` **se generan** con `npm run bundle`.
 
-- `npm ci && npm test`: regresiones sin navegador (datos, miniaturas, cartuchos horneados, ediciones,
-  ids, fuentes y que `lib/` exporte lo que usa el plató) y las de la versión clásica.
-- `npm run smoke`: prueba en un Chromium de verdad (Playwright), en escritorio y móvil: carga, mete
-  un cartucho, pulsa START, filtra y busca. Con `-- --shots` deja capturas en `dist/smoke/`.
-  La primera vez: `npx playwright install chromium`.
-- `npm run carts`: hornea los cartuchos nuevos o cambiados (`-- --all` para todos, obligado si se
-  toca el modelo 3D, la etiqueta o `editions.js`).
+- Para trabajar: `python3 -m http.server 4391` y abrir `http://127.0.0.1:4391/g64/`.
+  `g64/lab.html?a=cart` (o `console`, `tv`) enseña una pieza suelta.
+- `npm run bundle`: empaqueta `g64/` con three.js en `lib/g64/` y regenera `index.html`.
+  **Hay que ejecutarlo antes de publicar** cualquier cambio en `g64/` o `editions.js`.
+- `npm ci && npm test`: regresiones sin navegador (datos, miniaturas, ediciones, ids, que el paquete
+  esté al día y que la colección quepa en la pared).
+- `npm run smoke`: prueba en Chromium (Playwright), escritorio y móvil, sobre la página empaquetada.
+  Con `-- --shots` deja capturas en `dist/smoke/`. La primera vez: `npx playwright install chromium`.
 - `npm run thumbs`: miniaturas pequeñas (`thumbs/s/*.webp`, 320×200); necesita ImageMagick.
-- `npm run vendor`: vuelve a empaquetar three.js si `stage.js` usa algo nuevo de `THREE`.
-- `npm run build`: valida y copia lo publicable en `dist/` (opcional; Pages sirve la raíz tal cual).
 
 ## Añadir un juego
 
@@ -75,14 +73,16 @@ Para verla en local basta un servidor estático: `python3 -m http.server 4391` y
 }
 ```
 
-2. Deja su captura en `thumbs/mi-juego.jpg` (640×400) y ejecuta `npm run thumbs && npm run carts`.
-3. Quita el `"new": true` de la hornada anterior (y `npm run carts` rehace sus etiquetas).
-4. `npm test`, commit y push a `main`.
+2. Deja su captura en `thumbs/mi-juego.jpg` (640×400) y ejecuta `npm run thumbs`.
+3. Quita el `"new": true` de la hornada anterior.
+4. `npm test`, commit y push a `main`. Los datos se leen al cargar: **no hace falta reempaquetar**.
 
-**Un modelo nuevo** es una línea en `EDITIONS` de [`editions.js`](editions.js): nombre, color del
-plástico, color del plató, tinta y material (`rough`, `coat`, `metal`, `irid` para iridiscente,
-`opacity` + `board` para translúcido). Va arriba del todo si es el más reciente. Después,
-`npm run carts -- --all`.
+**Un modelo nuevo** es una línea en `EDITIONS` de [`editions.js`](editions.js) (nombre, color del
+plástico, color de fondo, tinta y material) y después `npm run bundle`.
+
+**La pared está llena**: son 16 columnas de seis cartuchos y la colección ocupa las 16. Cuando un
+modelo necesite una columna más, `npm test` avisará y habrá que ampliar la estantería en
+`g64/room.js` (más filas o cartuchos algo más pequeños).
 
 El cartucho **TRAZO** es de edición `astra` (plástico fosforito) y se publica en [gavilanbe.github.io/trazo/](https://gavilanbe.github.io/trazo/). Su código vive en [gavilanbe/trazo](https://github.com/gavilanbe/trazo).
 
