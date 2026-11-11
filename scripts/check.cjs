@@ -1,184 +1,67 @@
-// Regresiones de gavilanbe POCKET (jsdom; el plató 3D se prueba en el navegador).
-const {JSDOM, VirtualConsole} = require('jsdom');
+// Regresiones de gavilanbe POCKET sin navegador: datos, ficheros y coherencia entre piezas.
+// El plató 3D y la interacción se prueban en el navegador: npm run smoke.
 const css = require('css-tree');
+const esbuild = require('esbuild');
 const fs = require('node:fs');
 const path = require('node:path');
 const assert = require('node:assert/strict');
 const root = path.join(__dirname, '..');
-const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
-const data = fs.readFileSync(path.join(root, 'data.js'), 'utf8');
-// scripts en línea (el del cargador y el módulo de la interfaz), en su orden
-const ui = [...html.matchAll(/<script(?: type="module")?>([\s\S]*?)<\/script>/g)].map(m => m[1]).join('\n');
-
-const cssErrors = [];
-const style = html.match(/<style>([\s\S]*?)<\/style>/)[1];
-css.parse(style, {onParseError: e => cssErrors.push(e.message)});
-assert.deepEqual(cssErrors, [], 'CSS sin errores');
-assert.ok(fs.existsSync(path.join(root, 'pocket3d.js')), 'existe el plató 3D');
-// three.js empaquetado en casa (lib/): exporta todo lo que usa el plató (si no, `npm run vendor`)
-const p3d = fs.readFileSync(path.join(root, 'pocket3d.js'), 'utf8');
-const vendor = fs.readFileSync(path.join(root, 'lib/three.pocket.js'), 'utf8');
-const exported = new Set([...vendor.matchAll(/export\s*\{([^}]*)\}/g)].flatMap(m => m[1].split(',').map(s => s.trim().split(/\s+as\s+/).pop())));
-const used = new Set([...p3d.matchAll(/\bTHREE\.([A-Za-z_]\w*)/g)].map(m => m[1]).concat([...p3d.matchAll(/import\s*\{([^}]*)\}\s*from\s*'\.\/lib\/three\.pocket\.js'/g)].flatMap(m => m[1].split(',').map(s => s.trim()).filter(Boolean))));
-assert.deepEqual([...used].filter(n => !exported.has(n)), [], 'lib/three.pocket.js exporta lo que usa pocket3d.js (npm run vendor)');
-// las fuentes y lo precargado existen
-for (const [, f] of [...style.matchAll(/url\((fonts\/[^)]+)\)/g), ...html.matchAll(/<link rel="(?:module)?preload" href="([^"]+)"/g)]) assert.ok(fs.existsSync(path.join(root, f)), `existe ${f}`);
-
-function fixture({hash = '', storage = {}} = {}) {
-  const errors = [];
-  const vc = new VirtualConsole();
-  vc.on('jsdomError', e => { if (!/Could not parse CSS|Not implemented: HTMLCanvasElement/.test(e.message)) errors.push(e); });
-  const dom = new JSDOM(html, {url: 'http://127.0.0.1:4173/' + hash, runScripts: 'outside-only', pretendToBeVisual: true, virtualConsole: vc});
-  const w = dom.window, d = w.document;
-  for (const [k, v] of Object.entries(storage)) w.localStorage.setItem('pocket:' + k, JSON.stringify(v));
-  w.Element.prototype.scrollIntoView = () => {};
-  const went = [], copied = [];
-  w.__pocketNav = u => went.push(u);
-  Object.defineProperty(w.navigator, 'clipboard', {value: {writeText: t => { copied.push(t); return Promise.resolve(); }}});
-  w.eval(data + '\n;window.GAMES = GAMES;\n' + ui);
-  d.querySelector('#consola').getBoundingClientRect = () => ({top: 0, bottom: 900, left: 0, right: 1440, width: 1440, height: 900});
-  return {dom, w, d, GB: w.GB, errors, went, copied, GAMES: w.GAMES};
-}
-const key = (w, k, extra = {}) => w.document.dispatchEvent(new w.KeyboardEvent('keydown', {key: k, bubbles: true, cancelable: true, ...extra}));
-const sleep = ms => new Promise(r => setTimeout(r, ms));
+const read = f => fs.readFileSync(path.join(root, f), 'utf8');
+const exists = f => fs.existsSync(path.join(root, f.split('?')[0]));
 
 (async () => {
-  // colección, revista y álbum
-  {
-    const {d, w, GB, errors, GAMES} = fixture();
-    const web = GAMES.filter(g => g.type === 'web'), term = GAMES.filter(g => g.type !== 'web');
-    assert.equal(new Set(GAMES.map(g => g.name)).size, GAMES.length, 'slugs únicos');
-    const ids = [...d.querySelectorAll('[id]')].map(e => e.id);
-    assert.equal(new Set(ids).size, ids.length, 'ids únicos');
-    for (const g of GAMES) {
-      assert.ok(fs.existsSync(path.join(root, g.thumb.split('?')[0])), `existe ${g.thumb}`);
-      const s = GB.games.find(x => x.name === g.name).thumbS;
-      if (g.thumb) assert.ok(fs.existsSync(path.join(root, s.split('?')[0])), `existe ${s} (npm run thumbs)`);
-      assert.ok(/^https:\/\/github\.com\/gavilanbe\//.test(g.repo), `repo: ${g.name}`);
-      if (g.type === 'web') assert.ok(/^https:\/\//.test(g.play), `enlace de juego: ${g.name}`);
+  const html = read('index.html'), app = read('app.js'), stage = read('stage.js');
+  const GAMES = new Function(read('data.js') + ';return GAMES')();
+  const {EDITIONS, SHELLS, splitTitle} = await import(path.join(root, 'editions.js'));
+
+  // CSS y JavaScript sin errores de sintaxis
+  const cssErrors = [];
+  css.parse(html.match(/<style>([\s\S]*?)<\/style>/)[1], {onParseError: e => cssErrors.push(e.message)});
+  assert.deepEqual(cssErrors, [], 'CSS sin errores');
+  for (const f of ['app.js', 'stage.js', 'editions.js']) await esbuild.transform(read(f), {loader: 'js', format: 'esm'});
+
+  // la colección
+  assert.equal(new Set(GAMES.map(g => g.name)).size, GAMES.length, 'slugs únicos');
+  const manifest = JSON.parse(read('carts/manifest.json'));
+  for (const g of GAMES) {
+    if (g.thumb) {                                // sin captura, la etiqueta se dibuja sola
+      assert.ok(exists(g.thumb), `existe ${g.thumb}`);
+      assert.ok(exists(`thumbs/s/${g.name}.webp`), `existe thumbs/s/${g.name}.webp (npm run thumbs)`);
     }
-    for (const f of ['favicon.svg', 'apple-touch-icon.png', 'og.jpg', 'classic/index.html']) assert.ok(fs.existsSync(path.join(root, f)), `existe ${f}`);
-    assert.equal(d.querySelectorAll('#cabinet .sp').length, web.length, 'un lomo por cartucho en la estantería');
-    assert.equal(d.querySelectorAll('#drawer .fd').length, term.length, 'un disquete por juego de terminal en el archivador');
-    assert.equal(d.querySelectorAll('#cabinet .divider').length, new Set(web.map(g => g.model)).size, 'un separador por edición');
-    // cada edición está junta, en orden alfabético
-    const spines = [...d.querySelectorAll('#cabinet .sp')].map(el => GB.games.find(g => g.name === el.dataset.name));
-    for (let i = 1; i < spines.length; i++) if (spines[i].model === spines[i - 1].model) assert.ok(spines[i - 1].label.localeCompare(spines[i].label, 'es') <= 0, 'orden alfabético en la balda');
-    assert.equal(new Set(spines.map((g, i) => i && spines[i - 1].model !== g.model ? g.model : null).filter(Boolean)).size, new Set(web.map(g => g.model)).size - 1, 'ediciones contiguas');
-    assert.equal(d.querySelectorAll('#cabinet .case').length, new Set(web.map(g => g.model)).size, 'un estuche por modelo');
-    assert.equal(d.querySelectorAll('#cabinet .slot .sp .c3d .fr').length, web.length, 'cada cartucho es una caja 3D en su ranura');
-    assert.equal(d.querySelectorAll('#tabs button').length, new Set(GAMES.map(g => g.model)).size + 1, 'índice + una página por modelo');
-    assert.equal(d.querySelectorAll('#spread .idx-row').length, new Set(GAMES.map(g => g.model)).size, 'el índice lista cada modelo'); assert.equal(d.querySelector('#pack-btn').disabled, true, 'sin sobres al empezar');
-    const firstId = d.querySelector('#tabs button').dataset.ed;
-    d.querySelectorAll('#tabs button')[1].click(); await sleep(900); assert.notEqual(d.querySelector('#spread .page').dataset.ed, firstId, 'las pestañas pasan de página');
-    assert.ok(d.querySelectorAll('#spread .cslot').length > 0, 'huecos vacíos al empezar');
-    assert.equal(d.querySelectorAll('#mkeys .mkey').length, new Set(GAMES.map(g => g.model)).size + 1, 'una tecla por modelo y otra para todos');
-    assert.equal(GB.lists.cart.length, web.length); assert.equal(GB.lists.disk.length, term.length);
-    assert.ok(GB.lists.cart[0].new, 'lo nuevo va primero en la cinta');
-    // arranca con un cartucho dentro y enfocado
-    assert.ok(GB.st.inserted && GB.st.inserted.type === 'web');
-    assert.equal(GB.lists.cart[GB.st.focus], GB.st.inserted);
-    assert.ok(d.querySelector('#ptitle').textContent.includes(GB.st.inserted.label.split(' ')[0]));
-    assert.equal(d.querySelector('#primary-t').textContent, 'Jugar ahora');
-    // búsqueda en el archivo: lo que no coincide se apaga en su sitio
-    const q = d.querySelector('#q');
-    const search = v => { q.value = v; q.dispatchEvent(new w.Event('input', {bubbles: true})); };
-    const lit = () => [...d.querySelectorAll('.sp, .fd')].filter(x => !x.classList.contains('dim')).map(x => x.dataset.name);
-    search('pokemon'); const a = lit(); assert.ok(a.length > 3 && a.length < GAMES.length);
-    assert.ok(d.querySelector('.sp.hit, .fd.hit'), 'resalta lo encontrado');
-    search('POKÉMON'); assert.deepEqual(lit(), a, 'sin tildes ni mayúsculas');
-    search('pokemon terminal'); assert.ok(lit().length && lit().every(n => GAMES.find(g => g.name === n).type === 'terminal'), 'varias palabras');
-    d.querySelector('#q-clear').click(); assert.equal(lit().length, GAMES.length);
-    d.querySelector('.seg [data-type="terminal"]').click(); assert.equal(d.querySelector('#cabinet').hidden, true); assert.equal(d.querySelector('#filebox').hidden, false);
-    d.querySelector('.seg [data-type="all"]').click();
-    search('no-existe-este-juego'); assert.equal(d.querySelector('#empty').hidden, false);
-    d.querySelector('#empty-reset').click(); assert.equal(lit().length, GAMES.length);
-    // inspeccionar: la pieza sale y se puede devolver
-    const insp = d.querySelector('#insp');
-    d.querySelector('.sp[data-name="chromara"]').click();
-    assert.equal(insp.hidden, false); assert.ok(d.querySelector('#i-title').textContent.includes('CHROMARA'));
-    assert.ok(d.querySelector('#obj3d .c3'), 'cartucho en 3D'); assert.equal(d.querySelector('#i-play').getAttribute('href'), GAMES.find(g => g.name === 'chromara').play);
-    d.querySelector('#i-next').click(); assert.ok(!d.querySelector('#i-title').textContent.includes('CHROMARA'), 'hojea la balda');
-    d.dispatchEvent(new w.KeyboardEvent('keydown', {key: 'Escape', bubbles: true}));
-    await sleep(400); assert.equal(insp.hidden, true, 'Esc la devuelve');
-    d.querySelector('.fd[data-name="wirefox"]').click(); assert.ok(d.querySelector('#obj3d .d3'), 'disquete en 3D'); assert.equal(d.querySelector('#i-play').hidden, true);
-    d.querySelector('#i-close').click(); await sleep(400);
-    assert.deepEqual(errors, []); w.close();
+    assert.ok(exists(`carts/${g.name}.webp`) && manifest[g.name], `cartucho horneado de ${g.name} (npm run carts)`);
+    assert.ok(/^https:\/\/github\.com\/gavilanbe\//.test(g.repo), `repo: ${g.name}`);
+    assert.ok(['web', 'terminal'].includes(g.type), `tipo: ${g.name}`);
+    if (g.type === 'web') assert.ok(/^https:\/\//.test(g.play), `enlace de juego: ${g.name}`);
+    assert.ok(EDITIONS[g.model], `el modelo «${g.model}» de ${g.name} tiene edición en editions.js`);
+    if (g.also) assert.ok(EDITIONS[g.also.model], `el segundo modelo de ${g.name} tiene edición`);
+    assert.ok(g.title && g.tagline, `título y frase: ${g.name}`);
   }
+  for (const k of Object.keys(manifest)) assert.ok(GAMES.some(g => g.name === k), `carts/manifest.json no tiene restos: ${k}`);
+  const news = GAMES.filter(g => g.new);
+  assert.ok(news.length <= 6, 'el NUEVO es solo para la última hornada');
 
-  // la cinta, meter, START, disquetes, teclado
-  {
-    const {d, w, GB, errors, went, copied, GAMES} = fixture();
-    const first = GB.st.inserted;
-    d.querySelector('#next').click();
-    const g = GB.lists.cart[GB.st.focus];
-    assert.notEqual(g, first); assert.equal(d.querySelector('#primary-t').textContent, 'Meter en la consola');
-    assert.ok(d.querySelector('#consola').style.getPropertyValue('--studio'), 'el plató toma el color de la edición');
-    d.querySelector('#primary').click();
-    assert.equal(GB.st.inserted, g); assert.equal(w.location.hash, '#/' + g.name);
-    assert.equal(d.querySelector('#primary-t').textContent, 'Jugar ahora');
-    assert.equal(d.querySelector('#newtab').getAttribute('href'), g.play);
-    d.querySelector('#primary').click();
-    assert.deepEqual(went, [g.play], 'START abre el juego');
-    assert.ok(GB.played.has(g.name)); assert.equal(d.querySelector('#pack-n').textContent, '1', 'un sobre por juego arrancado');
-    // abrir el sobre y pegar el cromo
-    d.querySelector('#pack-btn').click(); assert.equal(d.querySelector('#packov').hidden, false);
-    d.querySelector('#pack').click(); await sleep(2000);
-    assert.equal(d.querySelector('#pk-act').hidden, false, 'los cromos salen del sobre');
-    d.querySelector('#pk-paste').click(); await sleep(1200);
-    assert.equal(d.querySelector('#packov').hidden, true); assert.ok(JSON.parse(w.localStorage.getItem('pocket:pasted')).includes(g.name));
-    assert.ok(d.querySelector(`#spread .cromo[data-n="${g.name}"]`), 'el cromo queda pegado en la página de su modelo');
-    assert.equal(d.querySelector('#pack-btn').disabled, true);
-    assert.equal(d.querySelector(`.sp[data-name="${g.name}"] .ok`).hidden, false, 'marca en el lomo');
-    assert.ok(d.querySelector(`.sp[data-name="${g.name}"]`).classList.contains('out'), 'hueco en la estantería');
-    assert.ok(JSON.parse(w.localStorage.getItem('pocket:played')).includes(g.name));
-    assert.equal(JSON.parse(w.localStorage.getItem('pocket:last')), g.name, 'recuerda el último cartucho');
-    // teclado: flechas y Enter
-    const f0 = GB.st.focus;
-    key(w, 'ArrowRight'); assert.equal(GB.st.focus, (f0 + 1) % GB.lists.cart.length);
-    key(w, 'ArrowLeft'); assert.equal(GB.st.focus, f0);
-    d.activeElement.blur(); key(w, 'ArrowLeft'); key(w, 'Enter'); assert.equal(GB.st.inserted, GB.lists.cart[GB.st.focus], 'Enter mete el cartucho');
-    // disquetes
-    d.querySelector('.modes [data-mode="disk"]').click();
-    assert.equal(GB.st.mode, 'disk'); assert.equal(d.querySelector('#primary-t').textContent, 'Meter en el PC');
-    const t = GB.lists.disk[GB.st.focus];
-    d.querySelector('#primary').click(); assert.equal(GB.st.disk, t);
-    assert.equal(d.querySelector('#pcmd').hidden, false); assert.ok(d.querySelector('#pcmd-code').textContent.includes('git clone ' + t.repo));
-    d.querySelector('#primary').click(); await sleep(0);
-    assert.ok(copied[0].startsWith('git clone ' + t.repo), 'copia el comando'); assert.equal(went.length, 1, 'un disquete no navega');
-    // sorpresa: vuelve a los cartuchos
-    d.querySelector('.modes [data-mode="cart"]').click();
-    key(w, 'r'); assert.equal(GB.st.mode, 'cart'); assert.equal(GB.st.inserted.type, 'web');
-    // del archivo a la consola
-    // (otro cartucho que no sea el del cromo pegado: el del día cambia con la fecha)
-    const pick = g.name === 'invoca' ? 'chromara' : 'invoca';
-    d.querySelector(`.sp[data-name="${pick}"]`).click(); d.querySelector('#i-insert').click(); await sleep(1100);
-    assert.equal(GB.st.inserted.name, pick); assert.equal(d.querySelector('#insp').hidden, true);
-    const cromo = d.querySelector('#spread .cromo'); const cn = cromo.dataset.n;
-    cromo.click(); assert.equal(d.querySelector('#insp').hidden, false, 'el cromo saca su cartucho');
-    d.querySelector('#i-insert').click(); await sleep(1100); assert.equal((GB.st.inserted.name === cn || GB.st.disk.name === cn), true);
-    // atajos
-    key(w, '/'); assert.equal(d.activeElement, d.querySelector('#q')); d.activeElement.blur();
-    d.querySelector('#shells [data-shell="cereza"]').click(); assert.equal(JSON.parse(w.localStorage.getItem('pocket:shell')), 'cereza');
-    key(w, 's'); assert.equal(JSON.parse(w.localStorage.getItem('pocket:shell')), 'kiwi', 'S cambia la carcasa');
-    for (const k of ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a']) key(w, k);
-    assert.ok(d.querySelector('.toast').textContent.includes('dorada'), 'Konami');
-    d.querySelector('#music').click(); assert.equal(d.querySelector('#music').getAttribute('aria-pressed'), 'true');
-    assert.deepEqual(errors, []); w.close();
-  }
+  // ediciones y carcasas bien formadas
+  const hex = /^#[0-9a-f]{6}$/i;
+  for (const [id, e] of Object.entries(EDITIONS)) for (const k of ['plastic', 'studio', 'ink']) assert.ok(hex.test(e[k]), `${id}.${k}`);
+  for (const s of SHELLS) for (const k of ['body', 'face', 'pad', 'ab']) assert.ok(hex.test(s[k]), `carcasa ${s.id}.${k}`);
+  assert.deepEqual(splitTitle('🧅 CEBA'), {emoji: '🧅', label: 'CEBA', sub: '', full: 'CEBA'});
+  assert.equal(splitTitle('🌱 SPROUT · y las 8 semillas').sub, 'y las 8 semillas');
+  assert.equal(splitTitle('🎱 Bingo Español (90 bolas)').label, 'Bingo Español');
+  assert.equal(splitTitle('Sin emoji').label, 'Sin emoji');
 
-  // enlace directo a un disquete y continuar donde lo dejaste
-  {
-    const {GB, errors, w} = fixture({hash: '#/wirefox', storage: {played: ['bitxo', 'no-existe'], shell: 'uva'}});
-    assert.equal(GB.st.mode, 'disk'); assert.equal(GB.st.disk.name, 'wirefox');
-    assert.equal(GB.played.size, 1, 'descarta juegos que ya no existen'); assert.equal(GB.shell, 'uva');
-    assert.deepEqual(errors, []); w.close();
-  }
-  {
-    const {GB, errors, w, d} = fixture({storage: {last: 'chromara'}});
-    assert.equal(GB.st.inserted.name, 'chromara'); assert.equal(GB.firstNote, 'Donde lo dejaste');
-    assert.equal(d.querySelector('#pstate-t').textContent, 'Cartucho dentro');
-    assert.deepEqual(errors, []); w.close();
-  }
-  console.log('PASS: colección, miniaturas, estantería y archivador, búsqueda, inspección, álbum, cinta, meter, START, pegatinas, teclado, disquetes, copiar, sorpresa, atajos, carcasa, Konami, música, enlaces directos y continuar.');
+  // la página y sus piezas
+  const ids = [...html.matchAll(/\sid="([^"]+)"/g)].map(m => m[1]);
+  assert.equal(new Set(ids).size, ids.length, 'ids únicos');
+  const made = [...app.matchAll(/\sid="([^"]+)"/g)].map(m => m[1]);   // los que app.js crea él mismo
+  for (const [, id] of app.matchAll(/\$\('#([\w-]+)'/g)) assert.ok(ids.includes(id) || made.includes(id), `index.html tiene #${id}, que usa app.js`);
+  for (const [, f] of [...html.matchAll(/url\((fonts\/[^)]+)\)/g), ...html.matchAll(/<link rel="(?:module)?preload" href="([^"]+)"/g), ...html.matchAll(/<script[^>]* src="([^"]+)"/g)]) assert.ok(exists(f), `existe ${f}`);
+  for (const f of ['favicon.svg', 'apple-touch-icon.png', 'og.jpg', 'classic/index.html', 'scripts/bake.html']) assert.ok(exists(f), `existe ${f}`);
+
+  // three.js empaquetado en casa (lib/): exporta todo lo que usa el plató (si no, `npm run vendor`)
+  const vendor = read('lib/three.pocket.js');
+  const exported = new Set([...vendor.matchAll(/export\s*\{([^}]*)\}/g)].flatMap(m => m[1].split(',').map(s => s.trim().split(/\s+as\s+/).pop())));
+  const used = new Set([...stage.matchAll(/\bTHREE\.([A-Za-z_]\w*)/g)].map(m => m[1]).concat([...stage.matchAll(/import\s*\{([^}]*)\}\s*from\s*'\.\/lib\/three\.pocket\.js'/g)].flatMap(m => m[1].split(',').map(s => s.trim()).filter(Boolean))));
+  assert.deepEqual([...used].filter(n => !exported.has(n)), [], 'lib/three.pocket.js exporta lo que usa stage.js (npm run vendor)');
+
+  console.log(`✔ ${GAMES.length} juegos, ${Object.keys(EDITIONS).length} ediciones: todo en su sitio.`);
 })().catch(e => { console.error(e); process.exit(1); });

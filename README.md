@@ -2,7 +2,7 @@
 
 # 🎮 gavilanbe POCKET
 
-**Toda mi colección de juegos en cartuchos y disquetes. Elige uno, mételo en la consola y pulsa START.**
+**El catálogo de todos mis juegos: cada uno, en un cartucho del color del modelo que lo hizo. Elige uno, mételo en la consola y pulsa START.**
 
 [![jugar](https://img.shields.io/badge/▶_abrir_la_colección-ff5b35?style=for-the-badge&labelColor=1c1a22)](https://gavilanbe.github.io/)
 
@@ -10,72 +10,49 @@
 
 ![gavilanbe POCKET](og.jpg)
 
-Una sola página estática: los juegos viven en [`data.js`](data.js) y las miniaturas en
-[`thumbs/`](thumbs/). La consola es 3D de verdad (three.js, empaquetado en
-[`lib/`](lib/) con solo lo que usa); el resto es HTML, CSS y JavaScript sin
-build, y las fuentes se sirven desde [`fonts/`](fonts/).
+Una página estática sin build: los juegos viven en [`data.js`](data.js), las ediciones de plástico
+en [`editions.js`](editions.js), la interfaz en [`app.js`](app.js) y la consola 3D en
+[`stage.js`](stage.js) (three.js empaquetado en [`lib/`](lib/) con solo lo que usa).
 
 ## Cómo funciona
 
-- **El cargador**: sol de rayos giratorio, el logo letra a letra en colores que caen y rebotan, un gavilán pixelado que cruza volando, barra arcoíris por celdas y un cierre en iris hacia la pantalla de la consola. Se va en cuanto la consola está lista y el logo ha caído; en la misma sesión (al volver de un juego o recargar) sale con el logo ya puesto y se va casi al momento.
-- **La consola.** *gavilanbe POCKET* en 3D (three.js): carcasa con biseles y la
-  esquina inferior derecha redondeada, costura entre mitades, marco de pantalla
-  con volumen, cruceta con flechas en relieve, botones A/B abombados y un frontal
-  con **mapa de normales generado** (los huecos de los botones y la rejilla del
-  altavoz reaccionan a la luz al girarla). Seis carcasas (**SELECT** o `S`).
-- **La pantalla es un LCD de 160×100 de verdad**: todo se pinta a resolución nativa
-  y se amplía ×3 sin suavizado con rejilla de matriz de puntos. El arranque:
-  retroiluminación, el gavilán pixelado bajando píxel a píxel, *ding*, un brillo
-  del color de la edición, «POCKET» letra a letra y disolución en bloques hasta la
-  pantalla de título con PRESS START. La consola se enciende al abrirse el
-  cargador, así que el primer arranque se ve entero; al cambiar de cartucho es un
-  **arranque en caliente** (el gavilán ya está posado y el resto va más deprisa).
-  A veces hay **error de lectura** y toca soplar (con el botón o con el micrófono).
-- **La cinta**: todos los cartuchos en 3D delante de la consola; `←` `→`, arrastrar,
-  la cruceta o un mando real. START mete la cámara en la pantalla y abre el juego,
-  que se ha ido preparando por detrás (prerender) desde que hubo intención de
-  jugarlo; al volver, la consola te recibe. Los disquetes van a un PC retro que teclea el
-  `git clone`.
-- **Interfaz de videojuego**: cajas con borde de píxel escalonado y sombra dura,
-  cuadro de diálogo de RPG que escribe la descripción, botones con glifos de la
-  consola (Ⓐ, Ⓑ, START, SELECT), barra de controles, marcador de pegatinas,
-  avisos de logro, cursor pixelado, tipografías Jersey 15 y Tiny5 (más Nunito y Caveat), y
-  animaciones a pasos (`steps()`).
-- **El archivo** (Mundo 2): un **estuche de coleccionista por modelo** (tapa de espuma, placa de latón, cierres). Los cartuchos son cajas 3D de verdad (CSS: frente, cantos y lomo) encajadas de pie en sus ranuras. El estuche gira hacia el cursor, el cartucho asoma al pasar por encima y al pulsarlo **sale tirando hacia arriba, gira en el aire y vuela** a la ficha, donde se **arrastra para girarlo 360°**. Al devolverlo cae en su ranura con un *clac* y el estuche tiembla. Los disquetes siguen en el archivador.
-- **Álbum de cromos** (Mundo 3): un libro de piel cosida con **índice** (progreso total y barra por modelo) y una doble página por modelo con cinta de color, huecos con esquinas de foto y cromos con relieve y brillo holográfico que siguen al cursor. Cada juego arrancado da un **sobre** metalizado que se inclina hacia el cursor y se **rasga arrastrando por la línea** con unas tijeras: la tira sale volando, estallan destellos, los cromos salen, se abren en abanico y se revelan uno a uno (los holográficos con onda arcoíris, chispas y «¡HOLO!»). Al pegarlos, cada uno **vuela a su hueco exacto**, aterriza con aplastamiento, polvo y brillo de pegamento; al completar un modelo cae el sello «¡COMPLETO!» con confeti.
-- **Rendimiento** (sin tocar el aspecto):
-  - 3D: sin refracción, sombras dinámicas ni postprocesado; render bajo demanda y
-    resolución adaptativa. Todos los shaders se compilan **en paralelo y antes del
-    primer frame** (`compileAsync`), incluidas las variantes que aún no están en
-    escena, así que la página no se congela al cargar ni hay tirones después. Lo
-    pesado de una vez (el relieve del frontal, despertar el audio) se hace mientras
-    la GPU compila y el cargador sigue delante. Los lienzos de las texturas se pintan
-    en la CPU para no competir con la GPU.
-  - Red: three.js empaquetado y minificado en el mismo origen (una petición), fuentes
-    en casa precargadas (sin Google Fonts) y miniaturas pequeñas en WebP
-    (`thumbs/s/`, ~7 KB) para etiquetas, cromos, cinta y LCD; las grandes solo en la
-    ficha y al asomar.
-  - Página: el archivo, el archivador y el álbum usan `content-visibility` (no se
-    calculan ni pintan hasta acercarse), el color del plató cambia solo en el
-    escenario y no en toda la página, y los scripts van diferidos.
-  - Atajos: un toque mientras salen los cromos de un sobre los destapa todos.
+- **El catálogo.** A la izquierda, papel: titular, buscador y un estante por modelo (lo más reciente,
+  primero). Cada juego es un **cartucho del color de su modelo**, y no es un dibujo: es un render 3D
+  horneado (`carts/<slug>.webp`) con el mismo modelo y la misma luz que la consola, con su captura,
+  su título y el sello del modelo en la etiqueta. Los juegos de terminal llevan la banda `>_ TERMINAL`.
+- **El plató.** A la derecha, siempre a la vista, la **gavilanbe POCKET** en 3D con luz de estudio
+  sobre el color de la edición del juego que tiene dentro. Al elegir un cartucho, **sale volando de
+  su hueco, gira y entra por la boca de la consola**; el que estaba dentro vuelve a su sitio en el
+  estante. La consola da un respingo, se enciende el LED y la pantalla arranca.
+- **La pantalla** es un LCD de 160×100 pintado a resolución nativa: arranque con el logo, carátula
+  del juego y `START` parpadeando. En los juegos de terminal teclea el `git clone`.
+- **START** (el botón grande, `↵`, o el botón A o la pantalla de la propia consola) mete la cámara
+  en la pantalla y abre el juego. En los de terminal copia el comando.
+- **La consola se toca**: se inclina hacia el cursor, se arrastra para girarla, la cruceta cambia de
+  cartucho, B saca uno al azar y SELECT cambia la carcasa (cinco colores).
+- **En el móvil** el plató es la portada; al tocar un cartucho sube a pantalla completa y, al
+  cerrarlo, queda una barra con lo que hay en la consola.
+- **Enlace directo**: `https://gavilanbe.github.io/#<slug>` abre con ese cartucho puesto.
+- Sin WebGL, en el sitio de la consola queda la foto del cartucho y todo lo demás funciona igual.
 
-La versión anterior (la consola horizontal y la tienda nocturna) sigue en
-[`/classic/`](https://gavilanbe.github.io/classic/) y en la etiqueta git `arcade-v1`.
+Las versiones anteriores siguen en las etiquetas git `pocket-v8` (la consola con cinta de cartuchos,
+estuches y álbum de cromos) y anteriores; la primera, en [`/classic/`](https://gavilanbe.github.io/classic/).
 
 ## Desarrollo
 
-`node scripts/build.mjs` valida el JavaScript y copia lo publicable en `dist/`.
-`npm ci && npm test` ejecuta las regresiones de la colección y de la versión clásica
-(también comprueba que cada juego tenga su miniatura pequeña y que `lib/` exporte
-todo lo que usa el plató).
+Para verla en local basta un servidor estático: `python3 -m http.server 4391` y abrir
+`http://127.0.0.1:4391/`.
 
-- `npm run thumbs` genera las miniaturas pequeñas (`thumbs/s/*.webp`, 320×200) que
-  falten o estén viejas; necesita ImageMagick (`magick`).
-- `npm run vendor` vuelve a empaquetar three.js en `lib/three.pocket.js` (no en `vendor/`,
-  que Jekyll puede excluir al publicar en GitHub Pages). Hace
-  falta si `pocket3d.js` empieza a usar algo nuevo de `THREE` o un addon (el script
-  lee qué se usa; los addons nuevos se añaden a su tabla).
+- `npm ci && npm test`: regresiones sin navegador (datos, miniaturas, cartuchos horneados, ediciones,
+  ids, fuentes y que `lib/` exporte lo que usa el plató) y las de la versión clásica.
+- `npm run smoke`: prueba en un Chromium de verdad (Playwright), en escritorio y móvil: carga, mete
+  un cartucho, pulsa START, filtra y busca. Con `-- --shots` deja capturas en `dist/smoke/`.
+  La primera vez: `npx playwright install chromium`.
+- `npm run carts`: hornea los cartuchos nuevos o cambiados (`-- --all` para todos, obligado si se
+  toca el modelo 3D, la etiqueta o `editions.js`).
+- `npm run thumbs`: miniaturas pequeñas (`thumbs/s/*.webp`, 320×200); necesita ImageMagick.
+- `npm run vendor`: vuelve a empaquetar three.js si `stage.js` usa algo nuevo de `THREE`.
+- `npm run build`: valida y copia lo publicable en `dist/` (opcional; Pages sirve la raíz tal cual).
 
 ## Añadir un juego
 
@@ -84,22 +61,28 @@ todo lo que usa el plató).
 ```js
 {
   "name": "mi-juego",                                   // slug del repo
-  "title": "🎮 MI JUEGO",                               // con su emoji
+  "title": "🎮 MI JUEGO · Un subtítulo",                // emoji, título y, si quieres, subtítulo tras « · »
   "tagline": "Una frase con gancho.",
   "type": "web",                                        // "web" | "terminal"
   "play": "https://gavilanbe.github.io/mi-juego/",      // vacío si es terminal
   "repo": "https://github.com/gavilanbe/mi-juego",
   "thumb": "thumbs/mi-juego.jpg",                       // 640×400 (16:10)
-  "wip": false,                                          // cinta adhesiva "WIP"
-  "new": true,                                           // pegatina "NUEVO"
+  "wip": false,                                          // cinta «WIP» en la etiqueta
+  "new": true,                                           // pegatina «NUEVO»; sale puesto en la consola
   "kind": "juego",
-  "model": "astra"            // edición de plástico: "opus-5.5" | "astra" | "fable-5.2" | "fable-5.1" | "fable" | "opus-4.8" | "opus-4.7" | "opus-4.6"
+  "model": "fable-5.2",                                  // una clave de editions.js
+  "also": {"model": "opus-5.5", "note": "con"}           // opcional: un segundo modelo
 }
 ```
 
-2. Deja su captura en `thumbs/mi-juego.jpg` (640×400) y ejecuta `npm run thumbs` (crea `thumbs/s/mi-juego.webp`).
-3. Si es de los buenos, ponlo en la lista `FEATURED` de `index.html`: sale antes en la cinta de la consola. Un modelo nuevo funciona solo; para darle nombre de plástico y color de plató añádelo a `EDITIONS` (`index.html`) y su material 3D a `edMat` (`pocket3d.js`).
-4. Quita el `"new": true` de la hornada anterior.
+2. Deja su captura en `thumbs/mi-juego.jpg` (640×400) y ejecuta `npm run thumbs && npm run carts`.
+3. Quita el `"new": true` de la hornada anterior (y `npm run carts` rehace sus etiquetas).
+4. `npm test`, commit y push a `main`.
+
+**Un modelo nuevo** es una línea en `EDITIONS` de [`editions.js`](editions.js): nombre, color del
+plástico, color del plató, tinta y material (`rough`, `coat`, `metal`, `irid` para iridiscente,
+`opacity` + `board` para translúcido). Va arriba del todo si es el más reciente. Después,
+`npm run carts -- --all`.
 
 El cartucho **TRAZO** es de edición `astra` (plástico fosforito) y se publica en [gavilanbe.github.io/trazo/](https://gavilanbe.github.io/trazo/). Su código vive en [gavilanbe/trazo](https://github.com/gavilanbe/trazo).
 

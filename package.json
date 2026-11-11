@@ -5,13 +5,17 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "test": "node scripts/check.cjs && node scripts/check-classic.cjs",
-    "vendor": "node scripts/vendor-three.mjs",
-    "thumbs": "node scripts/thumbs.mjs"
+    "smoke": "node scripts/smoke.mjs",
+    "carts": "node scripts/carts.mjs",
+    "thumbs": "node scripts/thumbs.mjs",
+    "vendor": "node scripts/vendor-three.mjs"
   },
   "devDependencies": {
     "css-tree": "3.1.0",
     "esbuild": "0.24.0",
     "jsdom": "26.1.0",
+    "playwright": "^1.65.0",
     "three": "0.169.0"
-  }
+  },
+  "type": "module"
 }
