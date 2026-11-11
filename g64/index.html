@@ -6,7 +6,7 @@
 <title>gavilanbe 64 · prueba</title>
 <style>
 @font-face{font-family:"Bricolage Grotesque";src:url(../fonts/bricolage-latin.woff2) format("woff2");font-weight:200 800;font-stretch:75% 100%}
-html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:"Bricolage Grotesque",sans-serif}
+html,body{margin:0;height:100%;background:radial-gradient(120% 90% at 50% 40%,#4a3a9a 0%,#2a1d5c 45%,#120c2e 100%);overflow:hidden;font-family:"Bricolage Grotesque",sans-serif}
 #gl{position:fixed;inset:0;width:100vw;height:100vh;display:block;image-rendering:auto;cursor:pointer}
 .hud{position:fixed;left:0;right:0;pointer-events:none;color:#fff;display:flex;justify-content:space-between;align-items:flex-end;padding:22px 30px}
 .hud.top{top:0;align-items:flex-start}
@@ -21,6 +21,8 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:"Bric
 .card .m{font-size:17px;color:#9dffb0}
 .hint{font-weight:800;font-size:20px;-webkit-text-stroke:5px #17122a;paint-order:stroke fill;text-align:right}
 .hint kbd{font:inherit;display:inline-block;background:#ffe95c;color:#17122a;-webkit-text-stroke:0;border-radius:99px;padding:1px 12px;margin:0 4px;box-shadow:0 3px 0 #17122a}
+.tip{position:fixed;left:0;top:0;pointer-events:none;background:#ffe95c;color:#17122a;font-weight:800;font-size:17px;padding:3px 12px;border-radius:99px;box-shadow:0 3px 0 #17122a;opacity:0;white-space:nowrap}
+.tip.on{opacity:1}
 </style>
 <script type="importmap">{"imports":{"three":"../node_modules/three/build/three.module.js","three/addons/":"../node_modules/three/examples/jsm/"}}</script>
 </head>
@@ -28,6 +30,7 @@ html,body{margin:0;height:100%;background:#000;overflow:hidden;font-family:"Bric
 <canvas id="gl"></canvas>
 <div class="hud top"><div class="logo">gavilanbe <i>64</i></div><div class="hint" id="where"></div></div>
 <div class="hud bot"><div class="card" id="card"><p class="m" id="c-m"></p><h2 id="c-t"></h2><p id="c-d"></p></div><div class="hint" id="hint"></div></div>
+<div class="tip" id="tip"></div>
 <script src="../data.js"></script>
 <script type="module" src="main.js"></script>
 </body>
