@@ -11,6 +11,7 @@ import {buildRoom, R, SH} from './room.js';
 import {makeConsole, makePad, SLOT, PORT1, REAR, PAD_CABLE} from './console.js';
 import {makeTV, SCREEN, TV_AV} from './tv.js';
 import {CART} from './cart.js';
+import {makeFX} from './fx.js';
 
 export async function createRoom({canvas, games, first, Sound, onStation, onPick, onPlay, tip}) {
   await fontsReady();
@@ -42,9 +43,10 @@ export async function createRoom({canvas, games, first, Sound, onStation, onPick
   const tvT = new THREE.CanvasTexture(tvC); tvT.colorSpace = THREE.SRGBColorSpace; tvT.minFilter = tvT.magFilter = THREE.LinearFilter; tvT.generateMipmaps = false;
   const tv = makeTV(tvBase, tvT); scene.add(tv);
   const scrW = V(0, SCREEN.y, SCREEN.z).applyMatrix4(tvBase); tvL.position.copy(V(0, SCREEN.y, 1.15).applyMatrix4(tvBase));
-  const CONP = TVP.clone().addScaledVector(tvDir, 1.85), conBase = M4(CONP.x, 0, CONP.z, TVR), con = makeConsole(conBase); scene.add(con);
+  const CONP = TVP.clone().addScaledVector(tvDir, 1.85), conBase = M4(CONP.x, 0, CONP.z, TVR), con = makeConsole(); con.applyMatrix4(conBase); scene.add(con);
+  const CP = con.userData.parts, conY = con.position.y, fx = makeFX(scene);
   const slot = SLOT.clone().applyMatrix4(conBase), conQ = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, TVR, 0));
-  const padBase = M4(CONP.x + tvDir.x * 1.0 - .62, 0, CONP.z + tvDir.z * 1.0 + .3, TVR - .55), pad = makePad(padBase); scene.add(pad);
+  const padBase = M4(CONP.x + tvDir.x * 1.0 - .62, 0, CONP.z + tvDir.z * 1.0 + .3, TVR - .55), pad = makePad(); pad.applyMatrix4(padBase); scene.add(pad);
   const put = (m, p, ry = 0) => { m.position.copy(p); m.position.y = .012; m.rotation.z = ry; scene.add(m); };
   put(blob(2.2, 1.8, .95), CONP, -TVR); put(blob(1.2, 1.2, .85), V(0, 0, 0).applyMatrix4(padBase).add(V(.1, 0, .1))); put(blob(3.0, 2.4, .9), TVP.clone().add(V(.15, 0, .15)), -TVR);
   // alfombra
@@ -61,6 +63,16 @@ export async function createRoom({canvas, games, first, Sound, onStation, onPick
   let selected = null, tvT0 = performance.now(), cover = null, tvMode = 'boot';
   function drawTV(now) {
     const x = tvC.getContext("2d"), w = 320, h = 240, t = Math.max(0, (now - tvT0) / 1000);
+    if (tvMode === 'collapse' || tvMode === 'off' || tvMode === 'on') {
+      x.fillStyle = '#05050a'; x.fillRect(0, 0, w, h);
+      if (tvMode === 'collapse') { const u = Math.min(1, t / .16), hh = Math.max(2, h * (1 - u) * (1 - u)), ww = w * (u < .7 ? 1 : 1 - (u - .7) / .3 * .96); x.fillStyle = '#fff'; x.fillRect((w - ww) / 2, (h - hh) / 2, ww, hh); if (u >= 1) { tvMode = 'off'; tvT0 = now; } }
+      else if (tvMode === 'off') { const a = Math.max(0, .9 - t * 2.2); if (a > 0) { x.fillStyle = `rgba(255,255,255,${a})`; x.beginPath(); x.arc(w / 2, h / 2, 3 + a * 3, 0, 7); x.fill(); } }
+      else if (t < .2) { const u = t / .2, hh = Math.max(2, h * u * u * u); x.fillStyle = '#fff'; x.fillRect(0, (h - hh) / 2, w, hh); }
+      else if (t < .62) { const d = x.createImageData(80, 60), a = d.data; for (let i = 0; i < a.length; i += 4) { const v = Math.random() * 255; a[i] = a[i + 1] = a[i + 2] = v; a[i + 3] = 255; } const c = drawTV.n || (drawTV.n = document.createElement('canvas')); c.width = 80; c.height = 60; c.getContext('2d').putImageData(d, 0, 0); x.imageSmoothingEnabled = false; x.drawImage(c, 0, 0, w, h); x.imageSmoothingEnabled = true; x.fillStyle = `rgba(255,255,255,${.5 * (1 - (t - .2) / .42)})`; x.fillRect(0, 0, w, h); x.fillStyle = 'rgba(0,0,0,.5)'; x.fillRect(0, ((t * 400) % h), w, 14); }
+      else { tvMode = 'boot'; tvT0 = now; }
+      x.fillStyle = 'rgba(0,0,0,.12)'; for (let y = 0; y < h; y += 2) x.fillRect(0, y, w, 1);
+      tvT.needsUpdate = true; return;
+    }
     if (selected && cover && tvMode === 'game' && t > .5) {
       const s = Math.max(w / cover.width, 196 / cover.height), sw = w / s, sh = 196 / s; x.imageSmoothingQuality = 'high';
       x.drawImage(cover, (cover.width - sw) / 2, (cover.height - sh) / 2, sw, sh, 0, 0, w, 196);
@@ -74,7 +86,7 @@ export async function createRoom({canvas, games, first, Sound, onStation, onPick
       const cols = ['#ff5b35', '#ffd23f', '#35d0c0', '#7a4be6'], grow = Math.min(1, t / .6), e = 1 - Math.pow(1 - grow, 3); x.lineWidth = 19 * e; cols.forEach((c, i) => { x.strokeStyle = c; x.beginPath(); const a = t * 1.3 - .35 + i * 1.42 + (1 - e) * 4; x.arc(160, 90, 38 * e, a, a + 1.44); x.stroke(); });
       if (t > .45) { x.globalAlpha = Math.min(1, (t - .45) / .3); x.textBaseline = 'middle'; x.font = `38px ${FONT}`; x.lineWidth = 8; x.lineJoin = 'round'; x.strokeStyle = '#0a0820'; x.textAlign = 'center'; x.strokeText('gavilanbe 64', 160, 176); const w1 = x.measureText('gavilanbe 64').width, wg = x.measureText('gavilanbe ').width; x.textAlign = 'left'; x.fillStyle = '#ffe95c'; x.fillText('gavilanbe', 160 - w1 / 2, 176); x.fillStyle = '#ff5b35'; x.fillText('64', 160 - w1 / 2 + wg, 176); x.globalAlpha = 1; }
       if (!intro && t > 1.0 && Math.floor(t * 2) % 2) { x.textAlign = 'center'; x.font = `13px ${FONT}`; x.fillStyle = '#fff'; x.fillText(selected ? 'LEYENDO EL CARTUCHO…' : 'ELIGE UN CARTUCHO', 160, 214); }
-      if (!intro && selected && cover && tvMode === 'boot' && t > 2.6) { tvMode = 'game'; tvT0 = now - 500; }
+      if (!intro && selected && cover && tvMode === 'boot' && t > 2.1) { tvMode = 'game'; tvT0 = now - 500; }
     }
     x.fillStyle = 'rgba(0,0,0,.12)'; for (let y = 0; y < h; y += 2) x.fillRect(0, y, w, 1);
     tvT.needsUpdate = true;
@@ -101,29 +113,70 @@ export async function createRoom({canvas, games, first, Sound, onStation, onPick
     wall: {pos: V(SH.xc, 1.28, 2.05), at: V(SH.xc, 1.26, R.z0), fov: 27, ppos: V(SH.xc, 1.28, 2.6), pat: V(SH.xc, 1.26, R.z0), pfov: 36, pan: true},
     tv: {pos: CONP.clone().addScaledVector(tvDir, 6.0).add(V(.8, 2.3, -.8)), at: scrW.clone().lerp(CONP.clone().setY(.2), .5), fov: 27, ppos: CONP.clone().addScaledVector(tvDir, 7.2).add(V(.3, 3.0, -.3)), pat: scrW.clone().lerp(CONP.clone().setY(.2), .5), pfov: 34},
   };
+  { const side = V(Math.cos(TVR), 0, -Math.sin(TVR)), at = CONP.clone().add(V(0, .42, 0)); ST.insert = {pos: CONP.clone().addScaledVector(tvDir, 2.0).addScaledVector(side, -1.15).setY(.82), at, fov: 31, ppos: CONP.clone().addScaledVector(tvDir, 3.1).addScaledVector(side, -.9).setY(1.3), pat: at, pfov: 40}; }
   // el título: dentro de la tele, hasta que se pulsa START
   const titlePos = () => scrW.clone().addScaledVector(tvDir, portrait() ? 2.6 : 1.42);
   let cur = 'hero', pan = 0, zoom = 0, zoomRes = null, intro = true, speed = 3.3, off = 0;
   const cam = {pos: titlePos(), at: scrW.clone(), fov: 27}, ptr = {x: 0, y: 0};
-  function go(name) { if (!ST[name]) return; cur = name; onStation(name); tip.classList.remove('on'); hover = null; }
+  function go(name) { if (!ST[name]) return; cur = name; onStation(name === 'insert' ? 'tv' : name); tip.classList.remove('on'); hover = null; }
   const halfPan = () => Math.max(0, (SH.x1 - SH.x0) / 2 - (portrait() ? .45 : 1.3));
 
   // ── cartuchos: asomar, volar, entrar ──
   const {carts, pickables} = room, flights = [], cartOf = g => carts.find(c => c.userData.game === g);
-  let hover = null, bump = 0, dimSet = null;
+  let hover = null, bump = 0, dimSet = null, tvLit = 1;
   const homeQ = new THREE.Quaternion().setFromEuler(new THREE.Euler(-.1, 0, 0));
-  function fly(obj, to, dur, done) { for (let i = flights.length - 1; i >= 0; i--) if (flights[i].obj === obj) flights.splice(i, 1); flights.push({obj, from: {p: obj.position.clone(), q: obj.quaternion.clone()}, to, t: 0, dur, done}); }
-  const seat = () => slot.clone().add(V(0, CART.H / 2 - .062, 0));
+  function fly(obj, to, dur, done) { for (let i = flights.length - 1; i >= 0; i--) if (flights[i].obj === obj) flights.splice(i, 1); flights.push({obj, from: {p: obj.position.clone(), q: obj.quaternion.clone(), s: obj.scale.x}, to, t: 0, dur, done}); }
+  const BIG = 1.55, seat = () => slot.clone().add(V(0, (CART.H / 2 - .058) * BIG, 0));   // en la consola el cartucho se ve a lo grande
+  // línea de tiempo de la secuencia (se para con el parón de impacto)
+  const cues = []; let seq = 0;
+  const at = (delay, fn) => cues.push({t: delay, fn, seq});
+  class Spring { constructor(k = 220, d = 13) { this.v = 0; this.vel = 0; this.to = 0; this.k = k; this.d = d; } step(dt) { this.vel += ((this.to - this.v) * this.k - this.vel * this.d) * dt; this.v += this.vel * dt; return this.v; } }
+  const sq1 = new Spring(260, 11), padHop = new Spring(190, 9), powerSp = new Spring(600, 22), flap = new Spring(140, 14), tvKick = new Spring(200, 12);
+  let power = 0, powerTo = 0, shake = 0, hitstop = 0, trail = null, glowCol = C('#ff5b35');
+  function setPower(on, g) { powerTo = on ? 1 : 0; if (g) glowCol.set(g.ed.plastic).lerp(C('#ffffff'), .15); }
+  function impact(g) {
+    const col = g.ed.plastic, p = slot.clone();
+    hitstop = .07; shake = 1; sq1.vel = -7.5; padHop.vel = 3.2; tvKick.vel = 1.4; bump = 1;
+    fx.spawn(p.clone().add(V(0, .03, 0)), col, {n: 110, speed: 2.9, up: 1.7, spread: 1.5, life: .75, gravity: 6.5, drag: 1.2});
+    fx.spawn(p.clone().add(V(0, .03, 0)), '#ffffff', {n: 24, speed: 3.6, up: .6, spread: 1.57, life: .3, gravity: 2, drag: 3, white: 1});
+    fx.ring(CONP, col, {from: .9, to: 4.6, dur: .7}); fx.ring(CONP, '#ffffff', {from: .5, to: 2.6, dur: .4, delay: .05});
+    Sound.chunk ? Sound.chunk() : Sound.clack();
+  }
   function insert(g, animate = true) {
     const cart = cartOf(g); if (!cart) return;
-    if (selected && selected !== g) { const old = cartOf(selected), h = old.userData.home; Sound.pop(); animate ? fly(old, {p: h.pos.clone(), q: homeQ, arc: .7, spin: -1}, .8) : (old.position.copy(h.pos), old.quaternion.copy(homeQ)); }
-    selected = g; cover = null; tvMode = 'boot'; tvT0 = performance.now();
+    const mySeq = ++seq, prev = selected && selected !== g ? cartOf(selected) : null;
+    for (let i = cues.length - 1; i >= 0; i--) cues.splice(i, 1);
+    selected = g; cover = null;
     const i = new Image(); i.onload = () => { if (selected === g) cover = i; }; i.src = g.thumbL;
     tvL.color.set(g.ed.plastic).lerp(C('#ffffff'), .4); tv.userData.halo.material.color.copy(tvL.color);
-    if (!animate) { cart.position.copy(seat()); cart.quaternion.copy(conQ); return; }
-    Sound.whoosh();
-    fly(cart, {p: slot.clone().add(V(0, .75, 0)), q: conQ, arc: .7, spin: 1}, 1.0, () => fly(cart, {p: seat(), q: conQ, ease: 'in'}, .2, () => { bump = 1; Sound.clack(); setTimeout(() => Sound.boot(), 250); }));
-    go('tv');
+    for (const c of carts) if (c !== cart && c !== prev && c.parent && c.position.distanceTo(c.userData.home.pos) > .3) { for (let j = flights.length - 1; j >= 0; j--) if (flights[j].obj === c) flights.splice(j, 1); c.position.copy(c.userData.home.pos); c.quaternion.copy(homeQ); c.scale.setScalar(1); }
+    if (!animate) { if (prev) { prev.position.copy(prev.userData.home.pos); prev.quaternion.copy(homeQ); prev.scale.setScalar(1); } cart.position.copy(seat()); cart.quaternion.copy(conQ); cart.scale.setScalar(BIG); flap.v = flap.to = 1; tvMode = intro ? 'boot' : 'on'; tvT0 = performance.now(); setPower(true, g); power = intro ? 1 : power; return; }
+    at(.42, () => go('insert'));
+    // 1 · fuera lo viejo: la tele se apaga, el cartucho salta y vuelve a su balda
+    if (prev) {
+      tvMode = 'collapse'; tvT0 = performance.now(); setPower(false); Sound.eject ? Sound.eject() : Sound.pop(); sq1.vel = 3; powerSp.vel = 2;
+      const h = prev.userData.home; fx.spawn(slot.clone(), prev.userData.game.ed.plastic, {n: 16, speed: 1.2, up: 1.6, spread: .8, life: .4, gravity: 5});
+      fly(prev, {p: slot.clone().add(V(0, .6, 0)), q: conQ, ease: 'out', s: BIG * 1.05}, .22, () => fly(prev, {p: h.pos.clone(), q: homeQ, arc: .6, spin: -1, s: 1}, .75, () => Sound.tick && Sound.tick()));
+    } else { tvMode = 'off'; tvT0 = performance.now(); setPower(false); }
+    // 2 · el nuevo se asoma de la balda con un meneo
+    Sound.pop();
+    const out = cart.userData.home.pos.clone().add(V(0, .05, .34));
+    fly(cart, {p: out, q: homeQ.clone().multiply(new THREE.Quaternion().setFromEuler(new THREE.Euler(.1, 0, .16))), ease: 'back', s: 1.25}, .3, () => {
+      if (seq !== mySeq) return;
+      // 3 · vuelo con estela hasta quedar suspendido sobre la boca
+      Sound.whoosh(); trail = {cart, col: g.ed.plastic}; flap.to = 1;
+      fly(cart, {p: slot.clone().add(V(0, .7, 0)), q: conQ, arc: .5, spin: 1, s: BIG * 1.08}, .9, () => {
+        if (seq !== mySeq) return; trail = null; Sound.tick && Sound.tick();
+        // 4 · un instante en el aire y entra de golpe
+        fly(cart, {p: slot.clone().add(V(0, .8, 0)), q: conQ, ease: 'out', s: BIG * 1.14}, .2, () => fly(cart, {p: seat(), q: conQ, ease: 'in', s: BIG, stretch: .24}, .11, () => {
+          if (seq !== mySeq) return;
+          impact(g);
+          at(.22, () => { powerSp.vel = -9; Sound.power && Sound.power(); });
+          at(.34, () => { setPower(true, g); tvMode = 'on'; tvT0 = performance.now(); Sound.crt && Sound.crt(); fx.ring(CONP, g.ed.plastic, {from: 1, to: 2.4, dur: .7}); });
+          at(1.15, () => { go('tv'); Sound.boot(); });
+        }));
+      });
+    });
   }
   function dim(set) { dimSet = set && set.size < games.length ? set : null; }
 
@@ -159,8 +212,10 @@ export async function createRoom({canvas, games, first, Sound, onStation, onPick
   const neon = scene.children.find(o => o.userData.neon);
   function frame(now) {
     raf = requestAnimationFrame(frame);
-    const dt = Math.min(.05, (now - last) / 1000); last = now; if (document.hidden) return; time += dt;
-    const s = ST[cur], p = portrait(); speed += (3.3 - speed) * dt * .35; const k = 1 - Math.exp(-dt * speed);
+    const real = Math.min(.05, (now - last) / 1000); last = now; if (document.hidden) return;
+    hitstop = Math.max(0, hitstop - real); const dt = hitstop > 0 ? real * .04 : real; time += dt;
+    for (let i = cues.length - 1; i >= 0; i--) { const c = cues[i]; c.t -= dt; if (c.t <= 0) { cues.splice(i, 1); if (c.seq === seq) c.fn(); } }
+    const s = ST[cur], p = portrait(); speed += (3.3 - speed) * dt * .35; const k = 1 - Math.exp(-dt * (cur === 'insert' ? 5.5 : speed));
     tpos.copy(p ? s.ppos : s.pos); tat.copy(p ? s.pat : s.at);
     if (intro) { tpos.copy(titlePos()); tat.copy(scrW); }
     if (s.pan) { if (!down && !mobile && Math.abs(ptr.x) > .72 && Math.abs(ptr.y) < .7) pan = Math.max(-1, Math.min(1, pan + Math.sign(ptr.x) * dt * .55)); tpos.x += pan * halfPan(); tat.x += pan * halfPan(); }
@@ -170,18 +225,39 @@ export async function createRoom({canvas, games, first, Sound, onStation, onPick
     cam.fov += (fov - cam.fov) * k;
     const sway = (cur === 'hero' ? 1 : .25) * (zoomRes || intro ? 0 : 1) * (mobile ? 0 : 1);
     camera.position.copy(cam.pos).add(tmp.set(ptr.x * .5 * sway, -ptr.y * .28 * sway + Math.sin(time * .5) * .03, -ptr.x * .22 * sway));
-    off += ((intro || zoomRes || p ? 0 : cur === 'hero' ? 3.4 : cur === 'wall' ? 4.6 : 3.2) - off) * k; camera.filmOffset = -off;
+    if (shake > .002) { const a = shake * shake * .075; camera.position.add(tmp.set((Math.random() - .5) * a, (Math.random() - .5) * a, (Math.random() - .5) * a)); shake *= Math.pow(.0008, real); }
+    off += ((intro || zoomRes || p ? 0 : cur === 'hero' ? 3.4 : cur === 'wall' ? 4.6 : cur === 'insert' ? 2 : 3.2) - off) * k; camera.filmOffset = -off;
     camera.fov = cam.fov; camera.updateProjectionMatrix(); camera.lookAt(cam.at);
     const moving = new Set(flights.map(f => f.obj));
-    for (const c of carts) { const g = c.userData.game; if (g === selected || moving.has(c)) continue; const h = c.userData.home, on = c === hover, off = dimSet && !dimSet.has(g), sp = Math.min(1, dt * 14); c.position.z += ((h.pos.z + (on ? .1 : off ? -.075 : 0)) - c.position.z) * sp; c.position.y += ((h.pos.y + (on ? .022 : 0)) - c.position.y) * sp; c.rotation.x += ((on ? .02 : -.1) - c.rotation.x) * sp; }
-    for (const f of [...flights]) {
-      f.t = Math.min(1, f.t + dt / f.dur); const e = f.to.ease === 'in' ? f.t * f.t : f.t < .5 ? 4 * f.t ** 3 : 1 - Math.pow(-2 * f.t + 2, 3) / 2;
-      f.obj.position.lerpVectors(f.from.p, f.to.p, e); if (f.to.arc) f.obj.position.y += Math.sin(Math.PI * f.t) * f.to.arc;
-      f.obj.quaternion.slerpQuaternions(f.from.q, f.to.q, e); if (f.to.spin) f.obj.quaternion.multiply(sq.setFromAxisAngle(yAxis, e * Math.PI * 2 * f.to.spin));
-      if (f.t >= 1) { flights.splice(flights.indexOf(f), 1); f.done && f.done(); }
+    for (const c of carts) {
+      const g = c.userData.game; if (g === selected || moving.has(c)) continue;
+      const h = c.userData.home, on = c === hover, sunk = dimSet && !dimSet.has(g), sp = Math.min(1, dt * 14);
+      c.position.z += ((h.pos.z + (on ? .12 : sunk ? -.075 : 0)) - c.position.z) * sp; c.position.y += ((h.pos.y + (on ? .024 : 0)) - c.position.y) * sp; c.position.x += (h.pos.x - c.position.x) * sp;
+      c.rotation.x += ((on ? .04 - ptr.y * .25 : -.1) - c.rotation.x) * sp; c.rotation.y += ((on ? (ptr.x - (c.position.x - cam.pos.x) * .5) * .5 : 0) - c.rotation.y) * sp; c.rotation.z += (0 - c.rotation.z) * sp;
+      const sc = on ? 1.1 : 1; c.scale.setScalar(c.scale.x + (sc - c.scale.x) * sp);
     }
-    tvL.intensity = 8 + Math.sin(time * 12) * .35 + Math.sin(time * 2.7) * .5 + bump * 7; bump *= .9;
-    con.userData.led.material.opacity = .7 + Math.sin(time * 3) * .12 + bump * .3;
+    for (const f of [...flights]) {
+      f.t = Math.min(1, f.t + dt / f.dur); const u = f.t, e = f.to.ease === 'in' ? u * u * u : f.to.ease === 'out' ? 1 - Math.pow(1 - u, 3) : f.to.ease === 'back' ? 1 + 2.7 * Math.pow(u - 1, 3) + 1.7 * Math.pow(u - 1, 2) : u < .5 ? 4 * u ** 3 : 1 - Math.pow(-2 * u + 2, 3) / 2;
+      f.obj.position.lerpVectors(f.from.p, f.to.p, e); if (f.to.arc) f.obj.position.y += Math.sin(Math.PI * u) * f.to.arc;
+      f.obj.quaternion.slerpQuaternions(f.from.q, f.to.q, Math.min(1, Math.max(0, e))); if (f.to.spin) f.obj.quaternion.multiply(sq.setFromAxisAngle(yAxis, e * Math.PI * 2 * f.to.spin));
+      const sc = f.from.s + ((f.to.s ?? 1) - f.from.s) * e, st = f.to.stretch ? Math.sin(Math.PI * u) * f.to.stretch : 0; f.obj.scale.set(sc * (1 - st * .5), sc * (1 + st), sc * (1 - st * .5));
+      if (u >= 1) { flights.splice(flights.indexOf(f), 1); f.done && f.done(); }
+    }
+    if (trail) { fx.spawn(trail.cart.position, trail.col, {n: 2, speed: .25, spread: 3.1, life: .5, gravity: .6, drag: 2, jitter: .1}); }
+    // la consola: se aplasta y rebota, tapas, teclas y luces
+    const sv = sq1.step(dt); con.scale.set(1 - sv * .16, 1 + sv * .34, 1 - sv * .16); con.position.y = conY;
+    const inMouth = selected && cartOf(selected).position.distanceTo(slot) < .75; flap.to = inMouth || trail ? 1 : 0; const fv = Math.max(0, Math.min(1.05, flap.step(dt)));
+    for (const f of CP.flaps) f.rotation.x = f.userData.open * fv;
+    const pv = powerSp.step(dt); CP.power.position.copy(CP.power.userData.home).addScaledVector(CP.power.userData.up, Math.max(-.022, Math.min(.01, pv * .02)) - power * .008);
+    power += (powerTo - power) * Math.min(1, dt * 9); const pulse = .85 + Math.sin(time * 3.2) * .15;
+    CP.ring.material.color.copy(glowCol).multiplyScalar(.12 + power * 1.25 * pulse); CP.pilot.material.color.setRGB(.16 + power * 1.2, .08 + power * .2, .07 + power * .12);
+    CP.led.material.opacity = power * (.75 + Math.sin(time * 3) * .1 + bump * .25); CP.powerGlow.material.color.copy(glowCol); CP.powerGlow.material.opacity = power * .5 * pulse + bump * .4;
+    CP.mouth.material.color.copy(glowCol); CP.mouth.material.opacity = power * .55 * pulse + bump * .5; CP.under.material.color.copy(glowCol); CP.under.material.opacity = power * .3 * pulse + bump * .7;
+    pad.position.y = Math.max(0, padHop.step(dt)) * .22; pad.rotation.z = padHop.v * .12;
+    tv.position.y = Math.max(0, tvKick.step(dt)) * .03;
+    fx.update(dt);
+    const lit = tvMode === 'off' || tvMode === 'collapse' ? .12 : 1; tvLit += (lit - tvLit) * Math.min(1, dt * 10);
+    tvL.intensity = (8 + Math.sin(time * 12) * .35 + Math.sin(time * 2.7) * .5) * tvLit + bump * 9; bump *= Math.pow(.004, dt); tv.userData.halo.material.opacity = .2 * tvLit + bump * .2;
     if (neon) neon.material.opacity = Math.sin(time * 31) > .985 || Math.sin(time * 1.7 + 2) > .995 ? .55 : 1;
     room.anim(time); drawTV(now);
     composer.render(dt);
@@ -192,7 +268,7 @@ export async function createRoom({canvas, games, first, Sound, onStation, onPick
   raf = requestAnimationFrame(frame);
   return {
     go, insert, dim, get station() { return cur; },
-    start() { intro = false; speed = .9; tvT0 = performance.now() - 1200; setTimeout(() => Sound.boot(), 500); },
+    start() { intro = false; speed = .9; tvT0 = performance.now() - 1200; power = 1; setTimeout(() => Sound.boot(), 500); },
     key(d) { if (cur === 'wall') pan = Math.max(-1, Math.min(1, pan + d * .3)); else { const o = ['hero', 'wall', 'tv']; go(o[(o.indexOf(cur) + d + 3) % 3]); } },
     launch() { go('tv'); zoom = 0; return new Promise(res => { zoomRes = res; }).then(() => { setTimeout(() => { zoom = 0; }, 600); }); },
     destroy() { cancelAnimationFrame(raf); },

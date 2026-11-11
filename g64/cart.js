@@ -14,7 +14,7 @@ function geometry() {
   if (geo) return geo;
   const shell = new Kit(), dark = new Kit();
   // cuerpo trasero y marco delantero con el hueco de la etiqueta
-  shell.add(ext(OUT, D - .008, .005, {segs: 2}), '#ffffff', M4(0, 0, -.004), 'plastic', .66, 1.1);
+  shell.add(ext(OUT, D - .008, .0065, {segs: 3}), '#ffffff', M4(0, 0, -.004), 'plastic', .66, 1.1);
   shell.add(ext(inset(OUT, .004), .008, .003, {segs: 1, holes: [rrect(LABEL.w + .004, LABEL.h + .004, .006, 0, LABEL.y)]}), '#ffffff', M4(0, 0, D / 2 - .004), 'plastic', .72, 1.12);
   // estrías de agarre arriba y nervio superior
   for (let i = 0; i < 5; i++) shell.add(rbox(W * .34 - i * .012, .0035, .004, .0015, 1), '#ffffff', M4(0, h * 1.02 - i * .0001, D / 2 - .012 - i * .0068), 'plastic', .55, .8);
@@ -24,18 +24,20 @@ function geometry() {
   // conector: lengüeta de placa con contactos
   dark.box(W * .8, .014, D * .5, '#17161c', 0, -h - .004, 0, 'plastic', 1, 1).box(W * .7, .016, .006, '#1f6b3a', 0, -h - .012, 0, 'plastic', .9, 1.1);
   for (let i = 0; i < 16; i++) dark.box(.0055, .013, .0068, '#f0c34a', -W * .31 + i * W * .0413, -h - .0125, 0, 'gold', 1, 1.1);
-  geo = {shell: mergeGeometries(shell.b.plastic), metal: mergeGeometries(dark.b.metal), dark: mergeGeometries(dark.b.plastic), gold: mergeGeometries(dark.b.gold), label: new THREE.PlaneGeometry(LABEL.w, LABEL.h), board: tint(new THREE.BoxGeometry(W * .82, H * .8, .004), '#1f6b3a', .8, 1.1)};
+  geo = {shell: mergeGeometries(shell.b.plastic), metal: mergeGeometries(dark.b.metal), dark: mergeGeometries(dark.b.plastic), gold: mergeGeometries(dark.b.gold), label: new THREE.PlaneGeometry(LABEL.w, LABEL.h), foil: new THREE.PlaneGeometry(.0105, LABEL.h - .004), board: (() => { const b = new Kit(); b.box(W * .82, H * .8, .004, '#1f6b3a', 0, 0, 0, 'plastic', .8, 1.1).box(.07, .05, .008, '#101014', -.03, .012, .005, 'plastic', 1, 1).box(.035, .035, .008, '#101014', .06, -.01, .005, 'plastic', 1, 1).box(.012, .03, .01, '#c9c6d6', .07, .04, .005, 'plastic', 1, 1); for (let i = 0; i < 7; i++) b.box(W * .7, .0025, .0045, '#2f8f4c', 0, -.05 + i * .006, .001, 'plastic', 1, 1); return mergeGeometries(b.b.plastic); })()};
   return geo;
 }
 const plastics = new Map();
 export function plastic(id) {
   if (plastics.has(id)) return plastics.get(id);
   const e = edition(id), m = e.mat || {};
-  const mat = new (m.irid ? THREE.MeshPhysicalMaterial : THREE.MeshStandardMaterial)({vertexColors: true, color: e.plastic, roughness: Math.max(.16, (m.rough ?? .5) * .9), metalness: m.metal ? .85 : 0, emissive: C(e.plastic).multiplyScalar(m.metal ? .04 : .1)});
+  const mat = new THREE.MeshPhysicalMaterial({vertexColors: true, color: e.plastic, roughness: Math.max(.14, (m.rough ?? .5) * .8), metalness: m.metal ? .85 : 0, clearcoat: m.metal ? .5 : .8, clearcoatRoughness: .2, envMapIntensity: 2.8, emissive: C(e.plastic).multiplyScalar(m.metal ? .04 : .08)});
   if (m.irid) { mat.iridescence = 1; mat.iridescenceIOR = 1.8; mat.iridescenceThicknessRange = [260, 760]; }
-  if (m.opacity) { mat.transparent = true; mat.opacity = Math.min(.9, m.opacity + .1); }
+  if (m.opacity) { mat.transparent = true; mat.opacity = Math.min(.88, m.opacity + .08); }
   plastics.set(id, mat); return mat;
 }
+// tira holográfica del sello de calidad, a la izquierda de la etiqueta
+const foilMat = new THREE.MeshPhysicalMaterial({color: '#f4f0ff', roughness: .18, metalness: .6, iridescence: 1, iridescenceIOR: 2.1, iridescenceThicknessRange: [200, 900], envMapIntensity: 4, clearcoat: 1});
 const shared = {dark: new THREE.MeshStandardMaterial({vertexColors: true, roughness: .6}), metal: new THREE.MeshStandardMaterial({vertexColors: true, roughness: .35, metalness: 1}), gold: new THREE.MeshStandardMaterial({vertexColors: true, roughness: .3, metalness: 1, emissive: '#3a2a05'}), board: new THREE.MeshStandardMaterial({vertexColors: true, roughness: .6})};
 
 // etiqueta: la captura a sangre y una banda con el título y el sello del modelo
@@ -46,16 +48,17 @@ function drawLabel(x, g, img) {
   x.clearRect(0, 0, LW, LH); x.save(); x.beginPath(); x.roundRect(0, 0, LW, LH, 9); x.clip();
   if (img) { const s = Math.max(LW / img.width, art / img.height), sw = LW / s, sh = art / s; x.imageSmoothingQuality = 'high'; x.drawImage(img, (img.width - sw) / 2, (img.height - sh) / 2, sw, sh, 0, 0, LW, art); }
   else { const gr = x.createLinearGradient(0, 0, LW, art); gr.addColorStop(0, ed.studio); gr.addColorStop(1, ed.plastic); x.fillStyle = gr; x.fillRect(0, 0, LW, art); x.fillStyle = '#17122a'; x.font = `54px ${FONT}`; x.textAlign = 'left'; x.textBaseline = 'alphabetic'; x.fillText(ell(x, g.label.toUpperCase(), LW - 28), 14, art - 22); }
+  x.fillStyle = '#17122a'; x.fillRect(0, 0, 24, LH);
   x.fillStyle = '#17122a'; x.fillRect(0, art, LW, LH - art); x.fillStyle = ed.plastic; x.fillRect(0, art - 3, LW, 5);
   // sello del modelo a la derecha
   x.font = `700 15px ${MONO}`; x.textBaseline = 'middle'; x.textAlign = 'right';
   const mw = x.measureText(ed.model.toUpperCase()).width;
   x.fillStyle = ed.plastic; x.fillRect(LW - mw - 30, art + 20, 11, 11); x.fillStyle = '#f4efe4'; x.fillText(ed.model.toUpperCase(), LW - 10, art + 27);
   x.textAlign = 'left'; x.fillStyle = '#ffe95c'; x.font = `25px ${FONT}`;
-  x.fillText(ell(x, g.label, LW - mw - 52), 11, art + 28);
-  if (term) { x.fillStyle = '#0c120d'; x.fillRect(8, 8, 76, 22); x.fillStyle = '#7dff9c'; x.font = `700 13px ${MONO}`; x.fillText('>_ TERM', 14, 20); }
+  x.fillText(ell(x, g.label, LW - mw - 70), 32, art + 28);
+  if (term) { x.fillStyle = '#0c120d'; x.fillRect(30, 8, 76, 22); x.fillStyle = '#7dff9c'; x.font = `700 13px ${MONO}`; x.fillText('>_ TERM', 36, 20); }
   if (g.new) { x.save(); x.translate(LW - 42, 40); x.rotate(.22); x.fillStyle = '#c6f432'; x.beginPath(); for (let i = 0; i < 24; i++) { const a = i / 24 * 6.283, r = i % 2 ? 27 : 33; x.lineTo(Math.cos(a) * r, Math.sin(a) * r); } x.fill(); x.fillStyle = '#17122a'; x.font = `14px ${FONT}`; x.textAlign = 'center'; x.fillText('NUEVO', 0, 1); x.restore(); }
-  if (g.wip) { x.save(); x.translate(52, 34); x.rotate(-.2); x.fillStyle = 'rgba(255,214,64,.95)'; x.fillRect(-44, -13, 88, 26); x.fillStyle = '#17122a'; x.font = `700 15px ${MONO}`; x.textAlign = 'center'; x.fillText('WIP', 0, 1); x.restore(); }
+  if (g.wip) { x.save(); x.translate(76, 34); x.rotate(-.2); x.fillStyle = 'rgba(255,214,64,.95)'; x.fillRect(-44, -13, 88, 26); x.fillStyle = '#17122a'; x.font = `700 15px ${MONO}`; x.textAlign = 'center'; x.fillText('WIP', 0, 1); x.restore(); }
   const gl = x.createLinearGradient(0, 0, LW, LH); gl.addColorStop(0, 'rgba(255,255,255,.14)'); gl.addColorStop(.45, 'rgba(255,255,255,0)'); gl.addColorStop(1, 'rgba(0,0,0,.1)'); x.fillStyle = gl; x.fillRect(0, 0, LW, LH);
   x.restore();
 }
@@ -67,8 +70,9 @@ export function makeCart(g) {
   for (const k of ['dark', 'metal', 'gold']) grp.add(new THREE.Mesh(G[k], shared[k]));
   if (ed.mat && ed.mat.opacity) { const b = new THREE.Mesh(G.board, shared.board); b.position.z = -.004; grp.add(b); shell.renderOrder = 2; }
   const t = tex(LW, LH, x => drawLabel(x, g, null));
-  const lm = new THREE.MeshStandardMaterial({map: t, roughness: .32, emissive: '#ffffff', emissiveMap: t, emissiveIntensity: .32, transparent: true, alphaTest: .5});
+  const lm = new THREE.MeshPhysicalMaterial({map: t, roughness: .3, clearcoat: 1, clearcoatRoughness: .12, envMapIntensity: 2.2, emissive: '#ffffff', emissiveMap: t, emissiveIntensity: .3, transparent: true, alphaTest: .5});
   const label = new THREE.Mesh(G.label, lm); label.position.set(0, LABEL.y, D / 2 - .0052); grp.add(label);
+  const foil = new THREE.Mesh(G.foil, foilMat); foil.position.set(-LABEL.w / 2 + .0075, LABEL.y, D / 2 - .0049); grp.add(foil);
   const back = new THREE.Mesh(new THREE.PlaneGeometry(W * .7, W * .35), new THREE.MeshBasicMaterial({map: backTex(), transparent: true, polygonOffset: true, polygonOffsetFactor: -2})); back.rotation.y = Math.PI; back.position.set(0, .004, -D / 2 - .0012); grp.add(back);
   if (g.thumb) { const i = new Image(); i.onload = () => { drawLabel(t.image.getContext('2d'), g, i); t.needsUpdate = true; }; i.src = g.thumbS; }
   grp.userData = {game: g, pick: [shell, label]};

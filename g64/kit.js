@@ -18,6 +18,9 @@ export const MATS = {
   plastic: std({roughness: .48}), gloss: std({roughness: .16}), rubber: std({roughness: .85}),
   metal: std({roughness: .32, metalness: 1}), gold: std({roughness: .3, metalness: 1}),
   glow: new THREE.MeshBasicMaterial({vertexColors: true}),
+  // plásticos «de producto»: con barniz, para la consola y el mando
+  shell: new THREE.MeshPhysicalMaterial({vertexColors: true, roughness: .34, clearcoat: .7, clearcoatRoughness: .22, envMapIntensity: 3.2}),
+  candy: new THREE.MeshPhysicalMaterial({vertexColors: true, roughness: .14, clearcoat: 1, clearcoatRoughness: .08, envMapIntensity: 4}),
   glass: new THREE.MeshStandardMaterial({color: '#0a0a12', roughness: .05, metalness: .2}),
 };
 

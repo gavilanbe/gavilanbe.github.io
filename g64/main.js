@@ -29,6 +29,11 @@ const Sound = (() => {
     move() { noise({dur: .35, gain: .05, f0: 300, f1: 1400, q: .7}); }, pop() { tone(300, {type: 'triangle', dur: .11, gain: .12, to: 720}); },
     whoosh() { noise({dur: .6, gain: .1, f0: 500, f1: 3400, q: .8}); },
     clack() { noise({dur: .07, gain: .3, f0: 2600, f1: 500, q: .7}); tone(130, {dur: .16, gain: .3, to: 62}); tone(96, {type: 'triangle', dur: .12, gain: .16, when: .05, to: 60}); },
+    tick() { tone(2400, {type: 'square', dur: .025, gain: .03}); },
+    eject() { tone(180, {type: 'triangle', dur: .16, gain: .16, to: 520}); noise({dur: .09, gain: .12, f0: 1800, f1: 600}); },
+    chunk() { noise({dur: .05, gain: .4, f0: 3400, f1: 700, q: .6}); tone(150, {dur: .2, gain: .42, to: 48}); tone(88, {type: 'triangle', dur: .26, gain: .3, when: .03, to: 40}); noise({dur: .22, gain: .12, when: .04, f0: 500, f1: 120, q: .5}); [1568, 2093, 2637].forEach((f, i) => tone(f, {type: 'triangle', dur: .22, gain: .035, when: .05 + i * .035})); },
+    power() { tone(900, {type: 'square', dur: .03, gain: .09}); tone(420, {type: 'square', dur: .04, gain: .07, when: .035}); },
+    crt() { tone(60, {type: 'sawtooth', dur: .5, gain: .06, to: 180}); noise({dur: .42, gain: .09, f0: 6000, f1: 2400, q: .5}); tone(15600, {dur: .5, gain: .006}); },
     boot() { [392, 523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(f, {type: 'triangle', dur: .3, gain: .09, when: .12 + i * .09})); tone(1568, {dur: .7, gain: .05, when: .6}); },
     start() { [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => tone(f, {type: 'square', dur: .12, gain: .06, when: i * .06})); noise({dur: .7, gain: .07, f0: 400, f1: 6000, when: .1}); },
   };
@@ -41,7 +46,7 @@ const CART_ICON = '<svg viewBox="0 0 16 15" fill="currentColor"><path d="M1 14V4
 function paintCard(g) {
   const root = document.documentElement.style; root.setProperty('--pl', g.ed.plastic);
   $('c-meta').innerHTML = `<span class="bdg model" style="color:${g.ed.dark ? '#fff' : 'var(--ink)'}">${CART_ICON}${esc(g.ed.model)}${g.also ? ' + ' + esc(edition(g.also.model).model) : ''}</span><span class="bdg">${esc(g.ed.name)}</span><span class="bdg">${g.web ? 'Web' : 'Terminal'}</span>${g.new ? '<span class="bdg new">¡Nuevo!</span>' : ''}${g.wip ? '<span class="bdg wip">En obras</span>' : ''}`;
-  const t = $('c-title'); t.textContent = g.label; t.dataset.t = g.label; t.classList.toggle('long', g.label.length > 12);
+  const t = $('c-title'); t.textContent = g.label; t.dataset.t = g.label; const longest = Math.max(...g.label.split(/\s+/).map(w => w.length)); t.classList.toggle('mid', longest > 6 && longest <= 9 && g.label.length <= 14); t.classList.toggle('long', longest > 9 || g.label.length > 14);
   $('c-sub').textContent = g.sub; $('c-sub').hidden = !g.sub;
   const d = $('c-desc'); d.classList.remove('open');
   d.innerHTML = `<p>${esc(g.tagline)}</p>${g.web ? '' : `<div class="cmd"><span>$</span><code>${esc(g.clone)}</code></div>`}`;

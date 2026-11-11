@@ -83,8 +83,9 @@ svg{display:block}
 .bdg.new{background:linear-gradient(180deg,#dcff6b,#9fdc12);color:var(--ink);animation:wob 2.4s ease-in-out infinite}
 .bdg.wip{background:linear-gradient(180deg,#ffe96a,#ffb52e);color:var(--ink)}
 @keyframes wob{50%{transform:rotate(-3deg) scale(1.05)}}
-.card h2{font-size:clamp(44px,5.4vw,70px);display:block;width:fit-content;max-width:100%;text-wrap:balance;overflow-wrap:anywhere;padding-bottom:.12em}
-.card h2.long{font-size:clamp(32px,3.5vw,46px)}
+.card h2{font-size:clamp(44px,5.4vw,70px);display:block;width:fit-content;max-width:100%;text-wrap:balance;overflow-wrap:break-word;padding-bottom:.12em}
+.card h2.mid{font-size:clamp(36px,4vw,52px)}
+.card h2.long{font-size:clamp(28px,3vw,40px)}
 .card .sub{font-family:var(--title);font-size:19px;color:#fff;-webkit-text-stroke:5px var(--ink);paint-order:stroke fill;margin-top:2px}
 .desc{margin-top:12px;padding:13px 16px 12px;font-size:16px;line-height:1.36;color:#efeaff}
 .desc p{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
@@ -192,7 +193,7 @@ body.intro .ui{opacity:0;pointer-events:none;transition:none}
   .tabs button{flex:1;justify-content:center;padding:0 6px;font-size:14px;height:44px}
   .tools .btn{height:44px;min-width:44px;padding:0 13px}.tools .lbl,.tools .gl{display:none}
   .card{bottom:calc(max(12px,env(safe-area-inset-bottom)) + 70px)}
-  .card h2{font-size:40px}.card h2.long{font-size:30px}
+  .card h2{font-size:40px}.card h2.mid{font-size:32px}.card h2.long{font-size:26px}
   .desc{padding:10px 13px;font-size:14.5px}.desc p{-webkit-line-clamp:2}
   .play{height:58px;font-size:22px}.rnd{width:48px;height:48px}
   .count,.keys{display:none}
