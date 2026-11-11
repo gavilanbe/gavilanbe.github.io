@@ -5,7 +5,7 @@ import {EDITIONS, edition} from '../editions.js';
 
 export const R = {x0: -3, x1: 3.1, z0: -2.6, z1: 2.7, h: 3.05, t: .16};
 const WIN = {z0: .5, z1: 2.05, y0: 1.12, y1: 2.42};
-export const SH = {x0: -1.2, y0: .42, z: R.z0 + .17, rows: 6, px: .272, py: .262};
+export const SH = {x0: -1.472, y0: .42, z: R.z0 + .17, rows: 6, px: .272, py: .262};
 const std = o => new THREE.MeshStandardMaterial(o);
 
 export function buildRoom(scene, games) {

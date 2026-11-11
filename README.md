@@ -80,9 +80,10 @@ El código vive en [`g64/`](g64/): `kit.js` (herramientas de modelado), `cart.js
 **Un modelo nuevo** es una línea en `EDITIONS` de [`editions.js`](editions.js) (nombre, color del
 plástico, color de fondo, tinta y material) y después `npm run bundle`.
 
-**La pared está llena**: son 16 columnas de seis cartuchos y la colección ocupa las 16. Cuando un
-modelo necesite una columna más, `npm test` avisará y habrá que ampliar la estantería en
-`g64/room.js` (más filas o cartuchos algo más pequeños).
+**La pared está llena**: son 17 columnas de seis cartuchos (la estantería ya se corrió una columna a la
+izquierda, hasta el mueble de la tele) y la colección ocupa las 17. Cuando un modelo necesite una
+columna más, `npm test` avisará y habrá que ampliarla en `g64/room.js` (más filas o cartuchos algo
+más pequeños).
 
 El cartucho **TRAZO** es de edición `astra` (plástico fosforito) y se publica en [gavilanbe.github.io/trazo/](https://gavilanbe.github.io/trazo/). Su código vive en [gavilanbe/trazo](https://github.com/gavilanbe/trazo).
 

@@ -38,7 +38,7 @@ const exists = f => fs.existsSync(path.join(root, f.split('?')[0]));
   assert.ok(GAMES.filter(g => g.new).length <= 6, 'el NUEVO es solo para la última hornada');
   // la pared tiene sitio: seis filas por columna y como mucho lo que cabe en la pared del fondo
   const cols = Object.keys(EDITIONS).reduce((n, id) => n + Math.ceil(GAMES.filter(g => g.model === id).length / 6), 0);
-  assert.ok(cols <= 16, `la colección cabe en la pared (${cols} columnas de 16): si no, hay que ampliar la estantería en g64/room.js`);
+  assert.ok(cols <= 17, `la colección cabe en la pared (${cols} columnas de 17): si no, hay que ampliar la estantería en g64/room.js`);
 
   const hex = /^#[0-9a-f]{6}$/i;
   for (const [id, e] of Object.entries(EDITIONS)) for (const k of ['plastic', 'studio', 'ink']) assert.ok(hex.test(e[k]), `${id}.${k}`);

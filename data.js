@@ -73,7 +73,6 @@ const GAMES = [
     "repo": "https://github.com/gavilanbe/ceba",
     "thumb": "thumbs/ceba.jpg",
     "wip": false,
-    "new": true,
     "kind": "juego",
     "model": "fable-5.2"
   },
@@ -740,6 +739,19 @@ const GAMES = [
     "wip": false,
     "kind": "juego",
     "model": "opus-4.6"
+  },
+  {
+    "name": "splashooter",
+    "title": "💦 SPLASHOOTER",
+    "tagline": "Guerra de agua 4 contra 4 en la piscina Los Pinos y la Cala Tortuga: shooter 3D en tercera persona con mojado % en vez de vida, depósito que rellenar, globos, rachas, rescates y empujones al agua. Tres modos, cinco armas y repetición del último remojón.",
+    "type": "web",
+    "play": "https://gavilanbe.github.io/splashooter/",
+    "repo": "https://github.com/gavilanbe/splashooter",
+    "thumb": "thumbs/splashooter.jpg",
+    "wip": false,
+    "kind": "juego",
+    "model": "opus-5.5",
+    "new": true
   },
   {
     "name": "spore-quest",
