@@ -1,10 +1,10 @@
 // Chispas, estelas y anillos de impacto: un único sistema de partículas aditivas y unos aros en el suelo.
 import {THREE, C, glowTex, tex} from './kit.js';
 
-export function makeFX(scene) {
+export function makeFX(scene, {size = .17} = {}) {
   const N = 420, pos = new Float32Array(N * 3).fill(999), col = new Float32Array(N * 3), P = Array.from({length: N}, () => ({life: 0, max: 1, v: new THREE.Vector3(), c: new THREE.Color(), g: 0, drag: 0}));
   const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
-  const pts = new THREE.Points(geo, new THREE.PointsMaterial({size: .17, map: glowTex, vertexColors: true, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false}));
+  const pts = new THREE.Points(geo, new THREE.PointsMaterial({size, map: glowTex, vertexColors: true, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false}));
   pts.frustumCulled = false; pts.renderOrder = 8; scene.add(pts);
   let next = 0;
   function spawn(p, color, {n = 1, speed = 1, up = 0, spread = 1, life = .6, gravity = 3, drag = 1.5, jitter = .02, white = .55} = {}) {

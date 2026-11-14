@@ -8,6 +8,11 @@ const norm = s => String(s).normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase
 const mq = q => matchMedia(q).matches, REDUCE = mq('(prefers-reduced-motion: reduce)');
 const store = {get(k, d) { try { const v = localStorage.getItem('g64:' + k); return v == null ? d : JSON.parse(v); } catch { return d; } }, set(k, v) { try { localStorage.setItem('g64:' + k, JSON.stringify(v)); } catch {} }};
 const go = u => (window.__g64Nav || (x => location.assign(x)))(u);
+const QS = new URLSearchParams(location.search);
+// en teléfonos, la consola es la portátil y la colección va en su estuche (?pocket y ?desktop lo fuerzan)
+const POCKET = QS.has('pocket') || (!QS.has('desktop') && mq('(max-width: 760px), (max-height: 540px) and (pointer: coarse)'));
+document.body.classList.toggle('pocket', POCKET);
+const BRAND = POCKET ? 'gavilanbe POCKET' : 'gavilanbe 64';
 const ROOT = new URL(document.documentElement.dataset.root || './', document.baseURI).href;
 
 // ── la colección ────────────────────────────────────
@@ -55,7 +60,7 @@ function paintCard(g) {
   $('play').href = g.web ? g.play : g.repo; $('play-t').textContent = g.web ? 'Jugar' : 'Copiar comando'; $('repo').href = g.repo;
   $('c-count').textContent = `Nº ${String(games.indexOf(g) + 1).padStart(3, '0')} / ${String(games.length).padStart(3, '0')}`;
   const card = $('card'); card.classList.remove('on'); void card.offsetWidth; card.classList.add('on');
-  document.title = `${g.label} · gavilanbe 64`;
+  document.title = `${g.label} · ${BRAND}`;
   for (const r of document.querySelectorAll('.row')) r.setAttribute('aria-current', r.dataset.name === g.name);
 }
 function renderList() {
@@ -76,6 +81,11 @@ $('close-list').addEventListener('click', () => { Sound.click(); openList(false)
 $('snd').addEventListener('click', e => e.currentTarget.setAttribute('aria-pressed', Sound.toggle())); $('snd').setAttribute('aria-pressed', Sound.on);
 let toastT = 0;
 function toast(m) { const t = $('toast'); t.textContent = m; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 2400); }
+const ARROWS = '<svg viewBox="0 0 22 12" width="20" height="11" fill="currentColor"><path d="M7 1v10L1 6zM15 1v10l6-5z"/></svg>';
+const PKEYS = {
+  tv: () => `<button type="button" data-act="a"><span class="gl a">A</span>${current && !current.web ? 'Copiar' : 'Jugar'}</button><button type="button" data-act="step"><span class="gl k">${ARROWS}</span>Cambiar</button><button type="button" data-act="b"><span class="gl b">B</span>Estuche</button>`,
+  wall: () => `<span><span class="gl a">A</span>Toca un cartucho</span><button type="button" data-act="tv"><span class="gl b">B</span>Consola</button>`,
+};
 const KEYS = {
   hero: '<span><span class="gl a">A</span>Tocar la pared o la tele</span><span><span class="gl k">/</span>Buscar</span>',
   wall: '<span><span class="gl a">A</span>Elegir cartucho</span><span><span class="gl k"><svg viewBox="0 0 22 12" width="20" height="11" fill="currentColor"><path d="M7 1v10L1 6zM15 1v10l6-5z"/></svg></span>Moverse</span><span><span class="gl b">B</span>Volver</span>',
@@ -85,16 +95,27 @@ function setStation(name) {
   let on = null;
   for (const b of document.querySelectorAll('.tabs button')) { const p = b.dataset.go === name; b.setAttribute('aria-pressed', p); if (p) on = b; }
   if (on) { const pill = $('pill'); pill.style.left = on.offsetLeft + 'px'; pill.style.width = on.offsetWidth + 'px'; }
-  $('keys').innerHTML = KEYS[name] || ''; document.body.dataset.st = name;
+  $('keys').innerHTML = POCKET ? (PKEYS[name] || PKEYS.tv)() : KEYS[name] || ''; document.body.dataset.st = name;
 }
 addEventListener('resize', () => room && setStation(room.station));
+$('keys').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b || !room) return; const a = b.dataset.act;
+  if (a === 'a') { room.button && room.button('a'); play(); } else if (a === 'step') { room.button && room.button('dpad', [1, 0]); step(1); } else { Sound.move(); room.go(a === 'b' ? 'wall' : 'tv'); }
+});
+// saltos por modelo sobre el estuche
+if (POCKET) {
+  $('jump').innerHTML = usedEds.map(id => { const e = edition(id); return `<button class="chip" type="button" data-ed="${esc(id)}" style="--c:${e.plastic}" aria-pressed="false"><i></i>${esc(e.model)}</button>`; }).join('');
+  $('jump').addEventListener('click', e => { const b = e.target.closest('.chip'); if (b && room) { Sound.click(); room.jump(b.dataset.ed); } });
+}
+function setSection(id) { for (const c of $('jump').children) { const on = c.dataset.ed === id; c.setAttribute('aria-pressed', on); if (on) $('jump').scrollTo({left: c.offsetLeft - ($('jump').clientWidth - c.offsetWidth) / 2, behavior: 'smooth'}); } }
+function jumpEd(d) { const i = usedEds.indexOf(current.model), id = usedEds[(i + d + usedEds.length) % usedEds.length]; Sound.pop(); select(games.find(g => g.model === id)); }
 document.querySelector('.tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b && room) { Sound.move(); room.go(b.dataset.go); } });
 
 let launching = false;
 function select(g, {fly = true, push = true} = {}) {
   if (!g || launching) return;
   if (g === current) { room && room.go('tv'); return; }
-  current = g; paintCard(g);
+  current = g; paintCard(g); if (POCKET && room) setStation(room.station);
   if (push) try { history.replaceState(null, '', '#' + g.name); } catch {}
   room && room.insert(g, fly && !REDUCE);
 }
@@ -120,29 +141,31 @@ addEventListener('keydown', e => {
   if (typing) return;
   if (e.key === '/') { e.preventDefault(); openList(true); }
   else if (e.key === 'Enter' && !e.target.closest?.('button, a')) { e.preventDefault(); play(); }
-  else if (e.key === 'b' || e.key === 'B') room && room.go(room.station === 'hero' ? 'hero' : 'hero');
+  else if (e.key === 'b' || e.key === 'B') room && room.go(POCKET ? (room.station === 'wall' ? 'tv' : 'wall') : 'hero');
   else if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') { const d = e.key === 'ArrowRight' ? 1 : -1; if (room && room.station === 'wall') room.key(d); else step(d); }
   else if (e.key === '1') room && room.go('hero'); else if (e.key === '2') room && room.go('wall'); else if (e.key === '3') room && room.go('tv');
 });
 
-renderList(); setStation('hero');
+renderList(); setStation(POCKET ? 'tv' : 'hero');
 const first = byName.get(decodeURIComponent(location.hash.slice(1))) || games.find(g => g.new && g.web) || games[0];
 current = first; paintCard(first);
-window.G64 = {games, byName, select, play, get current() { return current; }, get room() { return room; }};
+window.G64 = {games, byName, select, play, POCKET, get current() { return current; }, get room() { return room; }};
 
 // ── pantalla de título ──────────────────────────────
 const boot = $('boot');
-$('sp-word').innerHTML = [...'gavilanbe'].map((c, i) => `<span class="l tt" data-t="${c}" style="--i:${i}">${c}</span>`).join('') + '<span class="sp-64 tt hot" data-t="64">64</span>';
+$('sp-word').innerHTML = [...'gavilanbe'].map((c, i) => `<span class="l tt" data-t="${c}" style="--i:${i}">${c}</span>`).join('') + `<span class="sp-64 tt hot" data-t="${POCKET ? 'POCKET' : '64'}">${POCKET ? 'POCKET' : '64'}</span>`;
+if (POCKET) { $('sp-sub').textContent = 'Toda la colección, en el bolsillo'; $('sp-load').textContent = 'Cargando las pilas'; $('boot').setAttribute('aria-label', BRAND); for (const h of document.querySelectorAll('.logo .hot')) { h.textContent = 'POCKET'; h.dataset.t = 'POCKET'; } $('gl').setAttribute('aria-label', 'La gavilanbe POCKET y el estuche con la colección de cartuchos'); }
 $('sp-n').textContent = `${games.length} juegos · ${usedEds.length} modelos`;
 let ready = false, begun = false;
 function begin() {
   if (begun || !ready) return; begun = true;
   Sound.start(); $('flash').classList.add('on');
-  setTimeout(() => { boot.classList.add('off'); document.body.classList.remove('intro'); $('flash').classList.remove('on'); room && room.start(); setStation('hero'); }, 130);
+  setTimeout(() => { boot.classList.add('off'); document.body.classList.remove('intro'); $('flash').classList.remove('on'); room && room.start(); setStation(room ? room.station : 'hero'); }, 130);
 }
 boot.addEventListener('click', begin);
-function armed() { ready = true; boot.classList.remove('wait'); $('start-t').textContent = 'Pulsa START'; $('sp-load').textContent = 'Habitación lista'; if (REDUCE) begin(); }
+function armed() { ready = true; boot.classList.remove('wait'); $('start-t').textContent = 'Pulsa START'; $('sp-load').textContent = POCKET ? 'Pilas cargadas' : 'Habitación lista'; if (REDUCE) begin(); }
 
 // ── la habitación 3D ────────────────────────────────
-import('./scene.js').then(m => m.createRoom({canvas: $('gl'), games, first, Sound, onStation: setStation, onPick: g => select(g), onPlay: () => play(), tip: $('tip')})).then(r => { room = r; setTimeout(armed, 1500); })
-  .catch(err => { console.warn('Sin habitación 3D:', err); ready = true; begun = true; boot.classList.add('off'); document.body.classList.remove('intro'); openList(true); toast('Tu navegador no puede con la habitación 3D: aquí tienes la lista'); });
+const hooks = {canvas: $('gl'), games, first, Sound, onStation: setStation, onPick: g => select(g), onPlay: () => play(), tip: $('tip'), store, onStep: d => step(d), onJump: d => jumpEd(d), onSection: setSection};
+(POCKET ? import('./pocket.js').then(m => m.createPocket(hooks)) : import('./scene.js').then(m => m.createRoom(hooks))).then(r => { room = r; setTimeout(armed, 1500); })
+  .catch(err => { console.warn('Sin habitación 3D:', err); ready = true; begun = true; boot.classList.add('off'); document.body.classList.remove('intro'); openList(true); toast(POCKET ? 'Tu teléfono no puede con el 3D: aquí tienes la lista' : 'Tu navegador no puede con la habitación 3D: aquí tienes la lista'); });
