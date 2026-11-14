@@ -417,6 +417,19 @@ const GAMES = [
     "model": "fable"
   },
   {
+    "name": "makinamon-pulso",
+    "title": "🔋 MAKINAMON · Versión Pulso",
+    "tagline": "RPG de criaturas-máquina a lo Game Boy Color: diez capítulos por el Valle de Ferralla, seis fusibles, 50 Makinamon horneados a pixel art, 50 ataques con animación propia, un compañero que te sigue con vínculo y reacciones, y la Compañía APAGÓN queriendo embotellar el Pulso.",
+    "type": "web",
+    "play": "https://gavilanbe.github.io/makinamon-pulso/",
+    "repo": "https://github.com/gavilanbe/makinamon-pulso",
+    "thumb": "thumbs/makinamon-pulso.jpg",
+    "wip": false,
+    "kind": "juego",
+    "model": "fable-5.2",
+    "new": true
+  },
+  {
     "name": "michi",
     "title": "🐈 michi",
     "tagline": "Un gato pixel-art que vive en la parte de abajo de tu terminal mientras la usas.",
@@ -750,8 +763,7 @@ const GAMES = [
     "thumb": "thumbs/splashooter.jpg",
     "wip": false,
     "kind": "juego",
-    "model": "opus-5.5",
-    "new": true
+    "model": "opus-5.5"
   },
   {
     "name": "spore-quest",
