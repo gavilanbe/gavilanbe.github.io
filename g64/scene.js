@@ -157,7 +157,7 @@ export async function createRoom({canvas, games, first, Sound, onStation, onPick
     const cart = cartOf(g); if (!cart) return;
     const mySeq = ++seq, prev = selected && selected !== g ? cartOf(selected) : null;
     for (let i = cues.length - 1; i >= 0; i--) cues.splice(i, 1);
-    selected = g; cover = null;
+    selected = g; cover = null; cart.userData.sharp && cart.userData.sharp();
     const i = new Image(); i.onload = () => { if (selected === g) cover = i; }; i.src = g.thumbL;
     tvL.color.set(g.ed.plastic).lerp(C('#ffffff'), .4); tv.userData.halo.material.color.copy(tvL.color);
     for (const c of carts) if (c !== cart && c !== prev && c.parent && c.position.distanceTo(c.userData.home.pos) > .3) { for (let j = flights.length - 1; j >= 0; j--) if (flights[j].obj === c) flights.splice(j, 1); c.position.copy(c.userData.home.pos); c.quaternion.copy(homeQ); c.scale.setScalar(1); }

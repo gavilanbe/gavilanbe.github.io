@@ -1,12 +1,12 @@
 // La gavilanbe POCKET: la portátil de la casa. De pie en el plano XY, frente hacia +z, centro en el origen.
 // El cartucho se ve entero en la cuna de arriba; cruceta, A, B, START y SELECT son piezas sueltas que se pulsan.
-import {THREE, V, M4, Kit, MATS, ext, rbox, decal, glow, tint, tex, FONT, MONO} from './kit.js';
+import {THREE, V, M4, Kit, MATS, ext, rbox, lathe, decal, glow, tint, tex, FONT, MONO} from './kit.js';
 import {CART} from './cart.js';
 import {SHELLS} from '../editions.js';
 
 export const HH = {W: .6, H: 1, D: .12};
 export const BIG = .36 / CART.W;                        // escala del cartucho puesto en la consola
-export const SEAT = V(0, .43, .0215);                     // centro del cartucho encajado
+export const SEAT = V(0, .458, .0215);                     // centro del cartucho encajado
 export const LCD = {w: .4, h: .3, y: .123, z: HH.D / 2 + .0085, px: [480, 360]};
 const {W, H, D} = HH, F = D / 2, LOGO = ['#ff5b35', '#ffd23f', '#35d0c0', '#7a4be6'];
 
@@ -21,6 +21,9 @@ Object.assign(MATS, {
   pkLens: new THREE.MeshPhysicalMaterial({vertexColors: true, roughness: .06, clearcoat: 1, clearcoatRoughness: .03, envMapIntensity: 3.4}),
 });
 
+// grano fino del plástico inyectado
+const grain = tex(128, 128, (x, w, h) => { const d = x.createImageData(w, h), a = d.data; for (let i = 0; i < a.length; i += 4) { const v = 118 + Math.random() * 20; a[i] = a[i + 1] = a[i + 2] = v; a[i + 3] = 255; } x.putImageData(d, 0, 0); }, {repeat: [26, 26], srgb: false});
+for (const m of [MATS.pkFront, MATS.pkBack]) { m.bumpMap = grain; m.bumpScale = .55; m.roughnessMap = null; }
 const arc = (pts, cx, cy, r, a0, a1, n = 7) => { for (let i = 0; i <= n; i++) { const a = a0 + (a1 - a0) * i / n; pts.push([cx + Math.cos(a) * r, cy + Math.sin(a) * r]); } };
 const P = Math.PI;
 // silueta: esquinas de abajo más redondas; con `notch`, la cuna del cartucho abierta arriba
@@ -43,16 +46,22 @@ export const BTN = {
 export function makeHandheld() {
   const k = new Kit(), white = '#ffffff';
   // ── carcasa: tapa trasera entera, junta y frontal con la cuna ──
-  k.add(ext(outline(false), F + .004, .014, {segs: 3}), white, M4(0, 0, -F / 2 - .002), 'pkBack', .7, .98);
+  k.add(ext(outline(false), F + .004, .02, {segs: 6}), white, M4(0, 0, -F / 2 - .002), 'pkBack', .66, .98);
   k.add(ext(outline(false, .005), .006, 0), '#0d0c12', M4(0, 0, -.001), 'matte', 1, 1);
-  k.add(ext(outline(true), F, .011, {segs: 3}), white, M4(0, 0, F / 2), 'pkFront', .74, 1.1);
+  k.add(ext(outline(true), F, .017, {segs: 6}), white, M4(0, 0, F / 2), 'pkFront', .72, 1.1);
+  // línea de partición grabada alrededor del frontal
+  { const a = outline(true, .027), b = outline(true, .0296), n = a.length, pos = [], idx = []; for (let i = 0; i < n; i++) pos.push(a[i][0], a[i][1], 0, b[i][0], b[i][1], 0); for (let i = 0; i < n; i++) { const j = (i + 1) % n; idx.push(i * 2, j * 2, i * 2 + 1, i * 2 + 1, j * 2, j * 2 + 1); }
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals(); k.add(g, white, M4(0, 0, F + .0006), 'pkBack', .48, .6); }
+  // costillas del fondo de la cuna
+  for (let i = 0; i < 5; i++) k.add(rbox(.33, .006, .004, .002, 1), white, M4(0, H / 2 - .03 - i * .027, .0065), 'pkBack', .5, .66);
   // cuna: suelo con la boca y carriles laterales
   k.add(ext(pill(.385, .03, 5), .06, .002), '#08080c', M4(0, H / 2 - .17 + .001, .028, 0, Math.PI / 2), 'matte', 1, 1);
   k.box(.392, .166, .004, white, 0, H / 2 - .085, .0035, 'pkBack', .6, .8);
   for (let i = 0; i < 16; i++) k.box(.006, .004, .03, '#f0c34a', -.165 + i * .022, H / 2 - .176, .03, 'gold', 1, 1.1);
   // ── cristal de la pantalla ──
   const LY = .095, LW = .5, LH = .39;
-  k.add(ext(rr(LW + .008, LH + .008, .037), .0016, 0), '#16141c', M4(0, LY, F), 'matte', 1, 1);
+  k.add(ext(rr(LW + .03, LH + .03, .048), .0016, 0), '#16141c', M4(0, LY, F), 'matte', 1, 1);
+  k.add(ext(rr(LW + .022, LH + .022, .044, 10), .009, .0035, {segs: 3, holes: [rr(LW + .001, LH + .001, .034, 10).reverse()]}), '#d9d6e2', M4(0, LY, F + .003), 'metal', .8, 1.15);
   k.add(ext(rr(LW, LH, .034), .008, .003, {segs: 2}), '#0b0b12', M4(0, LY, F + .0035), 'pkLens', 1, 1);
   k.add(ext(rr(LCD.w + .014, LCD.h + .014, .008), .002, 0), '#020204', M4(0, LCD.y, F + .0072), 'matte', 1, 1);
   // ── cazoletas ──
@@ -77,21 +86,28 @@ export function makeHandheld() {
   ink(.1, .022, 2000, word('START'), BTN.start.x - .014, BTN.start.y - .042, .42);
   const letter = s => (x, cw, ch) => { x.fillStyle = '#fff'; x.font = `${ch * .86}px ${FONT}`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(s, cw / 2, ch / 2 + 1); };
   // logo en el cristal, bajo la pantalla
-  const logo = decal(.36, .05, 1500, (x, cw, ch) => {
+  const logo = decal(.46, .05, 1500, (x, cw, ch) => {
+    LOGO.forEach((c, i) => { x.fillStyle = c; x.fillRect(4 + i * 14, ch / 2 - 3, 10, 6); x.fillRect(cw - 58 + i * 14, ch / 2 - 3, 10, 6); }); x.translate(76, 0);
     const r = ch * .34, cx = r + 6, cy = ch / 2; x.lineWidth = r * .62; LOGO.forEach((c, i) => { x.strokeStyle = c; x.beginPath(); const a = -.35 + i * 1.42; x.arc(cx, cy, r * .68, a, a + 1.44); x.stroke(); }); x.fillStyle = LOGO[0]; x.fillRect(cx, cy - r * .3, r, r * .6);
     x.font = `${ch * .62}px ${FONT}`; x.textBaseline = 'middle'; x.textAlign = 'left'; x.fillStyle = '#e8e4f2'; const x0 = cx + r + 12; x.fillText('gavilanbe', x0, cy + 1); x.fillStyle = '#ff5b35'; x.fillText('POCKET', x0 + x.measureText('gavilanbe ').width, cy + 1);
   });
   k.mesh(logo, M4(0, LY - LH / 2 + .042, F + .0082));
   k.mesh(decal(.05, .014, 2600, (x, cw, ch) => { x.fillStyle = 'rgba(232,228,242,.6)'; x.font = `700 ${ch * .8}px ${MONO}`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('POWER', cw / 2, ch / 2); }), M4(-.226, LCD.y + .1 - .026, F + .0082, 0, 0, 0));
+  const em = M4(-.205, -.41, F + .001, 0, Math.PI / 2);
+  k.add(lathe([[.034, 0], [.034, .004], [.03, .007], [.0001, .007]], 28), '#d9d6e2', em, 'metal', .85, 1.15).add(lathe([[.0285, 0], [.0285, .0085], [.0001, .0085]], 28), '#17161d', em, 'gloss', 1, 1);
+  LOGO.forEach((c, i) => { const t = new THREE.TorusGeometry(.0165, .0058, 8, 14, 1.42); t.rotateZ(-.35 + i * 1.42); k.add(t, c, M4(-.205, -.41, F + .0105), 'gloss', .9, 1.2); });
+  k.add(rbox(.02, .0075, .009, .002, 1), LOGO[0], M4(-.196, -.41, F + .0105), 'gloss', .9, 1.2);
   const grp = k.build();
 
   // ── piezas móviles ──
   const piece = (geo, mat, hex = white, k0 = .82, k1 = 1.12) => { const m = new THREE.Mesh(tint(geo.index ? geo.toNonIndexed() : geo, hex, k0, k1), MATS[mat]); m.castShadow = true; return m; };
   const mov = (name, mesh, extra) => { const g = new THREE.Group(); g.add(mesh); if (extra) g.add(extra); g.position.set(BTN[name].x, BTN[name].y, F); g.userData = {name, v: 0, vel: 0, to: 0}; grp.add(g); parts[name] = g; return g; };
   { const c = piece(ext(CROSS(.082, .0275), .034, .008, {segs: 2}), 'pkPad', white, .9, 1.1); c.position.z = .006;
-    const dot = piece(ext(disc(.017, 18), .004, .001), 'pkPad', white, .55, .6); dot.position.z = .0225; mov('dpad', c, dot); }
+    const dot = piece(lathe([[.019, 0], [.016, -.0035], [.0001, -.005]], 20), 'pkPad', white, .5, .62); dot.rotation.x = Math.PI / 2; dot.position.z = .0235;
+    const g = mov('dpad', c, dot);
+    for (let i = 0; i < 4; i++) { const t = piece(ext([[-.011, -.007], [.011, -.007], [0, .009]], .003, .001, {segs: 1}), 'pkPad', white, .5, .6); t.rotation.z = -i * Math.PI / 2; t.position.set(Math.sin(i * Math.PI / 2) * .058, Math.cos(i * Math.PI / 2) * .058, .0238); g.add(t); } }
   parts.abInks = [];
-  for (const n of ['a', 'b']) { const c = piece(ext(disc(.044, 30), .032, .011, {segs: 4}), n === 'a' ? 'pkA' : 'pkB', white, .86, 1.16); c.position.z = .008; const l = decal(.05, .05, 1500, letter(n.toUpperCase())); l.position.z = .0246; parts.abInks.push(l); mov(n, c, l); }
+  for (const n of ['a', 'b']) { const c = piece(lathe([[.044, 0], [.044, .017], [.0425, .0225], [.038, .0268], [.03, .0298], [.018, .0316], [.0001, .0322]], 40, 1.2), n === 'a' ? 'pkA' : 'pkB', white, .84, 1.18); c.rotation.x = Math.PI / 2; c.position.z = -.006; const l = decal(.05, .05, 1500, letter(n.toUpperCase())); l.position.z = .0268; parts.abInks.push(l); mov(n, c, l); }
   for (const n of ['select', 'start']) { const c = piece(ext(pill(.082, .026, 6), .018, .006, {segs: 2}), 'pkPad', white, .9, 1.1); c.rotation.z = .42; c.position.z = .004; mov(n, c); }
   // pantalla: imagen, brillo del cristal y resplandor
   const cv = document.createElement('canvas'); cv.width = LCD.px[0]; cv.height = LCD.px[1];
@@ -106,7 +122,7 @@ export function makeHandheld() {
   parts.mouth = glow(.6, '#ffb070', 0); parts.mouth.scale.set(1, .32, 1); parts.mouth.position.set(0, H / 2 - .15, F + .012); grp.add(parts.mouth);
   // zonas de toque, más generosas que las piezas
   const hit = (name, w, h, x, y) => { const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({visible: false})); m.position.set(x, y, F + .03); m.userData.btn = name; grp.add(m); return m; };
-  parts.hits = [hit('dpad', .25, .25, BTN.dpad.x, BTN.dpad.y), hit('a', .13, .13, BTN.a.x + .012, BTN.a.y + .012), hit('b', .12, .12, BTN.b.x - .012, BTN.b.y - .012), hit('select', .12, .1, BTN.select.x - .004, BTN.select.y - .012), hit('start', .12, .1, BTN.start.x + .004, BTN.start.y - .012), hit('screen', LCD.w, LCD.h, 0, LCD.y), hit('cart', .4, .24, 0, H / 2 - .04), hit('body', W, H, 0, 0)];
+  parts.hits = [hit('dpad', .25, .25, BTN.dpad.x, BTN.dpad.y), hit('a', .13, .13, BTN.a.x + .012, BTN.a.y + .012), hit('b', .12, .12, BTN.b.x - .012, BTN.b.y - .012), hit('select', .12, .1, BTN.select.x - .004, BTN.select.y - .006), hit('start', .12, .1, BTN.start.x + .004, BTN.start.y - .012), hit('screen', LCD.w, LCD.h, 0, LCD.y), hit('cart', .4, .27, 0, H / 2 - .03), hit('body', W, H, 0, 0)];
   parts.hits[7].position.z = F + .001;
   parts.canvas = cv; parts.tex = st; parts.screen = screen;
   grp.userData.parts = parts;

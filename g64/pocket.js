@@ -28,10 +28,11 @@ export async function createPocket({canvas, games, first, Sound, onStation, onPi
   const camera = new THREE.PerspectiveCamera(FOV, 1, .2, 60);
 
   // ── luz: el mismo atardecer de la habitación, entrando por la izquierda ──
-  scene.add(new THREE.HemisphereLight('#dcd8ff', '#6a5a70', .7));
-  const sun = new THREE.DirectionalLight('#ffe2c2', 2.35), SUN = V(-3.2, 3.4, -1.3); scene.add(sun, sun.target);
+  scene.add(new THREE.HemisphereLight('#e4e2ff', '#7d7888', .72));
+  const sun = new THREE.DirectionalLight('#fff1e0', 2.3), SUN = V(-3.2, 3.4, -1.3); scene.add(sun, sun.target);
   sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, {left: -1.5, right: 1.5, top: 1.9, bottom: -1.9, near: .5, far: 12}); sun.shadow.camera.updateProjectionMatrix(); sun.shadow.bias = -.0004; sun.shadow.normalBias = .012; sun.shadow.radius = 3;
   const fill = new THREE.DirectionalLight('#a9a6ff', 1.15); fill.position.set(3, 6, 4); scene.add(fill);
+  const rim = new THREE.DirectionalLight('#9fc0ff', 1.1); rim.position.set(3.5, 2.2, -2.5); scene.add(rim);
   const scrL = new THREE.PointLight('#8fd0ff', 0, 1.6, 1.6); scene.add(scrL);
 
   // ── el edredón (el de la cama de la habitación) ──
@@ -171,7 +172,7 @@ export async function createPocket({canvas, games, first, Sound, onStation, onPi
   }
 
   // ── encuadres: se calculan con los huecos que deja la interfaz ──
-  const TOP = HH.H / 2 + .075;                                  // de la consola al borde del cartucho que asoma
+  const TOP = HH.H / 2 + .105;                                  // de la consola al borde del cartucho que asoma
   const FR = {tv: {cz: 0, e: 1}, wall: {cz: 0, e: 1}, intro: {cz: -LCD.y, e: .47}};
   let Z0 = 0, maxScroll = 0, ppuW = 400, hideZ = .2, catchZ = -.1;
   const tanF = Math.tan(FOV * Math.PI / 360);
@@ -179,9 +180,9 @@ export async function createPocket({canvas, games, first, Sound, onStation, onPi
     const card = document.getElementById('card'), keys = document.getElementById('keys'), land = VW > VH;
     const cardH = card && card.offsetHeight ? VH - card.getBoundingClientRect().top : VH * .3, keysH = keys && keys.offsetHeight ? VH - keys.getBoundingClientRect().top : 70;
     // consola: entre la cabecera y la ficha
-    const t = land ? 12 : 66, b = land ? 12 : Math.max(cardH, keysH) + 6, avail = Math.max(120, VH - t - b), full = HH.H + .075 + .05;
+    const t = land ? 12 : 66, b = land ? 12 : Math.max(cardH, keysH) + 6, avail = Math.max(120, VH - t - b), full = HH.H + .105 + .04;
     const ppu = Math.min(avail / full, VW * (land ? .5 : .9) / HH.W);
-    FR.tv.e = VW / ppu; FR.tv.cz = -.0375 + (VH / 2 - (t + avail / 2)) / ppu; FR.tv.cx = land ? (VW * .23) / ppu : 0;
+    FR.tv.e = VW / ppu; FR.tv.cz = -.0525 + (VH / 2 - (t + avail / 2)) / ppu; FR.tv.cx = land ? (VW * .23) / ppu : 0;
     // estuche: a lo ancho, con la consola asomando abajo
     ppuW = Math.min(VW / (SW + .14), land ? VH / 1.3 : 1e9); const peek = keysH + (land ? 70 : Math.min(150, VH * .19));
     FR.wall.e = VW / ppuW; FR.wall.cz = -TOP - (VH / 2 - peek) / ppuW; FR.wall.cx = 0;
@@ -221,7 +222,7 @@ export async function createPocket({canvas, games, first, Sound, onStation, onPi
     const cart = byGame.get(g); if (!cart) return;
     const mySeq = ++seq, prev = selected && selected !== g ? byGame.get(selected) : null;
     cues.length = 0; trail = null;
-    selected = g; cover = null;
+    selected = g; cover = null; cart.userData.sharp && cart.userData.sharp();
     const im = new Image(); im.onload = () => { if (selected === g) cover = im; }; im.src = g.thumbL;
     scrL.color.set(g.ed.plastic).lerp(C('#ffffff'), .45); CP.halo.material.color.copy(scrL.color);
     for (const c of carts) if (c !== cart && c !== prev && c.parent !== caseG) dock(c);
