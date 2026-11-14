@@ -3,10 +3,6 @@
 // Misma interfaz que scene.js: go, insert, dim, station, start, key, launch.
 import * as THREE from 'three';
 import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
-import {EffectComposer} from 'three/addons/postprocessing/EffectComposer.js';
-import {RenderPass} from 'three/addons/postprocessing/RenderPass.js';
-import {UnrealBloomPass} from 'three/addons/postprocessing/UnrealBloomPass.js';
-import {OutputPass} from 'three/addons/postprocessing/OutputPass.js';
 import {V, M4, C, Kit, tex, ext, decal, glow, blob, fontsReady, FONT, MONO} from './kit.js';
 import {makeHandheld, setShell, HH, BIG, SEAT, LCD} from './handheld.js';
 import {makeCart, CART} from './cart.js';
@@ -20,9 +16,10 @@ const FLAT = -Math.PI / 2;
 
 export async function createPocket({canvas, games, first, Sound, onStation, onPick, onPlay, onStep, onJump, onSection, store}) {
   await fontsReady();
-  const renderer = new THREE.WebGLRenderer({canvas, antialias: false, powerPreference: 'high-performance'});
+  // directo al lienzo, sin cadena de efectos: en un teléfono costaba más que la escena entera
+  const renderer = new THREE.WebGLRenderer({canvas, antialias: true, powerPreference: 'high-performance'});
   renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.NeutralToneMapping; renderer.toneMappingExposure = 1;
-  renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; renderer.shadowMap.autoUpdate = false;   // las sombras solo se rehacen cuando algo se mueve
   const scene = new THREE.Scene(); scene.background = new THREE.Color('#150f38');
   const pm = new THREE.PMREMGenerator(renderer); scene.environment = pm.fromScene(new RoomEnvironment(), .04).texture; scene.environmentIntensity = .3; scene.environmentRotation.set(1.15, .6, 0); pm.dispose();
   const camera = new THREE.PerspectiveCamera(FOV, 1, .2, 60);
@@ -30,7 +27,7 @@ export async function createPocket({canvas, games, first, Sound, onStation, onPi
   // ── luz: el mismo atardecer de la habitación, entrando por la izquierda ──
   scene.add(new THREE.HemisphereLight('#e4e2ff', '#7d7888', .72));
   const sun = new THREE.DirectionalLight('#fff1e0', 2.3), SUN = V(-3.2, 3.4, -1.3); scene.add(sun, sun.target);
-  sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, {left: -1.5, right: 1.5, top: 1.9, bottom: -1.9, near: .5, far: 12}); sun.shadow.camera.updateProjectionMatrix(); sun.shadow.bias = -.0004; sun.shadow.normalBias = .012; sun.shadow.radius = 3;
+  sun.castShadow = true; sun.shadow.mapSize.set(1536, 1536); Object.assign(sun.shadow.camera, {left: -1.5, right: 1.5, top: 1.9, bottom: -1.9, near: .5, far: 12}); sun.shadow.camera.updateProjectionMatrix(); sun.shadow.bias = -.0004; sun.shadow.normalBias = .012; sun.shadow.radius = 3;
   const fill = new THREE.DirectionalLight('#a9a6ff', 1.15); fill.position.set(3, 6, 4); scene.add(fill);
   const rim = new THREE.DirectionalLight('#9fc0ff', 1.1); rim.position.set(3.5, 2.2, -2.5); scene.add(rim);
   const scrL = new THREE.PointLight('#8fd0ff', 0, 1.6, 1.6); scene.add(scrL);
@@ -161,14 +158,11 @@ export async function createPocket({canvas, games, first, Sound, onStation, onPi
   }
 
   // ── acabado de imagen ──
-  let dpr = 1, cap = 2, composer = null, VW = 1, VH = 1;
+  let dpr = 1, cap = 2, VW = 1, VH = 1, shadowHold = 90, shadowSig = 0;
   function setup() {
     VW = innerWidth; VH = innerHeight; dpr = Math.min(devicePixelRatio || 1, cap);
     renderer.setPixelRatio(dpr); renderer.setSize(VW, VH, false); camera.aspect = VW / VH; camera.updateProjectionMatrix();
-    const rt = new THREE.WebGLRenderTarget(VW * dpr, VH * dpr, {type: THREE.HalfFloatType, samples: 4});
-    composer = new EffectComposer(renderer, rt); composer.setPixelRatio(dpr); composer.setSize(VW, VH);
-    composer.addPass(new RenderPass(scene, camera)); composer.addPass(new UnrealBloomPass(new THREE.Vector2(VW, VH), .16, .5, .97)); composer.addPass(new OutputPass());
-    layout();
+    layout(); shadowHold = 4;
   }
 
   // ── encuadres: se calculan con los huecos que deja la interfaz ──
@@ -206,7 +200,7 @@ export async function createPocket({canvas, games, first, Sound, onStation, onPi
   const flights = [], cues = []; let seq = 0;
   const at = (delay, fn) => cues.push({t: delay, fn, seq});
   const val = v => typeof v === 'function' ? v() : v;
-  function fly(obj, to, dur, done) { for (let i = flights.length - 1; i >= 0; i--) if (flights[i].obj === obj) flights.splice(i, 1); if (obj.parent !== scene) scene.attach(obj); flights.push({obj, from: {p: obj.position.clone(), q: obj.quaternion.clone(), s: obj.scale.x}, to, t: 0, dur, done}); }
+  function fly(obj, to, dur, done) { if (obj.userData.back) obj.userData.back.visible = true; for (let i = flights.length - 1; i >= 0; i--) if (flights[i].obj === obj) flights.splice(i, 1); if (obj.parent !== scene) scene.attach(obj); flights.push({obj, from: {p: obj.position.clone(), q: obj.quaternion.clone(), s: obj.scale.x}, to, t: 0, dur, done}); }
   function dock(c) { for (let i = flights.length - 1; i >= 0; i--) if (flights[i].obj === c) flights.splice(i, 1); caseG.add(c); c.position.copy(c.userData.home.pos); c.quaternion.copy(c.userData.home.q); c.scale.setScalar(CS); }
   function seat(c) { for (let i = flights.length - 1; i >= 0; i--) if (flights[i].obj === c) flights.splice(i, 1); con.add(c); c.position.copy(SEAT); c.quaternion.identity(); c.scale.setScalar(BIG); }
   function impact(g, big = true) {
@@ -317,7 +311,7 @@ export async function createPocket({canvas, games, first, Sound, onStation, onPi
     raf = requestAnimationFrame(frame);
     const real = Math.min(.05, (now - last) / 1000); last = now; if (document.hidden) return;
     // si el teléfono no llega, baja la resolución
-    if (!intro && frames++ > 40) { slow += real > .03 ? 1 : -.25; slow = Math.max(0, slow); if (slow > 45 && cap > 1.25) { cap = cap > 1.5 ? 1.5 : 1.25; slow = 0; frames = 0; setup(); } }
+    if (!intro && frames++ > 40) { slow += real > .021 ? 1 : -.3; slow = Math.max(0, slow); if (slow > 40 && cap > 1) { cap = cap > 1.5 ? 1.5 : cap > 1.25 ? 1.25 : 1; slow = 0; frames = 0; setup(); } }
     hitstop = Math.max(0, hitstop - real); const dt = hitstop > 0 ? real * .04 : real; time += dt;
     for (let i = cues.length - 1; i >= 0; i--) { const c = cues[i]; c.t -= dt; if (c.t <= 0) { cues.splice(i, 1); if (c.seq === seq) c.fn(); } }
     // estuche: inercia, topes elásticos y sección a la vista
@@ -339,7 +333,6 @@ export async function createPocket({canvas, games, first, Sound, onStation, onPi
     if (shake > .002) { const a = shake * shake * .03; camera.position.add(tmp.set((Math.random() - .5) * a, 0, (Math.random() - .5) * a)); look.add(tmp); shake *= Math.pow(.0008, real); }
     camera.lookAt(look);
     vig.position.set(cam.cx, .002, cam.cz); vig.scale.set(cam.e * 1.5, cam.e / camera.aspect * 1.25, 1);
-    sun.target.position.set(0, 0, cam.cz); sun.position.copy(sun.target.position).add(SUN);
     // la consola: flota, se inclina con el dedo, se aplasta con el golpe
     const tv = cur === 'tv' || intro; lift.to = tv ? 1 : 0; const lv = lift.step(dt);
     tiltX.to = tv && !zoomRes ? (down ? ptr.x : tiltDev.x) * .12 : 0; tiltY.to = tv && !zoomRes ? (down ? ptr.y : tiltDev.y) * .08 : 0;
@@ -368,7 +361,11 @@ export async function createPocket({canvas, games, first, Sound, onStation, onPi
     CP.aGlow.material.opacity = tvMode === 'game' && tv && !zoomRes ? .16 + Math.sin(time * 5.2) * .12 : 0;
     scrL.position.copy(L(0, LCD.y, .35)); scrL.intensity = power * lit * .5 + bump * 2.2; bump *= Math.pow(.004, dt);
     fx.update(dt); drawScreen(now);
-    composer.render(dt);
+    // ¿se ha movido algo que dé sombra? (estuche, consola, cartuchos en el aire o bajo el dedo)
+    { let sig = cam.cz * 3 + caseG.position.x + caseG.position.z * 2 + con.position.y * 5 + con.position.z + con.rotation.x * 3 + con.rotation.y * 2 + con.rotation.z + con.scale.y; for (const f of flights) sig += f.t + 1; if (caseG.visible) for (const c of carts) sig += c.position.y * 9 + c.scale.x;
+      if (Math.abs(sig - shadowSig) > 2e-5) { shadowSig = sig; shadowHold = 3; }
+      if (shadowHold > 0) { shadowHold--; sun.target.position.set(0, 0, cam.cz); sun.position.copy(sun.target.position).add(SUN); renderer.shadowMap.needsUpdate = true; } }
+    renderer.render(scene, camera);
   }
   let jumpTo = null, busy = false, conZ = 0;
   insert(first, false);
@@ -382,7 +379,7 @@ export async function createPocket({canvas, games, first, Sound, onStation, onPi
     reveal(g) { const c = byGame.get(g); if (c) { jumpTo = Math.max(0, Math.min(maxScroll, c.userData.home.pos.z - .55)); vel = 0; } },
     button(name, d) { if (CP[name]) { dir = d || [0, 0]; press(name, true); setTimeout(() => press(name, false), 110); } },
     launch() { go('tv'); zoom = 0; return new Promise(res => { zoomRes = res; }).then(() => { setTimeout(() => { zoom = 0; }, 600); }); },
-    debug: {get scroll() { return scroll; }, set scroll(v) { scroll = v; vel = 0; }, get max() { return maxScroll; }, cam, FR, con},
+    debug: {get scroll() { return scroll; }, set scroll(v) { scroll = v; vel = 0; }, get max() { return maxScroll; }, cam, FR, con, renderer, scene},
     destroy() { cancelAnimationFrame(raf); },
   };
 }

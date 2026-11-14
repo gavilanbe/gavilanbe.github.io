@@ -18,7 +18,7 @@ export async function createRoom({canvas, games, first, Sound, onStation, onPick
   const mobile = matchMedia('(max-width: 760px), (pointer: coarse)').matches;
   const renderer = new THREE.WebGLRenderer({canvas, antialias: false, powerPreference: 'high-performance'});
   renderer.outputColorSpace = THREE.SRGBColorSpace; renderer.toneMapping = THREE.NeutralToneMapping; renderer.toneMappingExposure = .98;
-  renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap; renderer.shadowMap.autoUpdate = false;   // las sombras solo se rehacen cuando algo se mueve
   const scene = new THREE.Scene();
   scene.background = tex(4, 256, (x, w, h) => { const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#2c2170'); g.addColorStop(.55, '#231a58'); g.addColorStop(1, '#140e34'); x.fillStyle = g; x.fillRect(0, 0, w, h); }, {mip: false});
   const pm = new THREE.PMREMGenerator(renderer); scene.environment = pm.fromScene(new RoomEnvironment(), .04).texture; scene.environmentIntensity = .22; pm.dispose();
@@ -96,16 +96,24 @@ export async function createRoom({canvas, games, first, Sound, onStation, onPick
   }
 
   // ── acabado de imagen ──
-  let dpr = 1, composer = null, bloom = null;
+  // un solo compositor que se redimensiona (crear otro en cada cambio de tamaño dejaba la memoria de vídeo sin liberar)
+  let dpr = 1, cap = mobile ? 1.5 : 2, composer = null, bloom = null;
   function setup() {
-    const w = innerWidth, h = innerHeight; dpr = Math.min(devicePixelRatio || 1, mobile ? 1.5 : 2);
+    const w = innerWidth, h = innerHeight; dpr = Math.min(devicePixelRatio || 1, cap, Math.sqrt(4.2e6 / (w * h)));   // tope de píxeles: una ventana enorme no se pinta a 2×
     renderer.setPixelRatio(dpr); renderer.setSize(w, h, false); camera.aspect = w / h; camera.updateProjectionMatrix();
-    const rt = new THREE.WebGLRenderTarget(w * dpr, h * dpr, {type: THREE.HalfFloatType, samples: 4});
-    composer = new EffectComposer(renderer, rt); composer.setPixelRatio(dpr); composer.setSize(w, h);
-    composer.addPass(new RenderPass(scene, camera));
-    bloom = new UnrealBloomPass(new THREE.Vector2(w, h), .2, .6, .96); composer.addPass(bloom);
-    composer.addPass(new OutputPass());
+    if (!composer) {
+      composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(w * dpr, h * dpr, {type: THREE.HalfFloatType, samples: 4}));
+      composer.addPass(new RenderPass(scene, camera));
+      bloom = new UnrealBloomPass(new THREE.Vector2(w, h), .2, .6, .96); composer.addPass(bloom);
+      // un brillo fuera de rango (o un valor inválido) no debe llegar al desenfoque: se extendía como un recuadro negro
+      bloom.materialHighPassFilter.fragmentShader = bloom.materialHighPassFilter.fragmentShader.replace('vec4 texel = texture2D( tDiffuse, vUv );', 'vec4 texel = texture2D( tDiffuse, vUv ); if ( ! ( texel.r >= 0.0 && texel.g >= 0.0 && texel.b >= 0.0 ) ) texel.rgb = vec3( 0.0 ); texel.rgb = min( texel.rgb, vec3( 6.0 ) );');
+      composer.addPass(new OutputPass());
+    }
+    composer.setPixelRatio(dpr); composer.setSize(w, h);
+    bloom.setSize(w * dpr / 2, h * dpr / 2);   // el resplandor es borroso de por sí: a media resolución cuesta la cuarta parte
+    shadowHold = 4;
   }
+  let shadowHold = 90, shadowSig = 0, slow = 0, frames = 0;
   setup();
   let rsT = 0; addEventListener('resize', () => { clearTimeout(rsT); rsT = setTimeout(setup, 120); });
 
@@ -136,7 +144,7 @@ export async function createRoom({canvas, games, first, Sound, onStation, onPick
   const {carts, pickables} = room, flights = [], cartOf = g => carts.find(c => c.userData.game === g);
   let hover = null, bump = 0, dimSet = null, tvLit = 1;
   const homeQ = new THREE.Quaternion().setFromEuler(new THREE.Euler(-.1, 0, 0));
-  function fly(obj, to, dur, done) { for (let i = flights.length - 1; i >= 0; i--) if (flights[i].obj === obj) flights.splice(i, 1); flights.push({obj, from: {p: obj.position.clone(), q: obj.quaternion.clone(), s: obj.scale.x}, to, t: 0, dur, done}); }
+  function fly(obj, to, dur, done) { if (obj.userData.back) obj.userData.back.visible = true; for (let i = flights.length - 1; i >= 0; i--) if (flights[i].obj === obj) flights.splice(i, 1); flights.push({obj, from: {p: obj.position.clone(), q: obj.quaternion.clone(), s: obj.scale.x}, to, t: 0, dur, done}); }
   const BIG = 1.55, seat = () => slot.clone().add(V(0, (CART.H / 2 - .058) * BIG, 0));   // en la consola el cartucho se ve a lo grande
   // línea de tiempo de la secuencia (se para con el parón de impacto)
   const cues = []; let seq = 0;
@@ -224,6 +232,8 @@ export async function createRoom({canvas, games, first, Sound, onStation, onPick
   function frame(now) {
     raf = requestAnimationFrame(frame);
     const real = Math.min(.05, (now - last) / 1000); last = now; if (document.hidden) return;
+    // si el equipo no llega, baja la resolución
+    if (!intro && frames++ > 60) { slow += real > .021 ? 1 : -.3; slow = Math.max(0, slow); if (slow > 50 && cap > 1) { cap = cap > 1.5 ? 1.5 : cap > 1.25 ? 1.25 : 1; slow = 0; frames = 0; setup(); } }
     hitstop = Math.max(0, hitstop - real); const dt = hitstop > 0 ? real * .04 : real; time += dt;
     for (let i = cues.length - 1; i >= 0; i--) { const c = cues[i]; c.t -= dt; if (c.t <= 0) { cues.splice(i, 1); if (c.seq === seq) c.fn(); } }
     const s = ST[cur], p = portrait(); speed += (3.3 - speed) * dt * .35; const k = 1 - Math.exp(-dt * (cur === 'insert' ? 5.5 : speed));
@@ -277,6 +287,9 @@ export async function createRoom({canvas, games, first, Sound, onStation, onPick
     tvL.intensity *= .25 + .75 * tvFade; tv.userData.halo.material.opacity = (.2 * tvLit + bump * .2) * tvFade;
     if (neon) neon.material.opacity = Math.sin(time * 31) > .985 || Math.sin(time * 1.7 + 2) > .995 ? .55 : 1;
     room.anim(time); drawTV(now);
+    // ¿se ha movido algo que dé sombra? (cartuchos, consola, mando, tele)
+    { let sig = con.scale.y * 7 + pad.position.y * 5 + tv.position.y * 3 + tvFade + fv; for (const c of carts) sig += c.position.x + c.position.y * 1.7 + c.position.z * 2.3 + c.rotation.x + c.scale.x;
+      if (Math.abs(sig - shadowSig) > 2e-5) { shadowSig = sig; shadowHold = 3; } if (shadowHold > 0) { shadowHold--; renderer.shadowMap.needsUpdate = true; } }
     composer.render(dt);
   }
   // el primero ya está puesto en la consola
@@ -288,6 +301,7 @@ export async function createRoom({canvas, games, first, Sound, onStation, onPick
     start() { intro = false; speed = .9; tvT0 = performance.now() - 1200; power = 1; setTimeout(() => Sound.boot(), 500); },
     key(d) { if (cur === 'wall') pan = Math.max(-1, Math.min(1, pan + d * .3)); else { const o = ['hero', 'wall', 'tv']; go(o[(o.indexOf(cur) + d + 3) % 3]); } },
     launch() { go('tv'); zoom = 0; return new Promise(res => { zoomRes = res; }).then(() => { setTimeout(() => { zoom = 0; }, 600); }); },
+    debug: {renderer, scene, get composer() { return composer; }},
     destroy() { cancelAnimationFrame(raf); },
   };
 }
