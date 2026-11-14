@@ -55,11 +55,22 @@ for (const [name, viewport, mobile] of [['escritorio', {width: 1440, height: 900
   if (shots) await page.screenshot({path: join(shots, `${name}-3-consola.png`)});
 
   // las vistas y START
-  await page.locator('.tabs button[data-go="wall"]').click(); await page.waitForTimeout(1600);
+  assert.equal(await page.evaluate(() => G64.POCKET), mobile, 'en el teléfono sale la portátil; en escritorio, la habitación');
+  await page.locator(mobile ? '#keys [data-act="b"]' : '.tabs button[data-go="wall"]').click(); await page.waitForTimeout(1600);
   assert.equal(await page.evaluate(() => G64.room.station), 'wall');
+  if (!mobile) assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector('#card')).visibility), 'hidden', 'la ficha no tapa la colección');
   if (shots) await page.screenshot({path: join(shots, `${name}-4-coleccion.png`)});
-  await page.locator('.tabs button[data-go="tv"]').click(); await page.waitForTimeout(1200);
-  await page.locator('#play').click();
+  if (mobile) {   // en el estuche: saltar de modelo, coger un cartucho con el dedo y volver a la consola
+    await page.locator('#jump .chip').nth(2).click(); await page.waitForTimeout(900);
+    assert.ok(await page.evaluate(() => G64.room.debug.scroll > .5), 'los saltos por modelo mueven el estuche');
+    await page.evaluate(() => { G64.room.debug.scroll = 0; }); await page.waitForTimeout(400);
+    await page.touchscreen.tap(viewport.width * .72, viewport.height * .3); await page.waitForTimeout(4200);
+    assert.notEqual(await page.evaluate(() => G64.current.name), 'glup', 'tocar un cartucho del estuche lo mete en la consola');
+    assert.equal(await page.evaluate(() => G64.room.station), 'tv', 'y la consola vuelve a la mano');
+    await page.evaluate(() => G64.select(G64.byName.get('glup'))); await page.waitForTimeout(1800);
+  }
+  await page.locator(mobile ? '#keys [data-act="a"]' : '.tabs button[data-go="tv"]').click(); await page.waitForTimeout(mobile ? 0 : 1200);
+  if (!mobile) await page.locator('#play').click();
   await page.waitForFunction(() => window.__went.length > 0, null, {timeout: 6000});
   assert.match(await page.evaluate(() => window.__went[0]), /\/glup\//, 'START lleva al juego');
 

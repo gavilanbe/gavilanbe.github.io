@@ -82,6 +82,8 @@ svg{display:block}
 
 /* ── ficha del cartucho ── */
 .card{position:fixed;left:var(--pad);bottom:max(22px,env(safe-area-inset-bottom));width:min(440px,calc(100vw - 2*var(--pad)));z-index:5;pointer-events:none}
+.card{transition:transform .5s var(--out),opacity .3s,visibility 0s}
+body[data-st=wall] .card{transform:translateX(calc(-100% - 60px));opacity:0;visibility:hidden;transition:transform .45s cubic-bezier(.5,0,.8,.4),opacity .3s .1s,visibility 0s .45s}
 .card>*{pointer-events:auto;opacity:0;transform:translateY(26px)}
 .card.on>*{animation:rise .55s var(--pop) forwards}
 .card.on>*:nth-child(2){animation-delay:.05s}.card.on>*:nth-child(3){animation-delay:.09s}.card.on>*:nth-child(4){animation-delay:.13s}.card.on>*:nth-child(5){animation-delay:.17s}
@@ -210,6 +212,39 @@ body.intro .ui{opacity:0;pointer-events:none;transition:none}
   body[data-st=wall] .card{display:none}
   .sp-foot{flex-direction:column;align-items:center;gap:6px}
 }
+/* ── de bolsillo: la portátil y su estuche ── */
+.jump{display:none}
+.pocket .tabs,.pocket #prev,.pocket #next,.pocket #play,.pocket .tip{display:none}
+.pocket .top{padding-bottom:26px;background:linear-gradient(180deg,rgba(12,8,34,.82),rgba(12,8,34,.5) 55%,transparent)}
+.pocket .logo{font-size:21px;gap:8px}.pocket .logo .emb{width:32px;height:32px}
+.pocket .logo .hot{margin-left:.22em}
+.pocket .keys{display:flex;left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom));height:54px;padding:0 8px;justify-content:space-around;gap:4px;pointer-events:auto;font-size:14.5px}
+.pocket .keys button,.pocket .keys span{display:inline-flex;align-items:center;gap:7px;height:42px;padding:0 9px;border-radius:99px;font-family:var(--title);white-space:nowrap}
+.pocket .keys button{transition:transform .16s var(--pop),background .15s}
+.pocket .keys button:active{transform:scale(.92);background:rgba(255,255,255,.14)}
+.pocket .keys>span{color:var(--mute)}
+.pocket .card{left:14px;width:calc(100vw - 28px);bottom:calc(max(12px,env(safe-area-inset-bottom)) + 66px);height:clamp(168px,24vh,204px);display:flex;flex-direction:column;justify-content:flex-end}
+.pocket .card .badges{margin-bottom:8px;padding-right:54px;gap:5px}
+.pocket .bdg{height:27px;padding:0 10px;font-size:12.5px;gap:6px}
+.pocket .card h2{font-size:38px}.pocket .card h2.mid{font-size:31px}.pocket .card h2.long{font-size:25px}
+.pocket .card .sub{font-size:16px}
+.pocket .desc{margin-top:9px;padding:10px 13px;font-size:14.5px}.pocket .desc p{-webkit-line-clamp:2}
+.pocket .desc.open{position:relative;z-index:2}
+.pocket .desc:not(.open) .cmd{display:none}
+.pocket .acts{position:absolute;right:0;bottom:calc(100% - 44px);margin:0;transform:none!important}
+.pocket .acts .rnd{width:44px;height:44px}
+.pocket[data-st=wall] .card{display:none}
+.pocket[data-st=wall] .jump{display:flex;position:fixed;left:0;right:0;top:calc(max(18px,env(safe-area-inset-top)) + 54px);z-index:5;gap:7px;padding:4px 12px 10px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.pocket .jump::-webkit-scrollbar{display:none}
+.pocket .jump .chip{flex:none;height:34px}
+body.intro .jump{display:none!important}
+@media (orientation:landscape){
+  .pocket .logo{display:none}
+  .pocket .sp-word{font-size:clamp(34px,13vh,90px)}.pocket .sp-emb{width:16vh;height:16vh}.pocket .sp-mid{gap:8px}.pocket .sp-start{height:52px;font-size:20px}
+  .pocket .count{display:none}
+  .pocket .card{left:auto;right:14px;width:46vw;bottom:calc(max(12px,env(safe-area-inset-bottom)) + 64px);height:auto}
+  .pocket .keys{left:auto;width:46vw}
+}
 @media (max-height:640px) and (min-width:821px){.desc p{-webkit-line-clamp:2}.card h2{font-size:44px}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01s!important;animation-delay:0s!important;transition-duration:.01s!important}}
 </style>
@@ -247,6 +282,7 @@ body.intro .ui{opacity:0;pointer-events:none;transition:none}
   </div>
   <p class="count" id="c-count"></p>
 </section>
+<nav class="jump ui" id="jump" aria-label="Saltar a un modelo"></nav>
 <div class="keys pnl ui" id="keys"></div>
 <div class="tip" id="tip"></div>
 
@@ -270,7 +306,7 @@ body.intro .ui{opacity:0;pointer-events:none;transition:none}
   <div class="sp-mid">
     <svg class="sp-emb" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="48" fill="#130e2e"/><g class="ring" fill="none" stroke-width="19"><circle class="arc" cx="50" cy="50" r="30" stroke="#ff5b35" stroke-dasharray="42.6 146" transform="rotate(-20 50 50)"/><circle class="arc" cx="50" cy="50" r="30" stroke="#ffd23f" stroke-dasharray="42.6 146" transform="rotate(61.400 50 50)"/><circle class="arc" cx="50" cy="50" r="30" stroke="#35d0c0" stroke-dasharray="42.6 146" transform="rotate(142.800 50 50)"/><circle class="arc" cx="50" cy="50" r="30" stroke="#7a4be6" stroke-dasharray="42.6 146" transform="rotate(224.200 50 50)"/></g><rect class="bar" x="50" y="41.500" width="33" height="17" fill="#ff5b35"/></svg>
     <div class="sp-word" id="sp-word" aria-label="gavilanbe 64"></div>
-    <p class="sp-sub">La colección de juegos en cartucho</p>
+    <p class="sp-sub" id="sp-sub">La colección de juegos en cartucho</p>
     <button class="btn lime sp-start" id="start" type="button"><span class="gl s">START</span><b id="start-t">Preparando…</b></button>
   </div>
   <div class="sp-foot"><span class="sp-load"><i><b></b><b></b><b></b><b></b></i><span id="sp-load">Montando la habitación</span></span><span id="sp-n"></span></div>

@@ -181,7 +181,7 @@ export async function createPocket({canvas, games, first, Sound, onStation, onPi
     // consola: entre la cabecera y la ficha
     const t = land ? 12 : 66, b = land ? 12 : Math.max(cardH, keysH) + 6, avail = Math.max(120, VH - t - b), full = HH.H + .075 + .05;
     const ppu = Math.min(avail / full, VW * (land ? .5 : .9) / HH.W);
-    FR.tv.e = VW / ppu; FR.tv.cz = -.0375 + (VH / 2 - (t + avail / 2)) / ppu; FR.tv.cx = land ? -(VW * .21) / ppu : 0;
+    FR.tv.e = VW / ppu; FR.tv.cz = -.0375 + (VH / 2 - (t + avail / 2)) / ppu; FR.tv.cx = land ? (VW * .23) / ppu : 0;
     // estuche: a lo ancho, con la consola asomando abajo
     ppuW = Math.min(VW / (SW + .14), land ? VH / 1.3 : 1e9); const peek = keysH + (land ? 70 : Math.min(150, VH * .19));
     FR.wall.e = VW / ppuW; FR.wall.cz = -TOP - (VH / 2 - peek) / ppuW; FR.wall.cx = 0;

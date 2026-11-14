@@ -17,7 +17,7 @@ const shot = n => page.screenshot({path: join(out, n + '.png')}), wait = ms => p
 await page.goto(base + (process.argv.includes('--built') ? '' : 'g64/') + '?pocket' + opt('hash', ''));
 await page.waitForFunction(() => window.G64 && G64.room, null, {timeout: 40000});
 await page.waitForFunction(() => !document.querySelector('#boot').classList.contains('wait'), null, {timeout: 10000});
-if (want('title')) await shot('01-title');
+if (want('title')) { await wait(2300); await shot('01-title'); }
 await page.tap('#start'); await wait(600); if (want('title')) await shot('02-start');
 await wait(3200); if (want('tv')) await shot('03-tv');
 if (want('swap')) { await page.evaluate(() => G64.room.key(1)); for (const [i, t] of [140, 120, 140, 500, 1600].entries()) { await wait(t); await shot('04-swap-' + i); } }

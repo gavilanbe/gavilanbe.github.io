@@ -56,7 +56,7 @@ function paintCard(g) {
   const d = $('c-desc'); d.classList.remove('open');
   d.innerHTML = `<p>${esc(g.tagline)}</p>${g.web ? '' : `<div class="cmd"><span>$</span><code>${esc(g.clone)}</code></div>`}`;
   const para = d.firstElementChild;
-  requestAnimationFrame(() => { if (para.scrollHeight > para.clientHeight + 3) { const m = document.createElement('button'); m.type = 'button'; m.className = 'more'; m.textContent = 'Leer más'; m.onclick = () => { m.textContent = d.classList.toggle('open') ? 'Menos' : 'Leer más'; }; para.after(m); } });
+  requestAnimationFrame(() => { if (para.scrollHeight > para.clientHeight + 3 || (POCKET && !g.web)) { const m = document.createElement('button'); m.type = 'button'; m.className = 'more'; m.textContent = 'Leer más'; m.onclick = () => { m.textContent = d.classList.toggle('open') ? 'Menos' : 'Leer más'; }; para.after(m); } });
   $('play').href = g.web ? g.play : g.repo; $('play-t').textContent = g.web ? 'Jugar' : 'Copiar comando'; $('repo').href = g.repo;
   $('c-count').textContent = `Nº ${String(games.indexOf(g) + 1).padStart(3, '0')} / ${String(games.length).padStart(3, '0')}`;
   const card = $('card'); card.classList.remove('on'); void card.offsetWidth; card.classList.add('on');

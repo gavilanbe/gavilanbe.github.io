@@ -42,13 +42,16 @@ export async function createRoom({canvas, games, first, Sound, onStation, onPick
   const tvC = document.createElement('canvas'); tvC.width = 320; tvC.height = 240;
   const tvT = new THREE.CanvasTexture(tvC); tvT.colorSpace = THREE.SRGBColorSpace; tvT.minFilter = tvT.magFilter = THREE.LinearFilter; tvT.generateMipmaps = false;
   const tv = makeTV(tvBase, tvT); scene.add(tv);
+  // la tele se desvanece al mirar la colección: está delante de las primeras columnas
+  const tvMats = []; tv.traverse(o => { if (o.isMesh) { o.material = o.material.clone(); o.material.userData = {o: o.material.opacity, t: o.material.transparent}; tvMats.push(o.material); } });
+  let tvFade = 1, tvFadeWas = 1;
   const scrW = V(0, SCREEN.y, SCREEN.z).applyMatrix4(tvBase); tvL.position.copy(V(0, SCREEN.y, 1.15).applyMatrix4(tvBase));
   const CONP = TVP.clone().addScaledVector(tvDir, 1.85), conBase = M4(CONP.x, 0, CONP.z, TVR), con = makeConsole(); con.applyMatrix4(conBase); scene.add(con);
   const CP = con.userData.parts, conY = con.position.y, fx = makeFX(scene);
   const slot = SLOT.clone().applyMatrix4(conBase), conQ = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, TVR, 0));
   const padBase = M4(CONP.x + tvDir.x * 1.0 - .62, 0, CONP.z + tvDir.z * 1.0 + .3, TVR - .55), pad = makePad(); pad.applyMatrix4(padBase); scene.add(pad);
   const put = (m, p, ry = 0) => { m.position.copy(p); m.position.y = .012; m.rotation.z = ry; scene.add(m); };
-  put(blob(2.2, 1.8, .95), CONP, -TVR); put(blob(1.2, 1.2, .85), V(0, 0, 0).applyMatrix4(padBase).add(V(.1, 0, .1))); put(blob(3.0, 2.4, .9), TVP.clone().add(V(.15, 0, .15)), -TVR);
+  put(blob(2.2, 1.8, .95), CONP, -TVR); put(blob(1.2, 1.2, .85), V(0, 0, 0).applyMatrix4(padBase).add(V(.1, 0, .1))); const tvBlob = blob(3.0, 2.4, .9); put(tvBlob, TVP.clone().add(V(.15, 0, .15)), -TVR);
   // alfombra
   { const rug = tex(256, 256, x => { const cols = ['#17122a', '#ff5b35', '#ffd23f', '#35d0c0', '#3b2a78']; cols.forEach((c, i) => { x.fillStyle = c; x.beginPath(); x.arc(128, 128, 126 - i * 18, 0, 7); x.fill(); }); x.fillStyle = '#ff8fb0'; for (let i = 0; i < 12; i++) { const a = i / 12 * 6.283; x.beginPath(); x.arc(128 + Math.cos(a) * 40, 128 + Math.sin(a) * 40, 6, 0, 7); x.fill(); } x.fillStyle = '#ffd23f'; x.beginPath(); for (let i = 0; i < 10; i++) { const a = i / 10 * 6.283 - 1.57, r = i % 2 ? 10 : 22; x.lineTo(128 + Math.cos(a) * r, 128 + Math.sin(a) * r); } x.fill(); x.strokeStyle = 'rgba(23,18,42,.22)'; x.lineWidth = 1; for (let i = 0; i < 90; i++) { const a = i / 90 * 6.283; x.beginPath(); x.moveTo(128 + Math.cos(a) * 20, 128 + Math.sin(a) * 20); x.lineTo(128 + Math.cos(a) * 126, 128 + Math.sin(a) * 126); x.stroke(); } });
     const r = new THREE.Mesh(new THREE.CircleGeometry(1.55, 48), new THREE.MeshStandardMaterial({map: rug, roughness: 1})); r.rotation.x = -Math.PI / 2; r.position.set(CONP.x + tvDir.x * .35, .008, CONP.z + tvDir.z * .35); r.receiveShadow = true; scene.add(r);
@@ -110,7 +113,7 @@ export async function createRoom({canvas, games, first, Sound, onStation, onPick
   const portrait = () => innerWidth / innerHeight < .9;
   const ST = {
     hero: {pos: V(8.5, 6.1, 9.8), at: V(.15, 1.02, -.1), fov: 27, ppos: V(7.4, 9.4, 13.4), pat: V(-.2, 1.1, -.2), pfov: 40},
-    wall: {pos: V(SH.xc, 1.28, 2.05), at: V(SH.xc, 1.26, R.z0), fov: 27, ppos: V(SH.xc, 1.28, 2.6), pat: V(SH.xc, 1.26, R.z0), pfov: 36, pan: true},
+    wall: {pan: true},
     tv: {pos: CONP.clone().addScaledVector(tvDir, 6.0).add(V(.8, 2.3, -.8)), at: scrW.clone().lerp(CONP.clone().setY(.2), .5), fov: 27, ppos: CONP.clone().addScaledVector(tvDir, 7.2).add(V(.3, 3.0, -.3)), pat: scrW.clone().lerp(CONP.clone().setY(.2), .5), pfov: 34},
   };
   { const side = V(Math.cos(TVR), 0, -Math.sin(TVR)), at = CONP.clone().add(V(0, .42, 0)); ST.insert = {pos: CONP.clone().addScaledVector(tvDir, 2.0).addScaledVector(side, -1.15).setY(.82), at, fov: 31, ppos: CONP.clone().addScaledVector(tvDir, 3.1).addScaledVector(side, -.9).setY(1.3), pat: at, pfov: 40}; }
@@ -119,7 +122,15 @@ export async function createRoom({canvas, games, first, Sound, onStation, onPick
   let cur = 'hero', pan = 0, zoom = 0, zoomRes = null, intro = true, speed = 3.3, off = 0;
   const cam = {pos: titlePos(), at: scrW.clone(), fov: 27}, ptr = {x: 0, y: 0};
   function go(name) { if (!ST[name]) return; cur = name; onStation(name === 'insert' ? 'tv' : name); tip.classList.remove('on'); hover = null; }
-  const halfPan = () => Math.max(0, (SH.x1 - SH.x0) / 2 - (portrait() ? .45 : 1.3));
+  // la colección se encuadra entera entre la cabecera y la leyenda, sin nada de la interfaz encima
+  let wallW = 3;
+  function fitWall() {
+    const p = portrait(), fov = p ? 36 : 27, H = innerHeight, T = innerWidth < 821 ? 76 : 106, B = innerWidth < 821 ? 84 : 96;
+    const y0 = SH.y0 - .07, y1 = SH.y0 + SH.rows * SH.py + .25, vis = (y1 - y0) / Math.max(.4, (H - T - B) / H), d = vis / (2 * Math.tan(fov * Math.PI / 360)), cy = y0 - B / H * vis + vis / 2;
+    const pos = V(SH.xc, cy, R.z0 + .2 + d), at = V(SH.xc, cy, R.z0); Object.assign(ST.wall, {pos, at, ppos: pos, pat: at, fov, pfov: fov}); wallW = vis * innerWidth / H;
+  }
+  fitWall(); addEventListener('resize', fitWall);
+  const halfPan = () => Math.max(0, (SH.x1 - SH.x0) / 2 + .14 - wallW / 2);
 
   // ── cartuchos: asomar, volar, entrar ──
   const {carts, pickables} = room, flights = [], cartOf = g => carts.find(c => c.userData.game === g);
@@ -226,7 +237,7 @@ export async function createRoom({canvas, games, first, Sound, onStation, onPick
     const sway = (cur === 'hero' ? 1 : .25) * (zoomRes || intro ? 0 : 1) * (mobile ? 0 : 1);
     camera.position.copy(cam.pos).add(tmp.set(ptr.x * .5 * sway, -ptr.y * .28 * sway + Math.sin(time * .5) * .03, -ptr.x * .22 * sway));
     if (shake > .002) { const a = shake * shake * .075; camera.position.add(tmp.set((Math.random() - .5) * a, (Math.random() - .5) * a, (Math.random() - .5) * a)); shake *= Math.pow(.0008, real); }
-    off += ((intro || zoomRes || p ? 0 : cur === 'hero' ? 3.4 : cur === 'wall' ? 4.6 : cur === 'insert' ? 2 : 3.2) - off) * k; camera.filmOffset = -off;
+    off += ((intro || zoomRes || p ? 0 : cur === 'hero' ? 3.4 : cur === 'wall' ? 0 : cur === 'insert' ? 2 : 3.2) - off) * k; camera.filmOffset = -off;
     camera.fov = cam.fov; camera.updateProjectionMatrix(); camera.lookAt(cam.at);
     const moving = new Set(flights.map(f => f.obj));
     for (const c of carts) {
@@ -257,7 +268,13 @@ export async function createRoom({canvas, games, first, Sound, onStation, onPick
     tv.position.y = Math.max(0, tvKick.step(dt)) * .03;
     fx.update(dt);
     const lit = tvMode === 'off' || tvMode === 'collapse' ? .12 : 1; tvLit += (lit - tvLit) * Math.min(1, dt * 10);
-    tvL.intensity = (8 + Math.sin(time * 12) * .35 + Math.sin(time * 2.7) * .5) * tvLit + bump * 9; bump *= Math.pow(.004, dt); tv.userData.halo.material.opacity = .2 * tvLit + bump * .2;
+    tvL.intensity = (8 + Math.sin(time * 12) * .35 + Math.sin(time * 2.7) * .5) * tvLit + bump * 9; bump *= Math.pow(.004, dt); tvFade += ((cur === 'wall' ? 0 : 1) - tvFade) * Math.min(1, dt * (cur === 'wall' ? 9 : 5));
+    if (Math.abs(tvFade - tvFadeWas) > .002 || (tvFade > .998) !== (tvFadeWas > .998)) {
+      const solid = tvFade > .998; tv.visible = tvFade > .01; tv.traverse(o => { if (o.isMesh) o.castShadow = o.userData.cs ?? (o.userData.cs = o.castShadow) ? tvFade > .5 : false; });
+      for (const m of tvMats) { const tr = m.userData.t || !solid; if (m.transparent !== tr) { m.transparent = tr; m.needsUpdate = true; } m.opacity = m.userData.o * tvFade; m.depthWrite = !m.userData.t; }
+      tvBlob.material.opacity = .9 * tvFade; tvFadeWas = tvFade;
+    }
+    tvL.intensity *= .25 + .75 * tvFade; tv.userData.halo.material.opacity = (.2 * tvLit + bump * .2) * tvFade;
     if (neon) neon.material.opacity = Math.sin(time * 31) > .985 || Math.sin(time * 1.7 + 2) > .995 ? .55 : 1;
     room.anim(time); drawTV(now);
     composer.render(dt);

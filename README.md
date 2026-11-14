@@ -32,13 +32,26 @@
   se hunde en la pared. Es también la vía rápida en el móvil y lo que queda si no hay WebGL.
 - **Enlace directo**: `https://gavilanbe.github.io/#<slug>` abre con ese cartucho puesto.
 
+### En el teléfono: gavilanbe POCKET
+
+En pantallas de teléfono la sobremesa se queda en casa y sale la **portátil**, sobre el edredón de la
+misma habitación (`?pocket` y `?desktop` fuerzan una u otra):
+
+- **La consola funciona**: la cruceta cambia de cartucho (o desliza el dedo), arriba y abajo saltan de
+  modelo, **A** y START juegan, **B** abre el estuche y **SELECT** cambia el color de la carcasa.
+  La pantalla enseña la carátula y el cartucho se ve entero en la cuna de arriba.
+- **El estuche** hace de pared: una tira con dos cartuchos por fila, cada uno con su cinta con el
+  nombre, y una placa por modelo. Se arrastra con inercia y los chips de arriba saltan de modelo.
+  Al tocar un cartucho, la consola sube a por él: vuela, entra de golpe y arranca.
+
 Las versiones anteriores siguen en las etiquetas git (`pocket-v8` y anteriores); la primera, en
 [`/classic/`](https://gavilanbe.github.io/classic/).
 
 ## Desarrollo
 
 El código vive en [`g64/`](g64/): `kit.js` (herramientas de modelado), `cart.js`, `console.js`,
-`tv.js`, `room.js` (las piezas), `scene.js` (luz, cámara, vuelo) y `main.js` (interfaz).
+`tv.js`, `room.js` (las piezas), `scene.js` (luz, cámara, vuelo) y `main.js` (interfaz); la versión de
+bolsillo son `handheld.js` (la portátil) y `pocket.js` (su escena y el estuche).
 `g64/index.html` es la página de desarrollo, que carga los módulos sueltos; la de la raíz y
 `lib/g64/` **se generan** con `npm run bundle`.
 
@@ -49,7 +62,8 @@ El código vive en [`g64/`](g64/): `kit.js` (herramientas de modelado), `cart.js
 - `npm ci && npm test`: regresiones sin navegador (datos, miniaturas, ediciones, ids, que el paquete
   esté al día y que la colección quepa en la pared).
 - `npm run smoke`: prueba en Chromium (Playwright), escritorio y móvil, sobre la página empaquetada.
-  Con `-- --shots` deja capturas en `dist/smoke/`. La primera vez: `npx playwright install chromium`.
+  Con `-- --shots` deja capturas en `dist/smoke/`. Para mirar a ojo: `node scripts/pocket-shot.mjs`
+  (teléfono, con `pocket-sheet.mjs` para la hoja de contactos) y `node scripts/desk-shot.mjs`. La primera vez: `npx playwright install chromium`.
 - `npm run thumbs`: miniaturas pequeñas (`thumbs/s/*.webp`, 320×200); necesita ImageMagick.
 
 ## Añadir un juego
