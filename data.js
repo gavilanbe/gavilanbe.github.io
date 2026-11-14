@@ -426,8 +426,7 @@ const GAMES = [
     "thumb": "thumbs/makinamon-pulso.jpg",
     "wip": false,
     "kind": "juego",
-    "model": "fable-5.2",
-    "new": true
+    "model": "fable-5.2"
   },
   {
     "name": "michi",
@@ -536,6 +535,19 @@ const GAMES = [
     "wip": false,
     "kind": "juego",
     "model": "opus-4.7"
+  },
+  {
+    "name": "pantastic",
+    "title": "🥖 PANTASTIC! · El obrador de Pan",
+    "tagline": "Juego cozy en 3D de la panadera Pan: amasa a dos manos, fermenta, hornea en horno de leña y despacha a los vecinos de Migas, que le van devolviendo las recetas de la abuela. Colmado con tique, libreta de anillas, obras para ampliar obrador y plaza, leña, buzón, paseos y un final con verbena.",
+    "type": "web",
+    "play": "https://gavilanbe.github.io/pantastic/",
+    "repo": "https://github.com/gavilanbe/pantastic",
+    "thumb": "thumbs/pantastic.jpg",
+    "wip": false,
+    "new": true,
+    "kind": "juego",
+    "model": "fable-5.2"
   },
   {
     "name": "pliego",
